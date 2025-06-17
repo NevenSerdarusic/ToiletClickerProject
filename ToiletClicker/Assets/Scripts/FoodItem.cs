@@ -15,7 +15,7 @@ public class FoodItem : ScriptableObject
 
     private const float fatCoefficient = 0.025f;
     private const float sugarCoefficient = 0.025f;
-    private const float fibersCoefficient = 0.025f;
+    private const float fibersCoefficient = 0.25f;
     private float foodWeightGain => (fatContent * fatCoefficient) + (sugarContent * sugarCoefficient) - (fibersContent * fibersCoefficient);
 
     public float FoodWeightGain => foodWeightGain;

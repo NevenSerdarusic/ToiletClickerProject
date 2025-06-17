@@ -52,7 +52,6 @@ public class PreassureSystem : MonoBehaviour
     {
         if (isOverloaded)
         {
-            Debug.Log("Prevelik pritisak! Pri?ekaj.");
             return;
         }
 
@@ -72,7 +71,7 @@ public class PreassureSystem : MonoBehaviour
 
     private void OnCriticalPressureReached()
     {
-        // Možeš ovdje dodati animaciju, vibraciju, kaznu, itd.
+        //Animacija
 
         if (warningText != null)
             warningText.GetComponent<TMP_Text>().text = CriticalPressure;
@@ -84,7 +83,7 @@ public class PreassureSystem : MonoBehaviour
 
         if (warningText != null)
             warningText.GetComponent<TMP_Text>().text = PressureNormalized;
-        warningText.SetActive(false);//dodaj odgodu
+            warningText.SetActive(false);
     }
 
     public bool IsOverloaded() => isOverloaded;

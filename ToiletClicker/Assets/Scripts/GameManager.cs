@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,12 +9,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PreassureSystem pressureSystem;
     [SerializeField] private GameConfig config;
 
-    [Header("Coin Settings")]
-    //[SerializeField] private int coinsPerClick = 1;
-    private int baseCoinsPerClick;         // Trajna vrijednost (npr. putem upgradea)
-    private float currentClickMultiplier = 1f; // Privremeni boostovi
+    //Coins per click settings
+    private int baseCoinsPerClick;
+    private float currentClickMultiplier = 1f;// Privremeni boostovi
 
     private int totalCoins;
+
+    //Event with which we monitor the interactable state of the buttons in Shop
+    public event System.Action<int> OnCoinsChanged;
+
 
     private void Start()
     {
@@ -22,16 +26,7 @@ public class GameManager : MonoBehaviour
         uiManager.UpdateCoins(totalCoins);
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            HandleClick();
-        }
-    }
-
-
-    private void HandleClick()
+    public void RegisterClick()
     {
         if (pressureSystem.IsOverloaded())
             return;
@@ -40,18 +35,20 @@ public class GameManager : MonoBehaviour
         totalCoins += actualCoins;
 
         uiManager.UpdateCoins(totalCoins);
-
-        //Save to PP
         PlayerPrefsHandler.SetCoins(totalCoins);
 
-        pressureSystem.OnClick(); // puni slider
+        //On each click, call an event to check the status of the button in the shop
+        OnCoinsChanged?.Invoke(totalCoins);
+
+        pressureSystem.OnClick();
     }
 
-    public void AddPermanentClickValue(int amount)
-    {
-        baseCoinsPerClick += amount;
-        Debug.Log($"Permanent baseCoinsPerClick increased to {baseCoinsPerClick}");
-    }
+
+    //public void AddPermanentClickValue(int amount)
+    //{
+    //    baseCoinsPerClick += amount;
+    //    Debug.Log($"Permanent baseCoinsPerClick increased to {baseCoinsPerClick}");
+    //}
 
     public void SetClickMultiplier(float multiplier)
     {
@@ -69,18 +66,15 @@ public class GameManager : MonoBehaviour
     {
         return Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
     }
-
-
     
     public int GetTotalCoins() => totalCoins;
    
 
-    //Reset
     public void ResetCoins()
     {
         totalCoins = 0;
         //Reset Player Prefs
-        Debug.Log("Coins reset.");
+        OnCoinsChanged?.Invoke(totalCoins);
     }
 
     public void SpendCoins(int amount)
@@ -89,5 +83,6 @@ public class GameManager : MonoBehaviour
         totalCoins = Mathf.Max(0, totalCoins);
         PlayerPrefsHandler.SetCoins(totalCoins);
         uiManager.UpdateCoins(totalCoins);
+        OnCoinsChanged?.Invoke(totalCoins);
     }
 }

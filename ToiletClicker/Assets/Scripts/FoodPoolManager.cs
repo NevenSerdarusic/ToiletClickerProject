@@ -163,7 +163,7 @@ public class FoodPoolManager : MonoBehaviour
             if (foodSlot == null || foodSlot.HasBeenEaten) continue;
 
             FoodItem currentItem = foodSlot.GetCurrentFood();
-            if (currentItem != null && junkFoodItems.Contains(currentItem)) // provjera da je junk
+            if (currentItem != null && junkFoodItems.Contains(currentItem))
             {
                 if (distance < closestDistance)
                 {
@@ -177,11 +177,10 @@ public class FoodPoolManager : MonoBehaviour
         {
             FoodSlot slot = closestJunkSlot.GetComponent<FoodSlot>();
             slot.SetFood(purchasedItem);
-            Debug.Log($"Zamijenjen junk food sa zdravim: {purchasedItem.foodName}");
         }
         else
         {
-            Debug.Log("Nema junk hrane za zamjenu.");
+            Debug.Log("Cant replace junk food in slot!");
         }
     }
 

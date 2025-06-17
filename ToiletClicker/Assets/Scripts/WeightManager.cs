@@ -13,7 +13,7 @@ public class WeightManager : MonoBehaviour
 
     private void Start()
     {
-        // Ako nije postavljena težina, postavi po?etnu iz GameConfig-a
+        //If no difficulty is set, set the initial one from GameConfig
         if (!PlayerPrefs.HasKey("PlayerWeight"))
         {
             currentWeight = gameConfig.startingWeight;
@@ -31,7 +31,7 @@ public class WeightManager : MonoBehaviour
     {
         currentWeight += amount;
         PlayerPrefsHandler.SetWeight(currentWeight);
-        //Debug.Log($"Dodano {amount} kg, ukupno: {currentWeight}");
+        
         UpdateWeightUI();
 
         if (currentWeight >= gameConfig.maxWeight)
@@ -42,7 +42,7 @@ public class WeightManager : MonoBehaviour
 
     private void OnGameOver()
     {
-        Debug.Log("Game Over! Dostignuta je maksimalna težina.");
+        Debug.Log("Game Over! Maximum difficulty reached.");
         uiManager.ShowGameOverScreen();
     }
 

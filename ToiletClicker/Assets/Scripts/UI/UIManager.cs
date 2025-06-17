@@ -19,6 +19,6 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameOverScreen()
     {
-
+        //Implementacija Game Over Panela
     }
 }

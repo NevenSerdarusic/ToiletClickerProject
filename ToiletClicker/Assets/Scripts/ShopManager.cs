@@ -12,20 +12,17 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private FoodPoolManager foodPoolManager;
 
     [Header("Shop Setup")]
-    [SerializeField] private List<FoodItem> allShopItems;
-    [SerializeField] private List<ShopItemUI> shopButtons;
-    
+    [SerializeField] private List<FoodItem> allShopItems; //SO Library Healthy Food
+    [SerializeField] private List<ShopItemUI> shopButtons; //All available buttons in Shop
 
+    //Track purchased items so that the same item that was just purchased is not added to the shop
     private HashSet<FoodItem> purchasedItems = new HashSet<FoodItem>();
 
     private void Start()
     {
         PopulateShop();
-    }
-
-    private void Update()
-    {
-        UpdateButtonStates();
+        gameManager.OnCoinsChanged += HandleCoinsChanged; //Event subscription
+        HandleCoinsChanged(gameManager.GetTotalCoins()); //Initial check of interactable buttons in Shop
     }
 
     private void PopulateShop()
@@ -44,6 +41,11 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    private void HandleCoinsChanged(int currentCoins)
+    {
+        UpdateButtonStates();
+    }
+
     private void UpdateButtonStates()
     {
         foreach (var button in shopButtons)
@@ -55,16 +57,17 @@ public class ShopManager : MonoBehaviour
 
     private void TryPurchaseItem(FoodItem item, ShopItemUI button)
     {
+        //if don't have enough coins for the purchase, return it
         if (gameManager.GetTotalCoins() < item.cost) return;
 
+        //if  have enough coins for the purchase, subtract from the total amount
         gameManager.SpendCoins(item.cost);
         purchasedItems.Add(item);
 
-        // Ubacivanje healthy food-a
+        //Repalcing junk food in foodSlot with healthy food
         foodPoolManager.ReplaceFirstUnhealthyFoodWithHealthy(item);
 
-
-        // Nova random ponuda
+        //Add new random item in shop, except the same one
         var remaining = allShopItems.Except(purchasedItems).ToList();
         if (remaining.Count > 0)
         {
@@ -73,7 +76,7 @@ public class ShopManager : MonoBehaviour
         }
         else
         {
-            button.Clear(); // shop prazan
+            button.Clear();
         }
     }
 
