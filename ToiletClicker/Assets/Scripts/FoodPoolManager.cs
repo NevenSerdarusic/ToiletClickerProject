@@ -185,6 +185,7 @@ public class FoodPoolManager : MonoBehaviour
     }
 
     //Eating Image Animation
+    //IVAN: dodati logiku za 3 spritea.....
     public void StartEatingAnimation(float duration = 1f)
     {
         LeanTween.value(gameObject, 1f, 0f, duration).setOnUpdate((float val) => {
