@@ -6,6 +6,7 @@ using static UnityEngine.UI.Image;
 public class FoodPoolManager : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private WeightManager weightManager;
 
     [Header("Slider Settings")]
@@ -14,7 +15,6 @@ public class FoodPoolManager : MonoBehaviour
     [SerializeField] private float scrollSpeed = 1f;
 
     [Header("Food Slot Setup")]
-    [SerializeField] int foodSlots = 20;
     [SerializeField] List<FoodItem> junkFoodItems;
 
     [Header("Eating Panel")]
@@ -30,6 +30,7 @@ public class FoodPoolManager : MonoBehaviour
 
     private Vector3[] slotCorners = new Vector3[4];
     private Vector3[] limiterCorners = new Vector3[4];
+
 
     private void Start()
     {
@@ -56,6 +57,10 @@ public class FoodPoolManager : MonoBehaviour
 
     private void Update()
     {
+        //If gamer is Paused or Game is over stop scrolling
+        if (gameManager.IsGamePaused || gameManager.IsGameOver)
+            return;
+
         ScrollContent();
 
         RectTransform closestSlot = null;
@@ -191,5 +196,8 @@ public class FoodPoolManager : MonoBehaviour
         LeanTween.value(gameObject, 1f, 0f, duration).setOnUpdate((float val) => {
             foodImage.fillAmount = val;
         });
+
+        //3 spritea 
+        //mrvice hrane
     }
 }

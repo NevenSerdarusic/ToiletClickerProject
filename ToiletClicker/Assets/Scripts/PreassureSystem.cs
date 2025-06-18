@@ -5,7 +5,9 @@ using UnityEngine.UI;
 public class PreassureSystem : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private GameConfig config;
+    [SerializeField] private GameConfig gameConfig;
+    [SerializeField] private WeightManager weightManager;
+    [SerializeField] private GameManager gameManager;
     
     [Header("Slider Settings")]
     [SerializeField] private Slider pressureSlider;
@@ -13,10 +15,11 @@ public class PreassureSystem : MonoBehaviour
     [SerializeField] private GameObject warningText;
 
     private float currentPressure = 0f;
+    private float overloadTimer = 0f;
     private bool isOverloaded = false;
 
+    //Prebaciti text u posebnu klasu
     private const string CriticalPressure = "CRITICAL PRESSURE! You need to stop pushing";
-    private const string PressureNormalized = "Pressure back to normal. Proceed when ready.";
 
     private void Start()
     {
@@ -31,20 +34,36 @@ public class PreassureSystem : MonoBehaviour
     {
         if (currentPressure > 0)
         {
-            currentPressure -= config.pressureDecreasePerSecond * Time.deltaTime;
+            currentPressure -= gameConfig.pressureDecreasePerSecond * Time.deltaTime;
             currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
             UpdateSlider();
         }
 
-        if (currentPressure >= config.criticalThreshold && !isOverloaded)
+        if (currentPressure >= gameConfig.criticalThreshold)
         {
-            isOverloaded = true;
-            OnCriticalPressureReached();
+            if (!isOverloaded)
+            {
+                isOverloaded = true;
+                OnCriticalPressureReached();
+                //Debug.Log("[PreassureSystem] ENTERED overload zone!");
+            }
+
+            //Start measuring time in overload
+            overloadTimer += Time.deltaTime;
+            //Debug.Log($"[PreassureSystem] Overload timer: {overloadTimer:F2} / {gameConfig.overloadDurationBeforeGameOver}");
+
+            if (overloadTimer >= gameConfig.overloadDurationBeforeGameOver)
+            {
+                //Debug.Log("[PreassureSystem] Overload timer exceeded! Triggering GameOver: ToiletOveruse");
+                gameManager.TriggerGameOver(GameOverReason.PressureOverload);
+            }
         }
-        else if (currentPressure < config.criticalThreshold && isOverloaded)
+        else if (isOverloaded)
         {
             isOverloaded = false;
             OnPressureBackToSafe();
+            overloadTimer = 0f;
+            //Debug.Log("[PreassureSystem] EXITED overload zone! Timer reset.");
         }
     }
 
@@ -55,9 +74,14 @@ public class PreassureSystem : MonoBehaviour
             return;
         }
 
-        currentPressure += config.pressurePerClick;
+        currentPressure += gameConfig.pressurePerClick;
         currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
         UpdateSlider();
+
+        if (weightManager != null)
+        {
+            weightManager.SubtractWeight(gameConfig.weightLossPerClick);
+        }
     }
 
     private void UpdateSlider()
@@ -82,7 +106,6 @@ public class PreassureSystem : MonoBehaviour
     {
 
         if (warningText != null)
-            warningText.GetComponent<TMP_Text>().text = PressureNormalized;
             warningText.SetActive(false);
     }
 

@@ -16,6 +16,12 @@ public class GameConfig : ScriptableObject
     public float pressureDecreasePerSecond = 10f;
     public float criticalThreshold = 95f;
 
+    [Header("Preassure Overload Settings")]
+    public float overloadDurationBeforeGameOver = 3f;
+
+    [Header("Weight Loss Settings")]
+    public float weightLossPerClick = 0.01f;
+
     [Header("Click Boost Settings")]
     public float boostDuration = 10f;
     public int boostMultiplier = 2;

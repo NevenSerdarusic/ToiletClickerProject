@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e9b97990646cca4387931934504c1a1, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  startingWeight: 300
-  maxWeight: 500
+  startingWeight: 150
+  maxWeight: 320
   idealWeight: 80
   coinsPerClick: 1
-  pressurePerClick: 2
-  pressureDecreasePerSecond: 7
+  pressurePerClick: 5
+  pressureDecreasePerSecond: 2
   criticalThreshold: 90
+  overloadDurationBeforeGameOver: 4
+  weightLossPerClick: 0.01
   boostDuration: 10
   boostMultiplier: 2
   boostAppearMinTime: 10

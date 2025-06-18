@@ -7,6 +7,7 @@ public class WeightManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private GameManager gameManager;
 
 
     private float currentWeight;
@@ -36,15 +37,18 @@ public class WeightManager : MonoBehaviour
 
         if (currentWeight >= gameConfig.maxWeight)
         {
-            OnGameOver();
+            gameManager.TriggerGameOver(GameOverReason.WeightLimit);
         }
     }
 
-    private void OnGameOver()
+    public void SubtractWeight(float amount)
     {
-        Debug.Log("Game Over! Maximum difficulty reached.");
-        uiManager.ShowGameOverScreen();
+        currentWeight -= amount;
+        currentWeight = Mathf.Max(0f, currentWeight); // sprje?ava negativnu težinu
+        PlayerPrefsHandler.SetWeight(currentWeight);
+        UpdateWeightUI();
     }
+
 
     private void UpdateWeightUI()
     {
