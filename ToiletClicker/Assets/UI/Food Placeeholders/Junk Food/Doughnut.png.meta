@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f9992167b5a30114ba11738ddfb632d4
+guid: bc3d99b325264b647bc1c1b6673d1148
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6791817249930038189
-    second: time_0
+      213: -8576997681220381384
+    second: Doughnut_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: time_0
+      name: Doughnut_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 63
         width: 512
-        height: 512
+        height: 386
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dab4371edc1614e50800000000000000
-      internalID: 6791817249930038189
+      spriteID: 83592834d0268f880800000000000000
+      internalID: -8576997681220381384
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      time_0: 6791817249930038189
+      Doughnut_0: -8576997681220381384
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

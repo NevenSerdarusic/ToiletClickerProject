@@ -2,10 +2,10 @@ using UnityEngine;
 
 public static class PlayerPrefsHandler
 {
-    // Klju?evi (da ne pišeš stringove po cijelom projektu)
+    //KEYS:
     private const string CoinsKey = "TotalCoins";
     private const string WeightKey = "PlayerWeight";
-
+    private const string XPKey = "TotalXP";
 
 
 
@@ -29,6 +29,17 @@ public static class PlayerPrefsHandler
     public static void SetWeight(float weight)
     {
         PlayerPrefs.SetFloat(WeightKey, weight);
+    }
+
+    // ----------- XP -----------
+    public static int GetXP()
+    {
+        return PlayerPrefs.GetInt(XPKey, 0);
+    }
+
+    public static void SetXP(int amount)
+    {
+        PlayerPrefs.SetInt(XPKey, amount);
     }
 
 }

@@ -1,31 +1,43 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PreassureSystem : MonoBehaviour
 {
+    [Header("Game Status")]
+    [SerializeField] private bool isOverloaded = false;
+    [SerializeField] private float overloadTimer = 0f; //Real-time timer od overload
+
     [Header("References")]
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private WeightManager weightManager;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private UIManager uiManager;
     
     [Header("Slider Settings")]
     [SerializeField] private Slider pressureSlider;
     [SerializeField] private Image fillImage;
-    [SerializeField] private GameObject warningText;
+    [SerializeField] private RectTransform preWarningThresholdMarker;
+    [SerializeField] private RectTransform criticalTresholdMarker;
 
+    //counter
     private float currentPressure = 0f;
-    private float overloadTimer = 0f;
-    private bool isOverloaded = false;
+   
+    //bool states that will be monitred on every Click
+    private bool isPreassureDecreaseBoostActivated = false;
+    private bool isPreassurePerClickBoostActivated = false;
+    private bool isWeightLossPerClickBoostActivated = false;
 
-    //Prebaciti text u posebnu klasu
-    private const string CriticalPressure = "CRITICAL PRESSURE! You need to stop pushing";
+
+    //public bool IsOverloaded() => isOverloaded;
 
     private void Start()
     {
-        if (warningText != null)
-            warningText.SetActive(false);
-
+        PositionCriticalThresholdMarker();
+        //Turn off warning text GO
+        uiManager.ShowWarningMessage("", 0 , false, uiManager.DefaultTextColor);
+        //Set slider to default value
         pressureSlider.value = 0;
     }
 
@@ -34,54 +46,53 @@ public class PreassureSystem : MonoBehaviour
     {
         if (currentPressure > 0)
         {
-            currentPressure -= gameConfig.pressureDecreasePerSecond * Time.deltaTime;
-            currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
+            CalculatePressureDecrease();
             UpdateSlider();
+
         }
 
-        if (currentPressure >= gameConfig.criticalThreshold)
+        //If we are above the critical value, we count the time
+        if (currentPressure >= gameConfig.preWarningThreshold)
         {
-            if (!isOverloaded)
+            //If we are just now entering the overload zone, show a warning
+            if (currentPressure >= gameConfig.criticalThreshold)
             {
-                isOverloaded = true;
-                OnCriticalPressureReached();
-                //Debug.Log("[PreassureSystem] ENTERED overload zone!");
+                if (!isOverloaded)
+                {
+                    isOverloaded = true;
+                    OnCriticalPressureReached();
+                }
             }
 
             //Start measuring time in overload
             overloadTimer += Time.deltaTime;
-            //Debug.Log($"[PreassureSystem] Overload timer: {overloadTimer:F2} / {gameConfig.overloadDurationBeforeGameOver}");
 
-            if (overloadTimer >= gameConfig.overloadDurationBeforeGameOver)
+
+            if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
             {
-                //Debug.Log("[PreassureSystem] Overload timer exceeded! Triggering GameOver: ToiletOveruse");
                 gameManager.TriggerGameOver(GameOverReason.PressureOverload);
             }
         }
-        else if (isOverloaded)
+        else
         {
-            isOverloaded = false;
-            OnPressureBackToSafe();
+            //If we fall below criticalThreshold, reset overload state
+            if (isOverloaded)
+            {
+                isOverloaded = false;
+                OnPressureBackToSafe();
+            }
+
             overloadTimer = 0f;
-            //Debug.Log("[PreassureSystem] EXITED overload zone! Timer reset.");
         }
     }
 
     public void OnClick()
     {
-        if (isOverloaded)
-        {
-            return;
-        }
+        CalculatePreassureOnClick();
 
-        currentPressure += gameConfig.pressurePerClick;
-        currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
-        UpdateSlider();
+        //UpdateSlider();
 
-        if (weightManager != null)
-        {
-            weightManager.SubtractWeight(gameConfig.weightLossPerClick);
-        }
+        ApplyWeightLossPerClick();
     }
 
     private void UpdateSlider()
@@ -95,20 +106,108 @@ public class PreassureSystem : MonoBehaviour
 
     private void OnCriticalPressureReached()
     {
-        //Animacija
-
-        if (warningText != null)
-            warningText.GetComponent<TMP_Text>().text = CriticalPressure;
-            warningText.SetActive(true);
+        //Animacija??
+        uiManager.ShowWarningMessage(uiManager.CriticalPreassure, uiManager.WarningTextDuration, true, uiManager.DangerTextColor);
+        uiManager.StartPreassureTimer(gameConfig.preassureOverloadDurationBeforeGameOver);
     }
 
     private void OnPressureBackToSafe()
     {
-
-        if (warningText != null)
-            warningText.SetActive(false);
+        uiManager.ShowWarningMessage(uiManager.SafePreassure, uiManager.WarningTextDuration, true, uiManager.WarningTextColor);
+        uiManager.StopPreassureTimer();
     }
 
-    public bool IsOverloaded() => isOverloaded;
+    private void CalculatePreassureOnClick()
+    {
+        if (isPreassurePerClickBoostActivated)
+        {
+            currentPressure += gameConfig.preassurePerClickUpgradeMultiplier; //1
+            currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
+        }
+        else
+        {
+            currentPressure += gameConfig.pressurePerClickStandard; //3
+            currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
+        }
+    }
+    
+    private void ApplyWeightLossPerClick()
+    {
+        if (weightManager != null)
+        {
+            if (isWeightLossPerClickBoostActivated)
+            {
+                weightManager.SubtractWeight(gameConfig.weightLossPerClickUpgradeMultiplier); //-0.5
+            }
+            else
+            {
+                weightManager.SubtractWeight(gameConfig.weightLossPerClickStandard); //-0.01
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Weight Manager is not set!");
+        }
+    }
 
+    private void CalculatePressureDecrease()
+    {
+        //Check the bool isPreassureDecreaseBoostActivated and set the value of pressureDecreasePerSecond accordingly.
+        float decrease = isPreassureDecreaseBoostActivated
+         ? gameConfig.pressureDecreasePerSecondUpgradeMultiplier * Time.deltaTime
+         : gameConfig.pressureDecreasePerSecondStandard * Time.deltaTime;
+
+        currentPressure -= decrease;
+        currentPressure = Mathf.Clamp(currentPressure, 0f, 100f);
+    }
+
+
+    //Method that sets the warningTeshold & criticalThreshold to a position on the slider that must not be exceeded
+    private void PositionCriticalThresholdMarker()
+    {
+        if (pressureSlider == null)
+            return;
+
+        RectTransform sliderRect = pressureSlider.GetComponent<RectTransform>();
+        float sliderWidth = sliderRect.rect.width;
+
+        if (criticalTresholdMarker != null)
+        {
+            float normalizedCritical = Mathf.Clamp01(gameConfig.criticalThreshold / 100f);
+            float xCritical = Mathf.Lerp(-sliderWidth / 2f, sliderWidth / 2f, normalizedCritical);
+            Vector2 newPosCritical = criticalTresholdMarker.anchoredPosition;
+            newPosCritical.x = xCritical;
+            criticalTresholdMarker.anchoredPosition = newPosCritical;
+        }
+
+        if (preWarningThresholdMarker != null)
+        {
+            float normalizedPreWarning = Mathf.Clamp01(gameConfig.preWarningThreshold / 100f);
+            float xPreWarning = Mathf.Lerp(-sliderWidth / 2f, sliderWidth / 2f, normalizedPreWarning);
+            Vector2 newPosPreWarning = preWarningThresholdMarker.anchoredPosition;
+            newPosPreWarning.x = xPreWarning;
+            preWarningThresholdMarker.anchoredPosition = newPosPreWarning;
+        }
+    }
+
+
+
+    //UPGRADES RELATED METHODS:
+    //Method that controls the increase in the variable responsible for the rate of pressure drop during printing
+    public void PreassureDecreaseBoost(bool isActive)
+    {
+        isPreassureDecreaseBoostActivated = isActive;
+    }
+
+
+    //Method that controls the reduction of the value of the variable responsible for the level of pressure increase when tapping
+    public void PreassurePerClickBoost(bool isActive)
+    {
+        isPreassurePerClickBoostActivated = isActive;
+    }
+
+    public void WeightPerClickDrop(bool isActive)
+    {
+        isWeightLossPerClickBoostActivated = isActive;
+    }
 }

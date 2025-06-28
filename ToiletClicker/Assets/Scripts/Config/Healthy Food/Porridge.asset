@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Porridge
   m_EditorClassIdentifier: 
   foodName: Porridge
-  foodImage: {fileID: 9097041532318638039, guid: 99b6662c2d8f68a4b95a5dd65892e24e, type: 3}
-  cost: 330
+  foodImage: {fileID: 21300000, guid: 99b6662c2d8f68a4b95a5dd65892e24e, type: 3}
+  cost: 120
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 12.5
+  fibersContent: 3.5

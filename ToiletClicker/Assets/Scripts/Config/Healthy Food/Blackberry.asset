@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04d7ba4c1bc16b14cb620f71494855f6, type: 3}
   m_Name: Blackberry
   m_EditorClassIdentifier: 
-  foodName: Blackberry
-  foodImage: {fileID: 1617826241060244454, guid: c8198245b7733624597e0b673208785a, type: 3}
-  cost: 150
+  foodName: Blackberies
+  foodImage: {fileID: 21300000, guid: c8198245b7733624597e0b673208785a, type: 3}
+  cost: 180
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 6.5
+  fibersContent: 5

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Avocado
   m_EditorClassIdentifier: 
   foodName: Avocado
-  foodImage: {fileID: 8028362493962905751, guid: 2dfd69deddc7a0941b6b9328ab053bc2, type: 3}
-  cost: 60
+  foodImage: {fileID: 21300000, guid: 2dfd69deddc7a0941b6b9328ab053bc2, type: 3}
+  cost: 220
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 3.5
+  fibersContent: 6

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Banana
   m_EditorClassIdentifier: 
   foodName: Banana
-  foodImage: {fileID: 7381965769198725172, guid: 2e41ad041b6befe4ea6b2c792a40d204, type: 3}
-  cost: 90
+  foodImage: {fileID: 21300000, guid: 2e41ad041b6befe4ea6b2c792a40d204, type: 3}
+  cost: 30
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 4.5
+  fibersContent: 1

@@ -9,12 +9,11 @@ public class WeightManager : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [SerializeField] private GameManager gameManager;
 
-
     private float currentWeight;
 
     private void Start()
     {
-        //If no difficulty is set, set the initial one from GameConfig
+        //If no default weight is set, set the initial one from GameConfig
         if (!PlayerPrefs.HasKey("PlayerWeight"))
         {
             currentWeight = gameConfig.startingWeight;
@@ -44,7 +43,7 @@ public class WeightManager : MonoBehaviour
     public void SubtractWeight(float amount)
     {
         currentWeight -= amount;
-        currentWeight = Mathf.Max(0f, currentWeight); // sprje?ava negativnu težinu
+        currentWeight = Mathf.Max(0f, currentWeight); //Protect negative number
         PlayerPrefsHandler.SetWeight(currentWeight);
         UpdateWeightUI();
     }

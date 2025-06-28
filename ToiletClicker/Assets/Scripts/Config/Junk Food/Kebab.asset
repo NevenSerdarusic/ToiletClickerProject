@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Kebab
   m_EditorClassIdentifier: 
   foodName: Kebab
-  foodImage: {fileID: 7025221299270980083, guid: 726a4743b639ce44e96d2d52e0c2e3cc, type: 3}
+  foodImage: {fileID: 21300000, guid: 726a4743b639ce44e96d2d52e0c2e3cc, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 15
   sugarContent: 3
   fibersContent: 0.5
-  foodWeightGain: 0.5

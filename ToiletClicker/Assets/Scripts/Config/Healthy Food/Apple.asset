@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Apple
   m_EditorClassIdentifier: 
   foodName: Apple
-  foodImage: {fileID: 7293598183456022363, guid: 203589270e903a14fa4bd57a6bce500e, type: 3}
+  foodImage: {fileID: 21300000, guid: 203589270e903a14fa4bd57a6bce500e, type: 3}
   cost: 30
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 2.5
+  fibersContent: 1

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Steak
   m_EditorClassIdentifier: 
   foodName: Steak
-  foodImage: {fileID: -2110104355339441885, guid: d14d96c06ea5fe3498e2eb548f1d9c6e, type: 3}
+  foodImage: {fileID: 21300000, guid: d14d96c06ea5fe3498e2eb548f1d9c6e, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 15
   sugarContent: 0
   fibersContent: 0
-  foodWeightGain: 0.1

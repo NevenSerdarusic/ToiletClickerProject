@@ -16,7 +16,7 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private List<ShopItemUI> shopButtons; //All available buttons in Shop
 
     //Track purchased items so that the same item that was just purchased is not added to the shop
-    private HashSet<FoodItem> purchasedItems = new HashSet<FoodItem>();
+    private readonly HashSet<FoodItem> purchasedItems = new HashSet<FoodItem>();
 
     private void Start()
     {
@@ -27,17 +27,37 @@ public class ShopManager : MonoBehaviour
 
     private void PopulateShop()
     {
-        var availableItems = new List<FoodItem>(allShopItems);
+        var displayedItems = new HashSet<FoodItem>();
 
-        foreach (var button in shopButtons)
+        // Prvo uzimamo sve dostupne iteme koji nisu kupljeni
+        var availableItems = allShopItems.Except(purchasedItems).ToList();
+
+        // Miješamo dostupne iteme kako bi shop imao raznolikost
+        availableItems = availableItems.OrderBy(item => item.cost).ToList();
+
+        for (int i = 0; i < shopButtons.Count; i++)
         {
-            if (availableItems.Count == 0) break;
+            FoodItem itemToAssign = null;
 
-            int index = Random.Range(0, availableItems.Count);
-            var item = availableItems[index];
-            button.AssignItem(item, TryPurchaseItem);
+            // Prona?i prvi koji nije ve? prikazan
+            foreach (var item in availableItems)
+            {
+                if (!displayedItems.Contains(item))
+                {
+                    itemToAssign = item;
+                    displayedItems.Add(item);
+                    break;
+                }
+            }
 
-            availableItems.RemoveAt(index);
+            if (itemToAssign != null)
+            {
+                shopButtons[i].AssignItem(itemToAssign, TryPurchaseItem);
+            }
+            else
+            {
+                shopButtons[i].Clear(); // Nema više dostupnih jedinstvenih itema
+            }
         }
     }
 
@@ -57,27 +77,46 @@ public class ShopManager : MonoBehaviour
 
     private void TryPurchaseItem(FoodItem item, ShopItemUI button)
     {
-        //if don't have enough coins for the purchase, return it
         if (gameManager.GetTotalCoins() < item.cost) return;
 
-        //if  have enough coins for the purchase, subtract from the total amount
         gameManager.SpendCoins(item.cost);
         purchasedItems.Add(item);
 
-        //Repalcing junk food in foodSlot with healthy food
         foodPoolManager.ReplaceFirstUnhealthyFoodWithHealthy(item);
 
-        //Add new random item in shop, except the same one
-        var remaining = allShopItems.Except(purchasedItems).ToList();
+        // Dohvati sve trenutno prikazane iteme
+        var currentlyDisplayed = System.Linq.Enumerable.ToHashSet(
+                shopButtons.Where(b => b.HasItem && b != button)
+               .Select(b => b.GetItem())
+                );
+
+        var remaining = allShopItems
+            .Except(purchasedItems)
+            .Except(currentlyDisplayed)
+            .ToList();
+
         if (remaining.Count > 0)
         {
-            var newItem = remaining[Random.Range(0, remaining.Count)];
+            remaining = remaining.OrderBy(i => i.cost).ToList();
+
+            int lowestCost = remaining[0].cost;
+            var cheapestItems = remaining.Where(i => i.cost == lowestCost).ToList();
+
+            var newItem = cheapestItems[Random.Range(0, cheapestItems.Count)];
             button.AssignItem(newItem, TryPurchaseItem);
         }
         else
         {
             button.Clear();
         }
+
+        UpdateButtonStates(); // refresh interactability
+    }
+
+
+    public List<FoodItem> GetAllShopItems()
+    {
+        return allShopItems;
     }
 
 }

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Pizza
   m_EditorClassIdentifier: 
   foodName: Pizza
-  foodImage: {fileID: 6048862160296339182, guid: ad67f35e70384ff46a2241333ee94717, type: 3}
+  foodImage: {fileID: 21300000, guid: ad67f35e70384ff46a2241333ee94717, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
-  fatContent: 12
-  sugarContent: 4
+  fatContent: 9
+  sugarContent: 3
   fibersContent: 2
-  foodWeightGain: 0.5

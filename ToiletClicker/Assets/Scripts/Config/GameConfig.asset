@@ -15,13 +15,22 @@ MonoBehaviour:
   startingWeight: 150
   maxWeight: 320
   idealWeight: 80
-  coinsPerClick: 1
-  pressurePerClick: 5
-  pressureDecreasePerSecond: 2
-  criticalThreshold: 90
-  overloadDurationBeforeGameOver: 4
-  weightLossPerClick: 0.01
-  boostDuration: 10
-  boostMultiplier: 2
-  boostAppearMinTime: 10
-  boostAppearMaxTime: 30
+  xpPerHealthyFoodEaten: 5
+  pressurePerClickStandard: 3
+  pressureDecreasePerSecondStandard: 5
+  preWarningThreshold: 85
+  criticalThreshold: 95
+  preassureOverloadDurationBeforeGameOver: 10
+  weightLossPerClickStandard: 0.01
+  autoClickInterval: 0.5
+  duobleTapMultiplier: 2
+  megaTapMultiplier: 5
+  laxativeWeightReduction: 5
+  detoxBombReplacingSlotCount: 5
+  snackLagMultiplier: 0.5
+  fiberOverloadBonusAmount: 3
+  junkFoodFatReduction: 1
+  junkFoodSugarReduction: 1
+  pressureDecreasePerSecondUpgradeMultiplier: 10
+  preassurePerClickUpgradeMultiplier: 1
+  weightLossPerClickUpgradeMultiplier: 0.5

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Pods
   m_EditorClassIdentifier: 
   foodName: Pods
-  foodImage: {fileID: 4514009106865021966, guid: a12ae409fd24c124fae7fdd6f1d4c8cf, type: 3}
-  cost: 300
+  foodImage: {fileID: 21300000, guid: a12ae409fd24c124fae7fdd6f1d4c8cf, type: 3}
+  cost: 30
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 11.5
+  fibersContent: 1

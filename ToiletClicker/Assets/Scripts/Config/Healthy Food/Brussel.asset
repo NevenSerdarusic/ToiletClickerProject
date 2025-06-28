@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Brussel
   m_EditorClassIdentifier: 
   foodName: Brussel
-  foodImage: {fileID: -400489652704409223, guid: 4df6658e043e40b4ba00014bdc234e86, type: 3}
-  cost: 240
+  foodImage: {fileID: 21300000, guid: 4df6658e043e40b4ba00014bdc234e86, type: 3}
+  cost: 160
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 9.5
+  fibersContent: 4.5

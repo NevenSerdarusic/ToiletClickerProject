@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: b11db3b2bd87cfd458b8145519194e17
+guid: 4481d92f7c677344287a56d93c51f866
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7795085465242543974
-    second: Beer_0
+      213: -3366272070310193754
+    second: Candy_0
+  - first:
+      213: -2950404794562567556
+    second: Candy_1
+  - first:
+      213: -3032129168011833662
+    second: Candy_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +52,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -113,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Beer_0
+      name: Candy_0
       rect:
         serializedVersion: 2
-        x: 34
-        y: 0
-        width: 444
-        height: 512
+        x: 0
+        y: 167
+        width: 401
+        height: 345
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +134,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 667a7953ee4bd2c60800000000000000
-      internalID: 7795085465242543974
+      spriteID: 6a597d723699841d0800000000000000
+      internalID: -3366272070310193754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Candy_1
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 0
+        width: 350
+        height: 196
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c722d74a87e0e07d0800000000000000
+      internalID: -2950404794562567556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Candy_2
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 20
+        width: 127
+        height: 378
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cecd8b2696bbe5d0800000000000000
+      internalID: -3032129168011833662
       vertices: []
       indices: 
       edges: []
@@ -138,7 +188,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -147,7 +197,10 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Candy_0: -3366272070310193754
+      Candy_1: -2950404794562567556
+      Candy_2: -3032129168011833662
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

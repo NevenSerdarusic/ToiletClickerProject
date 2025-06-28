@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,59 +9,92 @@ public class GameManager : MonoBehaviour
     [Header("Game Status")]
     [SerializeField] private bool isGamePaused;
     [SerializeField] private bool isGameOver;
-    public bool IsGamePaused => isGamePaused;
-    public bool IsGameOver => isGameOver;
+    [SerializeField] private float currentClickMultiplier = 1f;
 
     [Header("References")]
+    [SerializeField] private GameConfig gameConfig;
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private UpgradeManager upgradeManager;
     [SerializeField] private PreassureSystem pressureSystem;
-    [SerializeField] private GameConfig config;
-
-    [Header("Curtain Animation")]
-    [SerializeField] private RectTransform curtainRect;
-    [SerializeField] private float curtainSlideDuration = 1.2f;
+    [SerializeField] private MainMenuActions mainMenuActions;
+    [SerializeField] private ClickTarget clickTarget;
 
     [Header("Menu Buttons")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private Button pauseButton;
-    [SerializeField] private Button[] menuButtons;
+    [SerializeField] private Button purchaseButton;
 
-    [Header("Buttons Animation")]
-    [SerializeField] private List<RectTransform> menuButtonRects;
-    [SerializeField] private float buttonSlideDistance = 300f;
-    [SerializeField] private float buttonSlideDuration = 0.5f;
-    private readonly Dictionary<RectTransform, Vector2> originalButtonPositions = new();
+    [Header("Shop/Upgrade Panels")]
+    [SerializeField] private RectTransform shopPanel;
+    [SerializeField] private RectTransform upgradePanel;
+    [SerializeField] private Image shopButtonImage;
+    [SerializeField] private Sprite shopIcon;
+    [SerializeField] private Sprite upgradeIcon;
+    [SerializeField] private float panelSlideDuration = 0.5f;
+    private readonly float shownPosition = -112.5f;
+    private readonly float hiddenPosition = 115f;
+    private bool showingShop = true;
 
+    [Header("Upgrade Buttons")]
+    [SerializeField] private List<Button> upgradeButtons;
 
     //Coins per click settings
-    private int baseCoinsPerClick;
-    private float currentClickMultiplier = 1f;// Privremeni boostovi
+    private int baseCoinsPerClick = 1;
 
     private int totalCoins;
+    private int totalXP;
 
-    //Event with which we monitor the interactable state of the buttons in Shop
+    public bool IsGamePaused => isGamePaused;
+    public bool IsGameOver => isGameOver;
+
+    //Event with which we monitor the interactable state of the buttons in Healthy Food panel
     public event System.Action<int> OnCoinsChanged;
+    //Event with which we monitor the interactable state of the buttons in Upgrade panel
+    public event System.Action<int> OnXPChanged;
+    //Game over event
+    public event System.Action<GameOverReason> OnGameOver;
+
+    private void OnEnable()
+    {
+        if (clickTarget != null)
+        {
+            clickTarget.OnClicked += HandleClick;
+        }
+
+        OnXPChanged += CheckUpgradeButtonsAndToggleShopButton;
+    }
+
+    private void OnDisable()
+    {
+        if (clickTarget != null)
+        {
+            clickTarget.OnClicked -= HandleClick;
+        }
+
+        OnXPChanged -= CheckUpgradeButtonsAndToggleShopButton;
+    }
 
 
     private void Awake()
     {
         isGamePaused = true;
-
-        foreach (var rect in menuButtonRects)
-        {
-            originalButtonPositions[rect] = rect.anchoredPosition;
-        }
     }
 
     private void Start()
     {
-        baseCoinsPerClick = config.coinsPerClick;
         totalCoins = PlayerPrefsHandler.GetCoins();
+        totalXP = PlayerPrefsHandler.GetXP();
         uiManager.UpdateCoins(totalCoins);
+        uiManager.UpdateXP(totalXP);
 
         InitializeButtonListeners();
+
+        upgradeManager.GetAllUpgradeButons().Select(upg => upg.Button).ToList();
+
+        InitializePurchasePanels();
     }
+
 
     private void InitializeButtonListeners()
     {
@@ -72,13 +106,25 @@ public class GameManager : MonoBehaviour
 
         if (pauseButton != null)
             pauseButton.onClick.AddListener(PauseGame);
+
+        if (purchaseButton != null)
+            purchaseButton.onClick.AddListener(ToggleShopUpgradePanel);
+    }
+
+    private void InitializePurchasePanels()
+    {
+        //Initial settings of shop/upgrade panels
+        shopPanel.anchoredPosition = new Vector2(shownPosition, shopPanel.anchoredPosition.y);
+        upgradePanel.anchoredPosition = new Vector2(hiddenPosition, upgradePanel.anchoredPosition.y);
+        upgradePanel.gameObject.SetActive(false);
+    }
+    private void HandleClick()
+    {
+        RegisterClick();
     }
 
     public void RegisterClick()
     {
-        //if (pressureSystem.IsOverloaded())
-        //    return;
-
         int actualCoins = Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
         totalCoins += actualCoins;
 
@@ -91,33 +137,25 @@ public class GameManager : MonoBehaviour
         pressureSystem.OnClick();
     }
 
+    public void AddXP(int amount)
+    {
+        totalXP += amount;
+        uiManager.UpdateXP(totalXP);
+        PlayerPrefsHandler.SetXP(totalXP);
+    }
+
     public void SetClickMultiplier(float multiplier)
     {
         currentClickMultiplier = multiplier;
-        Debug.Log($"Click multiplier set to {currentClickMultiplier}");
     }
 
-    public void ResetClickMultiplier()
-    {
-        currentClickMultiplier = 1f;
-        Debug.Log("Click multiplier reset to 1");
-    }
-
-    public int GetCoinsPerClick()
-    {
-        return Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
-    }
-    
     public int GetTotalCoins() => totalCoins;
-   
 
-    public void ResetCoins()
-    {
-        totalCoins = 0;
-        //Reset Player Prefs
-        OnCoinsChanged?.Invoke(totalCoins);
-    }
+    public int GetTotalXP() => totalXP;
 
+
+    
+    //Method that manages the withdrawal of coins after a purchase in a shop
     public void SpendCoins(int amount)
     {
         totalCoins -= amount;
@@ -127,58 +165,60 @@ public class GameManager : MonoBehaviour
         OnCoinsChanged?.Invoke(totalCoins);
     }
 
+    //Method that manages the withdrawal of XP after a purchase in a shop
+    public void SpendXP(int amount)
+    {
+        totalXP -= amount;
+        totalXP= Mathf.Max(0, totalXP);
+        PlayerPrefsHandler.SetCoins(totalXP);
+        uiManager.UpdateCoins(totalXP);
+    }
 
+    //Two reasons for GAME OVER: 1.Overweight 2.Constant High Preassure
     public void TriggerGameOver(GameOverReason reason)
     {
-        if (isGameOver) return;
-
         isGameOver = true;
         
         uiManager.ShowGameOverScreen(reason);
+
+        // Reset all upgrades
+        if (TryGetComponent<UpgradeManager>(out var upgradeManager))
+        {
+            upgradeManager.ResetAllUpgrades();
+        }
+
+        clickTarget.BlockClicks(true);
+    }
+
+    //Method that controls the interactivity of the upgrade button
+    private void CheckUpgradeButtonsAndToggleShopButton(int _)
+    {
+        foreach (var upgradeButton in upgradeButtons)
+        {
+            if (upgradeButton.gameObject.activeInHierarchy && upgradeButton.interactable)
+            {
+                purchaseButton.interactable = true;
+                return;
+            }
+        }
+
+        purchaseButton.interactable = false;
     }
 
 
+    //Logic related to the main game buttons
     //Start Game
     public void PlayGame()
     {
         isGamePaused = false;
-
-        HideMenuButtonsAnimated();
-
-        float startRight = curtainRect.offsetMax.x;
-        float targetRight = 1080f;
-
-        LeanTween.value(gameObject, startRight, targetRight, curtainSlideDuration)
-        .setEase(LeanTweenType.easeInOutCubic)
-        .setOnUpdate((float val) =>
-        {
-            curtainRect.offsetMax = new Vector2(-val, curtainRect.offsetMax.y);
-        })
-        .setOnComplete(() =>
-        {
-            //Debug.Log("Curtain opened - game can start");
-           
-        });
+        mainMenuActions.DrawCurtains();
     }
 
     //Pause Game
     public void PauseGame()
     {
         isGamePaused = true;
-
-        float startRight = curtainRect.offsetMax.x;
-        float targetRight = 0f;
-
-        LeanTween.value(gameObject, -startRight, targetRight, curtainSlideDuration)
-       .setEase(LeanTweenType.easeInOutCubic)
-       .setOnUpdate((float val) =>
-       {
-           curtainRect.offsetMax = new Vector2(-val, curtainRect.offsetMax.y);
-       })
-       .setOnComplete(() =>
-       {
-           ShowMenuButtonsAnimated();
-       });
+        mainMenuActions.PullBackCurtains();
     }
 
     //Quit Game
@@ -187,35 +227,63 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-   
-    //Methods for animationg buttons
-    private void ShowMenuButtonsAnimated()
+    //Reset Game
+    public void ResetGame()
     {
-        foreach (var rect in menuButtonRects)
-        {
-            rect.gameObject.SetActive(true);
+        isGameOver = false;
+        isGamePaused = true;
 
-            Vector2 originalPos = originalButtonPositions[rect];
-            Vector2 hiddenPos = originalPos - new Vector2(0f, buttonSlideDistance);
+        totalCoins = 0;
+        totalXP = 0;
+        
+        PlayerPrefsHandler.SetCoins(totalCoins);
+        PlayerPrefsHandler.SetXP(totalXP);
+        
+        uiManager.UpdateCoins(totalCoins);
+        uiManager.UpdateXP(totalXP);
 
-            rect.anchoredPosition = hiddenPos;
+        OnCoinsChanged?.Invoke(totalCoins);
+        OnXPChanged?.Invoke(totalXP);
 
-            LeanTween.move(rect, originalPos, buttonSlideDuration)
-                .setEase(LeanTweenType.easeOutBounce);
-        }
+        currentClickMultiplier = 1f;
     }
 
-    private void HideMenuButtonsAnimated()
+
+    //Logic for changing Shop and Upgrade Panel
+    private void ToggleShopUpgradePanel()
     {
-        foreach (var rect in menuButtonRects)
+        if (showingShop)
         {
-            Vector2 targetPos = rect.anchoredPosition - new Vector2(0f, buttonSlideDistance);
-            LeanTween.move(rect, targetPos, buttonSlideDuration)
-                .setEase(LeanTweenType.easeInBack)
-                .setOnComplete(() =>
-                {
-                    rect.gameObject.SetActive(false);
-                });
+            //Move shop panel out, show upgrade panel
+            SlideOutPanel(shopPanel);
+            SlideInPanel(upgradePanel);
+            shopButtonImage.sprite = shopIcon;
         }
+        else
+        {
+            //Move the upgrade panel out, show the shop panel
+            SlideOutPanel(upgradePanel);
+            SlideInPanel(shopPanel);
+            shopButtonImage.sprite = upgradeIcon;
+        }
+
+        showingShop = !showingShop;
+    }
+
+    //Logic for animating panels: HEALTHY FOOD - UPGRADE
+    private void SlideInPanel(RectTransform panel)
+    {
+        panel.gameObject.SetActive(true);
+        panel.anchoredPosition = new Vector2(hiddenPosition, panel.anchoredPosition.y);
+
+        LeanTween.moveX(panel, shownPosition, panelSlideDuration)
+            .setEase(LeanTweenType.easeOutCubic);
+    }
+
+    private void SlideOutPanel(RectTransform panel)
+    {
+        LeanTween.moveX(panel, hiddenPosition, panelSlideDuration)
+            .setEase(LeanTweenType.easeInCubic)
+            .setOnComplete(() => panel.gameObject.SetActive(false));
     }
 }

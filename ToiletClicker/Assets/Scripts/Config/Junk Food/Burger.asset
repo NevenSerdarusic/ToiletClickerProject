@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Burger
   m_EditorClassIdentifier: 
   foodName: Burger
-  foodImage: {fileID: 731375368619335737, guid: 7beb83ea6f33f924289ca76b4fb6bfe0, type: 3}
+  foodImage: {fileID: 21300000, guid: 7beb83ea6f33f924289ca76b4fb6bfe0, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
-  fatContent: 20
-  sugarContent: 6
+  fatContent: 15
+  sugarContent: 5
   fibersContent: 1.5
-  foodWeightGain: 0.2

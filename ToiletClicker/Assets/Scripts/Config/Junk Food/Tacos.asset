@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04d7ba4c1bc16b14cb620f71494855f6, type: 3}
-  m_Name: Beer
+  m_Name: Tacos
   m_EditorClassIdentifier: 
-  foodName: Beer
-  foodImage: {fileID: 7795085465242543974, guid: b11db3b2bd87cfd458b8145519194e17, type: 3}
+  foodName: Tacos
+  foodImage: {fileID: 21300000, guid: aacdc2fc951b8e043a09e152c3ed7661, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
-  fatContent: 0
-  sugarContent: 3.5
-  fibersContent: 0
-  foodWeightGain: 0.15
+  fatContent: 12
+  sugarContent: 1
+  fibersContent: 0.7

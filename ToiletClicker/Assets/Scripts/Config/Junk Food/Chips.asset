@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Chips
   m_EditorClassIdentifier: 
   foodName: Chips
-  foodImage: {fileID: 5247816500109422983, guid: aff6afe067fc58c498abf9a778c04717, type: 3}
+  foodImage: {fileID: 21300000, guid: aff6afe067fc58c498abf9a778c04717, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 18
   sugarContent: 0.3
   fibersContent: 2.5
-  foodWeightGain: 0.3

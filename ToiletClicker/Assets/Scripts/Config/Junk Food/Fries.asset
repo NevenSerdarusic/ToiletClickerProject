@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Fries
   m_EditorClassIdentifier: 
   foodName: Fries
-  foodImage: {fileID: -6406154281553637950, guid: 1d06981ead8ea904fa0cbd9a704d6ffa, type: 3}
+  foodImage: {fileID: 21300000, guid: 1d06981ead8ea904fa0cbd9a704d6ffa, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 15
   sugarContent: 0.3
   fibersContent: 3
-  foodWeightGain: 0.5

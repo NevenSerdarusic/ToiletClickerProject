@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Soda
   m_EditorClassIdentifier: 
   foodName: Soda
-  foodImage: {fileID: -1556071078381340475, guid: e2d960ae656a863428aa921fb62021ff, type: 3}
+  foodImage: {fileID: 21300000, guid: e2d960ae656a863428aa921fb62021ff, type: 3}
+  cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 0
-  sugarContent: 10
+  sugarContent: 40
   fibersContent: 0
-  foodWeightGain: 0.2
