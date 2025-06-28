@@ -21,8 +21,10 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("UI Setup")]
     [SerializeField] private UpgradeItemUI upgradeButtonPrefab;
-    [SerializeField] private Transform upgradesContainer;
-    [SerializeField] private float verticalSpacing = 100f; //Spacing between upgrade buttons in content 
+    [SerializeField] private UpgradeCardUI upgradeCardUIPrefab;
+    [SerializeField] private Transform upgradesShopContainer;
+    [SerializeField] private Transform upgradesInstructionContainer;
+    [SerializeField] private float spacingBetweenInstantiatedPrefabs = 100f;
 
 
     private readonly Dictionary<UpgradeType, Coroutine> activeUpgrades = new();
@@ -38,7 +40,7 @@ public class UpgradeManager : MonoBehaviour
     private void PopulateUpgrades()
     {
         // O?isti stare buttone
-        foreach (Transform child in upgradesContainer)
+        foreach (Transform child in upgradesShopContainer)
             Destroy(child.gameObject);
         instantiatedButtons.Clear();
 
@@ -50,11 +52,12 @@ public class UpgradeManager : MonoBehaviour
         for (int i = 0; i < sortedUpgrades.Count; i++)
         {
             var upgrade = sortedUpgrades[i];
-            var button = Instantiate(upgradeButtonPrefab, upgradesContainer);
+            var button = Instantiate(upgradeButtonPrefab, upgradesShopContainer);
+           
 
             // Pomakni poziciju gumba vertikalno
             RectTransform rectTransform = button.GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = new Vector2(0, -i * verticalSpacing);
+            rectTransform.anchoredPosition = new Vector2(0, -i * spacingBetweenInstantiatedPrefabs);
 
             button.AssignUpgrade(upgrade, TryPurchaseUpgrade);
 
@@ -63,11 +66,15 @@ public class UpgradeManager : MonoBehaviour
             button.ShowLockedOverlay(!isAvailable);
 
             instantiatedButtons.Add(button);
+
+            var card = Instantiate(upgradeCardUIPrefab, upgradesInstructionContainer);
+            var cardUI = card.GetComponent<UpgradeCardUI>();
+            cardUI.AssignUpgrade(upgrade, null);
         }
 
         // Opcionalno: Prilagodi visinu containera
-        RectTransform containerRect = upgradesContainer.GetComponent<RectTransform>();
-        float totalHeight = sortedUpgrades.Count * verticalSpacing;
+        RectTransform containerRect = upgradesShopContainer.GetComponent<RectTransform>();
+        float totalHeight = sortedUpgrades.Count * spacingBetweenInstantiatedPrefabs;
         containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, totalHeight);
     }
 

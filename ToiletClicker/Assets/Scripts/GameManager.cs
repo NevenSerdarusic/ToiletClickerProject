@@ -19,11 +19,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
 
+    [Header("Menu Panels")]
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private GameObject infoPanel;
+    [SerializeField] private GameObject backgroundPanel;
+    [SerializeField] private float closedCurtain = 0f;
+    [SerializeField] private float openCurtain = 1080f;
+    
     [Header("Menu Buttons")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button purchaseButton;
+    [SerializeField] private Button infoButton;
+    [SerializeField] private Button backButton;
 
     [Header("Shop/Upgrade Panels")]
     [SerializeField] private RectTransform shopPanel;
@@ -44,6 +53,9 @@ public class GameManager : MonoBehaviour
 
     private int totalCoins;
     private int totalXP;
+
+    private List<RectTransform> mainTitleCharRects = new();
+    private List<RectTransform> infoTitleCharRects = new();
 
     public bool IsGamePaused => isGamePaused;
     public bool IsGameOver => isGameOver;
@@ -79,6 +91,15 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         isGamePaused = true;
+
+        mainMenuActions.GenerateCharacters(mainPanel, mainTitleCharRects);
+        mainMenuActions.GenerateCharacters(infoPanel, infoTitleCharRects);
+
+        mainMenuActions.SetPanelsStartPosition(mainPanel);
+        mainMenuActions.SetPanelsStartPosition(infoPanel);
+
+        mainMenuActions.InitializeMenuButtons(mainPanel);
+        mainMenuActions.InitializeMenuButtons(infoPanel);
     }
 
     private void Start()
@@ -93,6 +114,8 @@ public class GameManager : MonoBehaviour
         upgradeManager.GetAllUpgradeButons().Select(upg => upg.Button).ToList();
 
         InitializePurchasePanels();
+
+        OpenMainPanel();
     }
 
 
@@ -109,6 +132,16 @@ public class GameManager : MonoBehaviour
 
         if (purchaseButton != null)
             purchaseButton.onClick.AddListener(ToggleShopUpgradePanel);
+
+        if (infoButton != null)
+        {
+            infoButton.onClick.AddListener(OpenInfoPanel);
+        }
+
+        if (backButton != null)
+        {
+            backButton.onClick.AddListener(CloseInfoPanel);
+        }
     }
 
     private void InitializePurchasePanels()
@@ -211,14 +244,44 @@ public class GameManager : MonoBehaviour
     public void PlayGame()
     {
         isGamePaused = false;
-        mainMenuActions.DrawCurtains();
+        CloseMainPanel();
+        mainMenuActions.AnimateBackgroundPanel(true);
     }
 
     //Pause Game
     public void PauseGame()
     {
         isGamePaused = true;
-        mainMenuActions.PullBackCurtains();
+        OpenMainPanel();
+        mainMenuActions.AnimateBackgroundPanel(false);
+    }
+
+    //Panel Management
+    public void OpenMainPanel()
+    {
+        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+    }
+    private void CloseMainPanel()
+    {
+        mainMenuActions.PullCurtain(mainPanel, openCurtain, mainTitleCharRects);
+    }
+
+    public void OpenInfoPanel()
+    {
+        mainMenuActions.PullCurtain(mainPanel, openCurtain, mainTitleCharRects);
+
+        mainMenuActions.WithdrawCurtain(infoPanel, closedCurtain, infoTitleCharRects);
+
+        mainMenuActions.AnimateInstructionalPanelTransparency(false);
+    }
+ 
+    public void CloseInfoPanel() 
+    {
+        mainMenuActions.AnimateInstructionalPanelTransparency(true);
+
+        mainMenuActions.PullCurtain(infoPanel, openCurtain, infoTitleCharRects);
+
+        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
     }
 
     //Quit Game
@@ -226,7 +289,6 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
-
     //Reset Game
     public void ResetGame()
     {
@@ -247,6 +309,8 @@ public class GameManager : MonoBehaviour
 
         currentClickMultiplier = 1f;
     }
+
+
 
 
     //Logic for changing Shop and Upgrade Panel
