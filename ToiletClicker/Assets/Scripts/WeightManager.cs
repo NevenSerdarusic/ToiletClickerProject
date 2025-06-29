@@ -57,13 +57,9 @@ public class WeightManager : MonoBehaviour
         }
     }
 
-    public float GetCurrentWeight()
-    {
-        return currentWeight;
-    }
-
     public void ResetCurrentWeight()
     {
-        currentWeight = 0f;
+        currentWeight = gameConfig.startingWeight;
+        UpdateWeightUI();
     }
 }

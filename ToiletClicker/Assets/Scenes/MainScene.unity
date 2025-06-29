@@ -2340,14 +2340,13 @@ MonoBehaviour:
   uiManager: {fileID: 460194651}
   upgradeManager: {fileID: 460194656}
   pressureSystem: {fileID: 460194655}
+  weightManager: {fileID: 460194653}
   mainMenuActions: {fileID: 460194657}
   clickTarget: {fileID: 564778217}
   mainPanel: {fileID: 314052122}
   infoPanel: {fileID: 248103346}
   backgroundPanel: {fileID: 630518752}
   gameOverPanel: {fileID: 1435356041}
-  closedCurtain: 0
-  openCurtain: 1080
   startButton: {fileID: 2787576437137074007}
   quitButton: {fileID: 24669855}
   pauseButton: {fileID: 1809875597}
@@ -2361,10 +2360,14 @@ MonoBehaviour:
   shopButtonImage: {fileID: 0}
   shopIcon: {fileID: 21300000, guid: 5ba4ddc8404ead6419e3a771cfb6afa8, type: 3}
   upgradeIcon: {fileID: 21300000, guid: 29a510767c0577241b58c608c540f7cf, type: 3}
-  panelSlideDuration: 0.5
+  panels:
+  - {fileID: 314052122}
+  - {fileID: 248103346}
+  - {fileID: 1435356041}
   upgradeButtons: []
   instructionalSubPanel: {fileID: 1803839941}
   gameOverReasonSubPanel: {fileID: 901515618}
+  panelSlideDuration: 0.5
 --- !u!114 &460194651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2575,7 +2578,7 @@ MonoBehaviour:
   hideEase: 5
   backgroundPanelRect: {fileID: 630518753}
   clickableTargetRect: {fileID: 564778214}
-  rectAnimDuration: 1
+  rectAnimDuration: 2
   rectAnimEase: 7
   fadeDuration: 2.5
   fadeEase: 4

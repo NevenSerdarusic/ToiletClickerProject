@@ -51,13 +51,13 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
 
         OnClicked?.Invoke();
 
-        //Vector2 screenPos;
-        //RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out screenPos);
-        ////Set end position: top left corner
-        //Vector2 targetPos = new Vector2(-canvas.pixelRect.width / 2f + 50f, canvas.pixelRect.height / 2f - 50f);
+        Vector2 screenPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out screenPos);
+        //Set end position: top left corner
+        Vector2 targetPos = new Vector2(-canvas.pixelRect.width / 2f + 50f, canvas.pixelRect.height / 2f - 50f);
 
 
-        //ActivateFlyingClickableEvent(screenPos, targetPos);
+        ActivateFlyingClickableEvent(screenPos, targetPos);
 
         //Implementacija animacija lika
         //if (characterAnimator != null)

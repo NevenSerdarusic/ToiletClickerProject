@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image shopButtonImage;
     [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite upgradeIcon;
+    [SerializeField] private List<GameObject> panels;
     
 
     [Header("Upgrade Buttons")]
@@ -280,6 +281,14 @@ public class GameManager : MonoBehaviour
         purchaseButton.interactable = false;
     }
 
+    private void SetPanelsState(bool active)
+    {
+        foreach (var panel in panels)
+        {
+            panel.SetActive(active);
+        }
+    }
+
 
     //Logic related to the main game buttons
     //Start Game
@@ -299,6 +308,7 @@ public class GameManager : MonoBehaviour
             CloseMainPanel();
 
             mainMenuActions.AnimateBackgroundPanel(true);
+            SetPanelsState(false);
         }
     }
 
@@ -308,6 +318,7 @@ public class GameManager : MonoBehaviour
         isGamePaused = true;
         OpenMainPanel();
         mainMenuActions.AnimateBackgroundPanel(false);
+        SetPanelsState(true);
     }
 
     //Panel Management
@@ -342,6 +353,7 @@ public class GameManager : MonoBehaviour
     {
         mainMenuActions.WithdrawCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
         mainMenuActions.AnimateInstructionalPanelTransparency(gameOverReasonSubPanel, false);
+        SetPanelsState(true);
     }
 
     public void PlayAgain()
@@ -349,6 +361,7 @@ public class GameManager : MonoBehaviour
         mainMenuActions.PullCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
         ResetGame();
         StartGame();
+        SetPanelsState(false);
     }
 
     private void CloseGameOverPanel()
