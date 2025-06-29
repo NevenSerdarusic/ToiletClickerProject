@@ -146,37 +146,37 @@ public class UpgradeManager : MonoBehaviour
     {
         switch (upgrade.type)
         {
-            case UpgradeType.DoubleTap:
+            case UpgradeType.DoubleDip:
                 clickTarget.SetClickMultiplier(gameConfig.duobleTapMultiplier);
                 break;
-            case UpgradeType.MegaTap:
+            case UpgradeType.QuintupleClick:
                 clickTarget.SetClickMultiplier(gameConfig.megaTapMultiplier);
                 break;
-            case UpgradeType.FastFlush:
+            case UpgradeType.MegaLaxLaunch:
                 weightManager.SubtractWeight(gameConfig.laxativeWeightReduction);
                 break;
-            case UpgradeType.DetoxBomb:
+            case UpgradeType.HealthSwap:
                 foodPoolManager.ReplaceJunkWithHealthy(gameConfig.detoxBombReplacingSlotCount);
                 break;
-            case UpgradeType.SnackLag:
+            case UpgradeType.SnackDecelerator:
                 foodPoolManager.SlowScroll(true);
                 break;
             case UpgradeType.AutoTap:
                 clickTarget.EnableAutoClick(true);
                 break;
-            case UpgradeType.FullFlush:
+            case UpgradeType.FiberFirepower:
                 foodPoolManager.BoostFiberInHealthy(true);
                 break;
-            case UpgradeType.MegaBurn:
+            case UpgradeType.LightweightJunk:
                 foodPoolManager.ReduceJunkNutrition(true);
                 break;
-            case UpgradeType.PressDrop:
+            case UpgradeType.RapidRelief:
                 preassureSystem.PreassureDecreaseBoost(true);
                 break;
-            case UpgradeType.DePress:
+            case UpgradeType.PreasureBrake:
                 preassureSystem.PreassurePerClickBoost(true);
                 break;
-            case UpgradeType.TapBurn:
+            case UpgradeType.ScaleSmasher:
                 preassureSystem.WeightPerClickDrop(true);
                 break;
         }
@@ -186,29 +186,29 @@ public class UpgradeManager : MonoBehaviour
     {
         switch (upgrade.type)
         {
-            case UpgradeType.DoubleTap:
-            case UpgradeType.MegaTap:
+            case UpgradeType.DoubleDip:
+            case UpgradeType.QuintupleClick:
                 clickTarget.SetClickMultiplier(1f);
                 break;
-            case UpgradeType.SnackLag:
+            case UpgradeType.SnackDecelerator:
                 foodPoolManager.SlowScroll(false);
                 break;
             case UpgradeType.AutoTap:
                 clickTarget.EnableAutoClick(false);
                 break;
-            case UpgradeType.FullFlush:
+            case UpgradeType.FiberFirepower:
                 foodPoolManager.BoostFiberInHealthy(false);
                 break;
-            case UpgradeType.MegaBurn:
+            case UpgradeType.LightweightJunk:
                 foodPoolManager.ReduceJunkNutrition(false);
                 break;
-            case UpgradeType.PressDrop:
+            case UpgradeType.RapidRelief:
                 preassureSystem.PreassureDecreaseBoost(false);
                 break;
-            case UpgradeType.DePress:
+            case UpgradeType.PreasureBrake:
                 preassureSystem.PreassurePerClickBoost(false);
                 break;
-            case UpgradeType.TapBurn:
+            case UpgradeType.ScaleSmasher:
                 preassureSystem.WeightPerClickDrop(false);
                 break;
         }

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: AutoTap
   m_EditorClassIdentifier: 
   type: 5
-  upgradeName: AutoTap
+  upgradeName: Auto Tap
   upgradePrice: 120
   upgradeDuration: 15
   upgradeIcon: {fileID: 0}
-  description: The player doesn't have to tap on the click target, it's now done
-    for itself
+  description: "Your Auto\u2011Click upgrade does the tapping! You just need to sit
+    back and relax."
   isInstant: 0

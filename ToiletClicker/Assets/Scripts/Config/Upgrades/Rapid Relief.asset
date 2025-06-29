@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 227cecd162d7e00499852d90278ac077, type: 3}
-  m_Name: FastMetabolism
+  m_Name: Rapid Relief
   m_EditorClassIdentifier: 
-  type: 7
-  upgradeName: MegaBurn
-  upgradePrice: 80
+  type: 8
+  upgradeName: Rapid Relief
+  upgradePrice: 150
   upgradeDuration: 20
   upgradeIcon: {fileID: 0}
-  description: In all junk food, the proportion of fat and carbohydrates is reduced,
-    and they contribute less by adding kg to the weight.
+  description: Each click slashes pressure faster than ever!
   isInstant: 0

@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 227cecd162d7e00499852d90278ac077, type: 3}
-  m_Name: MegaTap
+  m_Name: Health Swap
   m_EditorClassIdentifier: 
-  type: 1
-  upgradeName: MegaTap
-  upgradePrice: 180
-  upgradeDuration: 20
+  type: 3
+  upgradeName: Health Swap
+  upgradePrice: 100
+  upgradeDuration: 0
   upgradeIcon: {fileID: 0}
-  description: Makes every click worth five coins
-  isInstant: 0
+  description: "Zap the five junkies nearest the limiter into five fresh, nutritious
+    treats\u2014instantly!"
+  isInstant: 1

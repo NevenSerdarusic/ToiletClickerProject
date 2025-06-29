@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 227cecd162d7e00499852d90278ac077, type: 3}
-  m_Name: PressDrop
+  m_Name: Preasure Brake
   m_EditorClassIdentifier: 
-  type: 8
-  upgradeName: PressDrop
-  upgradePrice: 150
-  upgradeDuration: 20
+  type: 9
+  upgradeName: Preassure Brake
+  upgradePrice: 250
+  upgradeDuration: 25
   upgradeIcon: {fileID: 0}
-  description: The pressure reduction value that occurs as a result of tapping on
-    the click target is accelerated
+  description: "Every tap eases the squeeze\u2014pressure builds up more slowly!"
   isInstant: 0

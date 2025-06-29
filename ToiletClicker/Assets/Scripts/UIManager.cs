@@ -94,11 +94,11 @@ public class UIManager : MonoBehaviour
         switch (reason)
         {
             case GameOverReason.WeightLimit:
-                gameOverText.text = "Game Over!\nYou've reached the ultimate weight!\nMaybe it's time for a healthy change?";
+                gameOverText.text = StringLibrary.weightLimitReached;
                 break;
 
             case GameOverReason.PressureOverload:
-                gameOverText.text = "Game Over!\nYou spent too long on the toilet!\nRemember: moderation is key!";
+                gameOverText.text = StringLibrary.preassureOverloadReached;
                 break;
         }
     }

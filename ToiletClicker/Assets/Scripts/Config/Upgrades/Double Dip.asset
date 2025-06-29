@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 227cecd162d7e00499852d90278ac077, type: 3}
-  m_Name: Laxative
+  m_Name: Double Dip
   m_EditorClassIdentifier: 
-  type: 2
-  upgradeName: FastFlush
-  upgradePrice: 280
-  upgradeDuration: 0
+  type: 0
+  upgradeName: Double Dip
+  upgradePrice: 50
+  upgradeDuration: 10
   upgradeIcon: {fileID: 0}
-  description: Laxative. Player is currently losing 5 kilograms on the scale.
-  isInstant: 1
+  description: Every tap now pockets you two ducks instead of one!
+  isInstant: 0

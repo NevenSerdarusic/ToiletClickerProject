@@ -2,15 +2,15 @@ using UnityEngine;
 
 public enum UpgradeType
 {
-    DoubleTap,
-    MegaTap,
-    FastFlush,
-    DetoxBomb,
-    SnackLag,
+    DoubleDip,
+    QuintupleClick,
+    MegaLaxLaunch,
+    HealthSwap,
+    SnackDecelerator,
     AutoTap,
-    FullFlush,
-    MegaBurn,
-    PressDrop,
-    DePress,
-    TapBurn
+    FiberFirepower,
+    LightweightJunk,
+    RapidRelief,
+    PreasureBrake,
+    ScaleSmasher
 }
