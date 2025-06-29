@@ -1,5 +1,4 @@
-using System.Collections;
-using TMPro;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +29,7 @@ public class PreassureSystem : MonoBehaviour
     private bool isWeightLossPerClickBoostActivated = false;
 
 
-    //public bool IsOverloaded() => isOverloaded;
+    public event Action<GameOverReason> OnGameOverRequested;
 
     private void Start()
     {
@@ -70,7 +69,8 @@ public class PreassureSystem : MonoBehaviour
 
             if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
             {
-                gameManager.TriggerGameOver(GameOverReason.PressureOverload);
+                //gameManager.TriggerGameOver(GameOverReason.PressureOverload);
+                OnGameOverRequested?.Invoke(GameOverReason.PressureOverload);
             }
         }
         else

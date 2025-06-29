@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 using Button = UnityEngine.UI.Button;
+using System;
 
 public class MainMenuActions : MonoBehaviour
 {
@@ -43,7 +41,7 @@ public class MainMenuActions : MonoBehaviour
     private Coroutine titleCoroutine;
 
     //Curtains logic
-    public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars)
+    public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
@@ -59,11 +57,15 @@ public class MainMenuActions : MonoBehaviour
             .setOnUpdate((float val) =>
             {
                 panel.offsetMax = new Vector2(-val, panel.offsetMax.y);
+            })
+            .setOnComplete(() =>
+            {
+                onComplete?.Invoke();
             });
     }
 
 
-    public void WithdrawCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars)
+    public void WithdrawCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
@@ -82,6 +84,8 @@ public class MainMenuActions : MonoBehaviour
                 ShowMenuButtonsAnimated(buttons);
                 if (titleChars != null)
                     ShowPanelTitle(panelGO, titleChars);
+
+                onComplete?.Invoke();
             });
     }
 

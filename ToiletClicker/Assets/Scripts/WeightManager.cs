@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 
 public class WeightManager : MonoBehaviour
@@ -10,6 +9,8 @@ public class WeightManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     private float currentWeight;
+
+    public event Action<GameOverReason> OnGameOverRequested;
 
     private void Start()
     {
@@ -36,7 +37,8 @@ public class WeightManager : MonoBehaviour
 
         if (currentWeight >= gameConfig.maxWeight)
         {
-            gameManager.TriggerGameOver(GameOverReason.WeightLimit);
+            //gameManager.TriggerGameOver(GameOverReason.WeightLimit);
+            OnGameOverRequested?.Invoke(GameOverReason.WeightLimit);
         }
     }
 

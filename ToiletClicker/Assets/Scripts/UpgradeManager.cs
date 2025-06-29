@@ -3,7 +3,6 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Linq;
-using UnityEngine.UI;
 
 public class UpgradeManager : MonoBehaviour
 {
