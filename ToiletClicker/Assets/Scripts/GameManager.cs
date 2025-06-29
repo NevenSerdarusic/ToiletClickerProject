@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Game Status")]
+    [Header("Game State")]
     [SerializeField] private bool isGamePaused;
     [SerializeField] private bool isGameOver;
     [SerializeField] private float currentClickMultiplier = 1f;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private UIManager uiManager;
     [SerializeField] private UpgradeManager upgradeManager;
     [SerializeField] private PreassureSystem pressureSystem;
+    [SerializeField] private WeightManager weightManager;
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
 
@@ -23,16 +24,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject infoPanel;
     [SerializeField] private GameObject backgroundPanel;
-    [SerializeField] private float closedCurtain = 0f;
-    [SerializeField] private float openCurtain = 1080f;
-    
+    [SerializeField] private GameObject gameOverPanel;
+    private float closedCurtain = 0f;
+    private float openCurtain = 1080f;
+
     [Header("Menu Buttons")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button quitButton;
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button purchaseButton;
     [SerializeField] private Button infoButton;
-    [SerializeField] private Button backButton;
+    [SerializeField] private Button infoBackButton;
+    [SerializeField] private Button playAgainButton;
+    [SerializeField] private Button gameOverBackButton;
 
     [Header("Shop/Upgrade Panels")]
     [SerializeField] private RectTransform shopPanel;
@@ -40,22 +44,29 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image shopButtonImage;
     [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite upgradeIcon;
-    [SerializeField] private float panelSlideDuration = 0.5f;
-    private readonly float shownPosition = -112.5f;
-    private readonly float hiddenPosition = 115f;
-    private bool showingShop = true;
+    
 
     [Header("Upgrade Buttons")]
     [SerializeField] private List<Button> upgradeButtons;
 
-    //Coins per click settings
-    private int baseCoinsPerClick = 1;
+    [Header("Menu Sub Panels")]
+    [SerializeField] private GameObject instructionalSubPanel;
+    [SerializeField] private GameObject gameOverReasonSubPanel;
 
+    [Header("Shop & Upgrade Panel Toogle Animation Settings")]
+    [SerializeField] private float panelSlideDuration = 0.5f;
+
+
+    private int baseCoinsPerClick = 1;
     private int totalCoins;
     private int totalXP;
+    private bool showingShop = true;
+    private readonly float shownPosition = -112.5f;
+    private readonly float hiddenPosition = 115f;
 
     private List<RectTransform> mainTitleCharRects = new();
     private List<RectTransform> infoTitleCharRects = new();
+    private List<RectTransform> gameOverTitleRects = new();
 
     public bool IsGamePaused => isGamePaused;
     public bool IsGameOver => isGameOver;
@@ -64,8 +75,7 @@ public class GameManager : MonoBehaviour
     public event System.Action<int> OnCoinsChanged;
     //Event with which we monitor the interactable state of the buttons in Upgrade panel
     public event System.Action<int> OnXPChanged;
-    //Game over event
-    public event System.Action<GameOverReason> OnGameOver;
+    
 
     private void OnEnable()
     {
@@ -91,15 +101,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         isGamePaused = true;
-
-        mainMenuActions.GenerateCharacters(mainPanel, mainTitleCharRects);
-        mainMenuActions.GenerateCharacters(infoPanel, infoTitleCharRects);
-
-        mainMenuActions.SetPanelsStartPosition(mainPanel);
-        mainMenuActions.SetPanelsStartPosition(infoPanel);
-
-        mainMenuActions.InitializeMenuButtons(mainPanel);
-        mainMenuActions.InitializeMenuButtons(infoPanel);
+        InitilizePanelsProperties();
     }
 
     private void Start()
@@ -108,6 +110,9 @@ public class GameManager : MonoBehaviour
         totalXP = PlayerPrefsHandler.GetXP();
         uiManager.UpdateCoins(totalCoins);
         uiManager.UpdateXP(totalXP);
+
+        instructionalSubPanel.GetComponent<CanvasGroup>().alpha = 0;
+        gameOverReasonSubPanel.GetComponent<CanvasGroup>().alpha = 0;
 
         InitializeButtonListeners();
 
@@ -118,29 +123,61 @@ public class GameManager : MonoBehaviour
         OpenMainPanel();
     }
 
+    private void InitilizePanelsProperties()
+    {
+        mainMenuActions.GenerateCharacters(mainPanel, mainTitleCharRects);
+        mainMenuActions.GenerateCharacters(infoPanel, infoTitleCharRects);
+        mainMenuActions.GenerateCharacters(gameOverPanel, gameOverTitleRects);
+
+        mainMenuActions.SetPanelsStartPosition(mainPanel);
+        mainMenuActions.SetPanelsStartPosition(infoPanel);
+        mainMenuActions.SetPanelsStartPosition(gameOverPanel);
+
+        mainMenuActions.InitializeMenuButtons(mainPanel);
+        mainMenuActions.InitializeMenuButtons(infoPanel);
+        mainMenuActions.InitializeMenuButtons(gameOverPanel);
+    }
 
     private void InitializeButtonListeners()
     {
         if (startButton != null)
-            startButton.onClick.AddListener(PlayGame);
+        {
+            startButton.onClick.AddListener(StartGame);
+        }
 
         if (quitButton != null)
+        {
             quitButton.onClick.AddListener(QuitGame);
+        }  
 
         if (pauseButton != null)
+        {
             pauseButton.onClick.AddListener(PauseGame);
-
+        }
+            
         if (purchaseButton != null)
+        {
             purchaseButton.onClick.AddListener(ToggleShopUpgradePanel);
-
+        }
+            
         if (infoButton != null)
         {
             infoButton.onClick.AddListener(OpenInfoPanel);
         }
 
-        if (backButton != null)
+        if (infoBackButton != null)
         {
-            backButton.onClick.AddListener(CloseInfoPanel);
+            infoBackButton.onClick.AddListener(CloseInfoPanel);
+        }
+
+        if (playAgainButton != null)
+        {
+            playAgainButton.onClick.AddListener(StartGame);
+        }
+
+        if (gameOverBackButton != null)
+        {
+            gameOverBackButton.onClick.AddListener(CloseGameOverPanel);
         }
     }
 
@@ -151,6 +188,9 @@ public class GameManager : MonoBehaviour
         upgradePanel.anchoredPosition = new Vector2(hiddenPosition, upgradePanel.anchoredPosition.y);
         upgradePanel.gameObject.SetActive(false);
     }
+
+
+
     private void HandleClick()
     {
         RegisterClick();
@@ -187,7 +227,6 @@ public class GameManager : MonoBehaviour
     public int GetTotalXP() => totalXP;
 
 
-    
     //Method that manages the withdrawal of coins after a purchase in a shop
     public void SpendCoins(int amount)
     {
@@ -202,17 +241,18 @@ public class GameManager : MonoBehaviour
     public void SpendXP(int amount)
     {
         totalXP -= amount;
-        totalXP= Mathf.Max(0, totalXP);
+        totalXP = Mathf.Max(0, totalXP);
         PlayerPrefsHandler.SetCoins(totalXP);
         uiManager.UpdateCoins(totalXP);
     }
+
 
     //Two reasons for GAME OVER: 1.Overweight 2.Constant High Preassure
     public void TriggerGameOver(GameOverReason reason)
     {
         isGameOver = true;
-        
-        uiManager.ShowGameOverScreen(reason);
+
+        uiManager.ShowGameOverReason(reason);
 
         // Reset all upgrades
         if (TryGetComponent<UpgradeManager>(out var upgradeManager))
@@ -221,6 +261,8 @@ public class GameManager : MonoBehaviour
         }
 
         clickTarget.BlockClicks(true);
+
+        GameOver();
     }
 
     //Method that controls the interactivity of the upgrade button
@@ -241,11 +283,23 @@ public class GameManager : MonoBehaviour
 
     //Logic related to the main game buttons
     //Start Game
-    public void PlayGame()
+    public void StartGame()
     {
         isGamePaused = false;
-        CloseMainPanel();
-        mainMenuActions.AnimateBackgroundPanel(true);
+
+        if (isGameOver)
+        {
+            mainMenuActions.PullCurtain(gameOverPanel, openCurtain, gameOverTitleRects);
+            mainMenuActions.AnimateBackgroundPanel(true);
+            ResetGame();
+            isGameOver= false;
+        }
+        else
+        {
+            CloseMainPanel();
+
+            mainMenuActions.AnimateBackgroundPanel(true);
+        }
     }
 
     //Pause Game
@@ -272,15 +326,35 @@ public class GameManager : MonoBehaviour
 
         mainMenuActions.WithdrawCurtain(infoPanel, closedCurtain, infoTitleCharRects);
 
-        mainMenuActions.AnimateInstructionalPanelTransparency(false);
+        mainMenuActions.AnimateInstructionalPanelTransparency(instructionalSubPanel,false);
     }
- 
-    public void CloseInfoPanel() 
+
+    public void CloseInfoPanel()
     {
-        mainMenuActions.AnimateInstructionalPanelTransparency(true);
+        mainMenuActions.AnimateInstructionalPanelTransparency(instructionalSubPanel,true);
 
         mainMenuActions.PullCurtain(infoPanel, openCurtain, infoTitleCharRects);
 
+        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+    }
+
+    public void GameOver()
+    {
+        mainMenuActions.WithdrawCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
+        mainMenuActions.AnimateInstructionalPanelTransparency(gameOverReasonSubPanel, false);
+    }
+
+    public void PlayAgain()
+    {
+        mainMenuActions.PullCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
+        ResetGame();
+        StartGame();
+    }
+
+    private void CloseGameOverPanel()
+    {
+        mainMenuActions.AnimateInstructionalPanelTransparency(gameOverReasonSubPanel, true);
+        mainMenuActions.PullCurtain(gameOverPanel, openCurtain, gameOverTitleRects);
         mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
     }
 
@@ -290,27 +364,20 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
     //Reset Game
-    public void ResetGame()
+    private void ResetGame()
     {
         isGameOver = false;
-        isGamePaused = true;
 
         totalCoins = 0;
         totalXP = 0;
-        
-        PlayerPrefsHandler.SetCoins(totalCoins);
-        PlayerPrefsHandler.SetXP(totalXP);
-        
+        weightManager.ResetCurrentWeight();
+
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+
         uiManager.UpdateCoins(totalCoins);
         uiManager.UpdateXP(totalXP);
-
-        OnCoinsChanged?.Invoke(totalCoins);
-        OnXPChanged?.Invoke(totalXP);
-
-        currentClickMultiplier = 1f;
     }
-
-
 
 
     //Logic for changing Shop and Upgrade Panel
@@ -333,6 +400,8 @@ public class GameManager : MonoBehaviour
 
         showingShop = !showingShop;
     }
+
+
 
     //Logic for animating panels: HEALTHY FOOD - UPGRADE
     private void SlideInPanel(RectTransform panel)

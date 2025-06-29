@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text gameOverText;
 
     [Header("GO References")]
-    [SerializeField] private GameObject gameOverScreen;
+    //[SerializeField] private GameObject gameOverScreen;
     [SerializeField] private GameObject warningText;
 
     [Header("Timers")]
@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
     [Header("Game Background Components")]
     [SerializeField] private List<GameObject> gameBackgroundPanels;
     
-    [Header("UI Settings")]
+    [Header("General UI Settings")]
     [SerializeField] private Color warningColor;
     [SerializeField] private Color dangerColor;
     [SerializeField] private Color defaultColor;
@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
         }
 
         //Turn OFF listed GO
-        gameOverScreen.SetActive(false);
+        //gameOverScreen.SetActive(false);
         upgradeTimer.gameObject.SetActive(false);
         preassureTimer.gameObject.SetActive(false);
         upgradeTimerText.gameObject.SetActive(false);
@@ -89,16 +89,8 @@ public class UIManager : MonoBehaviour
     }
 
     //Method for displaying a panel indicating the end of the game
-    public void ShowGameOverScreen(GameOverReason reason)
+    public void ShowGameOverReason(GameOverReason reason)
     {
-        if (gameOverScreen == null || gameOverText == null)
-        {
-            Debug.LogWarning("GameOverScreen or GameOverText is not set!");
-            return;
-        }
-
-        gameOverScreen.SetActive(true);
-
         switch (reason)
         {
             case GameOverReason.WeightLimit:

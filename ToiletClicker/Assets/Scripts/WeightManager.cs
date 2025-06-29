@@ -61,4 +61,9 @@ public class WeightManager : MonoBehaviour
     {
         return currentWeight;
     }
+
+    public void ResetCurrentWeight()
+    {
+        currentWeight = 0f;
+    }
 }

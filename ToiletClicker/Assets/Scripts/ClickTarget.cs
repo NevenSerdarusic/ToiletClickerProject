@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,11 +14,31 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
     [SerializeField] private Animator characterAnimator;
     [SerializeField] private string clickAnimationTrigger = "Click";
 
+    [Header("Flying Clickable Bonus")]
+    [SerializeField] private FlyingClickableBonus prefab;
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private int poolSize = 7;
+    [SerializeField] private Transform parentCanvas;
+
     public event Action OnClicked;
 
     private Coroutine autoClickRoutine; //coroutine responsible for autoclick upgrade
 
     private bool isBlocked = false; //bool responsible for blocking tapping on clicktarget in case of game over
+
+    private Queue<FlyingClickableBonus> pool = new Queue<FlyingClickableBonus>(); //Pool of all clickable flying bonuses
+
+
+    private void Awake()
+    {
+        //Populate CLICKABLE POOL and turn OFF all childs od pool
+        for (int i = 0; i < poolSize; i++)
+        {
+            var instance = Instantiate(prefab, parentCanvas);
+            instance.gameObject.SetActive(false);
+            pool.Enqueue(instance);
+        }
+    }
 
     public void BlockClicks(bool block)
     {
@@ -29,6 +50,14 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
         if (isBlocked || gameManager.IsGameOver) return;
 
         OnClicked?.Invoke();
+
+        //Vector2 screenPos;
+        //RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, canvas.worldCamera, out screenPos);
+        ////Set end position: top left corner
+        //Vector2 targetPos = new Vector2(-canvas.pixelRect.width / 2f + 50f, canvas.pixelRect.height / 2f - 50f);
+
+
+        //ActivateFlyingClickableEvent(screenPos, targetPos);
 
         //Implementacija animacija lika
         //if (characterAnimator != null)
@@ -78,5 +107,23 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
             // if (characterAnimator != null)
             //     characterAnimator.SetTrigger(clickAnimationTrigger);
         }
+    }
+
+    //Animate logic for Flying Clickable Bonuses
+    public void ActivateFlyingClickableEvent(Vector2 screenPosition, Vector2 endPosition)
+    {
+        if (pool.Count == 0)
+        {
+            Debug.LogWarning("Pool exhausted!");
+            return;
+        }
+
+        var image = pool.Dequeue();
+        image.Animate(screenPosition, endPosition, ReturnClickableBonusToPool);
+    }
+
+    private void ReturnClickableBonusToPool(FlyingClickableBonus image)
+    {
+        pool.Enqueue(image);
     }
 }

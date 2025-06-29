@@ -32,7 +32,6 @@ public class MainMenuActions : MonoBehaviour
     [SerializeField] private LeanTweenType rectAnimEase = LeanTweenType.easeInOutCubic;
 
     [Header("Instruction Panel Animation Settings")]
-    [SerializeField] private GameObject instructionalPanel;
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private LeanTweenType fadeEase = LeanTweenType.easeInOutQuad;
 
@@ -42,11 +41,6 @@ public class MainMenuActions : MonoBehaviour
     private readonly Dictionary<RectTransform, Vector2> originalCharPositions = new();
 
     private Coroutine titleCoroutine;
-
-    private void Awake()
-    {
-        instructionalPanel.GetComponent<CanvasGroup>().alpha = 0;
-    }
 
     //Curtains logic
     public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars)
@@ -325,12 +319,12 @@ public class MainMenuActions : MonoBehaviour
     }
 
     //Animate logic of hidding and showing subPanel of InfoPanel
-    public void AnimateInstructionalPanelTransparency(bool transparent)
+    public void AnimateInstructionalPanelTransparency(GameObject panel, bool transparent)
     {
         // Uzmi ili dodaj CanvasGroup
-        var cg = instructionalPanel.GetComponent<CanvasGroup>();
+        var cg = panel.GetComponent<CanvasGroup>();
         if (cg == null)
-            cg = instructionalPanel.AddComponent<CanvasGroup>();
+            cg = panel.AddComponent<CanvasGroup>();
 
         // Ciljna vrijednost alfa
         float targetAlpha = transparent ? 0f : 1f;
@@ -362,6 +356,7 @@ public class MainMenuActions : MonoBehaviour
         rectTransform.offsetMin = new Vector2(0, rectTransform.offsetMin.y);       // Left = 0
         rectTransform.offsetMax = new Vector2(-1080, rectTransform.offsetMax.y);   // Right = 1080
     }
+
+
+  
 }
-
-

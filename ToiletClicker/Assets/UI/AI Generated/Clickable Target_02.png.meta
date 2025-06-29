@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d4e2bf08db7d4dc44b1008e938f38e44
+guid: 0265501291aff164db3f7f5156ac66ff
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7849617135901634903
-    second: Progress Bar Inline_0
+      213: -8710984678759173123
+    second: 20250629_1017_Whimsical Dino Bathroom_simple_compose_01jyxc4ej7fs190479jsw80xe2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Progress Bar Inline_0
+      name: 20250629_1017_Whimsical Dino Bathroom_simple_compose_01jyxc4ej7fs190479jsw80xe2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1174
-        height: 74
+        width: 1024
+        height: 1536
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7517c3032317fec60800000000000000
-      internalID: 7849617135901634903
+      spriteID: df370b2669d5c1780800000000000000
+      internalID: -8710984678759173123
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Progress Bar Inline_0: 7849617135901634903
+      20250629_1017_Whimsical Dino Bathroom_simple_compose_01jyxc4ej7fs190479jsw80xe2_0: -8710984678759173123
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

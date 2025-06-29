@@ -30,10 +30,19 @@ public class UpgradeManager : MonoBehaviour
     private readonly Dictionary<UpgradeType, Coroutine> activeUpgrades = new();
     private readonly List<UpgradeItemUI> instantiatedButtons = new();
 
+    private void OnEnable()
+    {
+        gameManager.OnXPChanged += HandleXPChanged;
+    }
+
+    private void OnDisable()
+    {
+        gameManager.OnXPChanged -= HandleXPChanged;
+    }
+
     private void Start()
     {
         PopulateUpgrades();
-        gameManager.OnXPChanged += HandleXPChanged;
         HandleXPChanged(gameManager.GetTotalXP());
     }
 
@@ -85,7 +94,7 @@ public class UpgradeManager : MonoBehaviour
         UpdateUpgradeButtonStates();
     }
 
-    private void UpdateUpgradeButtonStates()
+    public void UpdateUpgradeButtonStates()
     {
         int currentXP = gameManager.GetTotalXP();
 
@@ -226,7 +235,7 @@ public class UpgradeManager : MonoBehaviour
 
         activeUpgrades.Clear();
 
-        // Resetiraj ru?no efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
+        // Resetiraj rucno efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
         clickTarget.SetClickMultiplier(1f);
         clickTarget.EnableAutoClick(false);
         foodPoolManager.SlowScroll(false);
