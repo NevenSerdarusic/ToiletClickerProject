@@ -3,14 +3,17 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private UIActions uIActions;
+    
     [Header("Text References")]
     [SerializeField] private TMP_Text coinSaldo;
     [SerializeField] private TMP_Text xpSaldo;
-    [SerializeField] private TMP_Text weightText;
+    [SerializeField] private TMP_Text weightTotalText;
+    [SerializeField] private TMP_Text weightIndividualText;
     [SerializeField] private TMP_Text gameOverText;
 
     [Header("GO References")]
@@ -34,9 +37,7 @@ public class UIManager : MonoBehaviour
     
     private Coroutine warningCoroutine;
 
-    //Tweening:
-    private int preassureTweenId = -1;
-
+    
     //PROPERTIES:
     public Color DefaultTextColor => defaultColor;
     public Color WarningTextColor => warningColor;
@@ -80,10 +81,21 @@ public class UIManager : MonoBehaviour
         xpSaldo.text = amount.ToString();
     }
 
-    public void UpdateWeight(float amount)
+    public void UpdateTotalWeight(float amount)
     {
-        weightText.text = $"{amount:F2}";
+        weightTotalText.text = $"{amount:F2}";
     }
+
+    public void UpdateIndividualWeight(float amount)
+    {
+        weightIndividualText.text = $"{(amount > 0 ? "+" : "")}{amount:F2} KG";
+        if (uIActions != null)
+        {
+            uIActions.AnimateWeightChange(amount);
+        }
+    }
+
+
 
     //Method for displaying a panel indicating the end of the game
     public void ShowGameOverReason(GameOverReason reason)
@@ -106,94 +118,32 @@ public class UIManager : MonoBehaviour
     {
         if (upgradeTimer == null) return;
 
-        upgradeTimer.fillAmount = 1f;
-        upgradeTimer.gameObject.SetActive(true);
-
-        //Text Animation
-        AnimateTimerText(upgradeTimerText.gameObject, StringLibrary.upgradeTimerText);
-
-        //Timer Animation
-        LeanTween.value(upgradeTimer.gameObject, 1f, 0f, duration)
-                 .setOnUpdate((float val) => upgradeTimer.fillAmount = val)
-                 .setEase(LeanTweenType.linear)
-                 .setOnComplete(() => upgradeTimer.gameObject.SetActive(false));
+        if (uIActions != null)
+        {
+            
+            uIActions.AnimateUpgradeTimer(upgradeTimer, upgradeTimerText, duration, StringLibrary.upgradeTimerText);
+        }
     }
 
     public void StartPreassureTimer(float duration)
     {
         if (preassureTimer == null) return;
 
-        preassureTimer.fillAmount = 0f;
-        preassureTimer.gameObject.SetActive(true);
-
-        //Text Animation
-        AnimateTimerText(preassureTimerText.gameObject, StringLibrary.preassureTimerText);
-
-        //Timer Animation
-        preassureTweenId = LeanTween.value(preassureTimer.gameObject, 0f, 1f, duration)
-            .setOnUpdate((float val) => preassureTimer.fillAmount = val)
-            .setEase(LeanTweenType.linear)
-            .setOnComplete(() =>
-            {
-                preassureTimer.gameObject.SetActive(false);
-                preassureTweenId = -1; //Reset ID when finnish
-            }).id;
+        if (uIActions != null)
+        {
+            uIActions.AnimatePreassureTimer(preassureTimer, preassureTimerText, duration, StringLibrary.preassureTimerText);
+        }
     }
 
     public void StopPreassureTimer()
     {
         if (preassureTimer == null) return;
 
-        //Stop tween if is active
-        if (LeanTween.isTweening(preassureTweenId))
+        if (uIActions != null)
         {
-            LeanTween.cancel(preassureTweenId);
-            preassureTweenId = -1;
+            uIActions.StopPreassureTimer(preassureTimer);
         }
-
-        preassureTimer.gameObject.SetActive(false);
     }
-
-    //Method that will animate timer text
-    public void AnimateTimerText(GameObject textGO, string text)
-    {
-        if (textGO == null) return;
-
-        TMP_Text tmpText = textGO.GetComponent<TMP_Text>();
-        RectTransform rect = textGO.GetComponent<RectTransform>();
-
-        if (tmpText == null || rect == null)
-        {
-            Debug.LogWarning("Text GameObject must have TMP_Text and RectTransform components.");
-            return;
-        }
-
-        textGO.SetActive(true);
-        tmpText.text = text;
-        tmpText.alpha = 0f;
-        rect.localScale = Vector3.zero;
-
-        // Pop-in scale + fade-in
-        LeanTween.scale(textGO, Vector3.one * 1.3f, 0.3f).setEaseOutBack();
-        LeanTween.value(textGO, 0f, 1f, 0.3f).setOnUpdate((float a) =>
-        {
-            tmpText.alpha = a;
-        });
-
-        // Fade-out + scale down + deactivate
-        LeanTween.delayedCall(textGO, 0.8f, () =>
-        {
-            LeanTween.scale(textGO, Vector3.zero, 0.2f).setEaseInBack();
-            LeanTween.value(textGO, 1f, 0f, 0.2f).setOnUpdate((float a) =>
-            {
-                tmpText.alpha = a;
-            }).setOnComplete(() =>
-            {
-                textGO.SetActive(false);
-            });
-        });
-    }
-
 
 
     //Methods that handle warning messages related to slider loading

@@ -360,7 +360,4 @@ public class MainMenuActions : MonoBehaviour
         rectTransform.offsetMin = new Vector2(0, rectTransform.offsetMin.y);       // Left = 0
         rectTransform.offsetMax = new Vector2(-1080, rectTransform.offsetMax.y);   // Right = 1080
     }
-
-
-  
 }

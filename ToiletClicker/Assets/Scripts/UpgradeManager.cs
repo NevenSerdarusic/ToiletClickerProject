@@ -68,11 +68,6 @@ public class UpgradeManager : MonoBehaviour
             var cardUI = card.GetComponent<UpgradeCardUI>();
             cardUI.AssignUpgrade(upgrade, null);
         }
-
-        // Opcionalno: Prilagodi visinu containera
-        RectTransform containerRect = upgradesShopContainer.GetComponent<RectTransform>();
-        float totalHeight = sortedUpgrades.Count * spacingBetweenInstantiatedPrefabs;
-        containerRect.sizeDelta = new Vector2(containerRect.sizeDelta.x, totalHeight);
     }
 
 

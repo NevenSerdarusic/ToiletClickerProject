@@ -25,7 +25,7 @@ public class WeightManager : MonoBehaviour
             currentWeight = PlayerPrefsHandler.GetWeight();
         }
 
-        UpdateWeightUI();
+        UpdateTotalWeightUI();
     }
 
     public void AddWeight(float amount)
@@ -33,11 +33,10 @@ public class WeightManager : MonoBehaviour
         currentWeight += amount;
         PlayerPrefsHandler.SetWeight(currentWeight);
         
-        UpdateWeightUI();
+        UpdateTotalWeightUI();
 
         if (currentWeight >= gameConfig.maxWeight)
         {
-            //gameManager.TriggerGameOver(GameOverReason.WeightLimit);
             OnGameOverRequested?.Invoke(GameOverReason.WeightLimit);
         }
     }
@@ -47,21 +46,29 @@ public class WeightManager : MonoBehaviour
         currentWeight -= amount;
         currentWeight = Mathf.Max(0f, currentWeight); //Protect negative number
         PlayerPrefsHandler.SetWeight(currentWeight);
-        UpdateWeightUI();
+        UpdateTotalWeightUI();
     }
 
 
-    private void UpdateWeightUI()
+    private void UpdateTotalWeightUI()
     {
         if (uiManager != null)
         {
-            uiManager.UpdateWeight(currentWeight);
+            uiManager.UpdateTotalWeight(currentWeight);
         }
     }
 
-    public void ResetCurrentWeight()
+    public void UpdateIndividualWeightUI(float amount)
+    {
+        if (uiManager != null) 
+        {
+            uiManager.UpdateIndividualWeight(amount);
+        }
+    }
+
+    public void ResetTotalWeight()
     {
         currentWeight = gameConfig.startingWeight;
-        UpdateWeightUI();
+        UpdateTotalWeightUI();
     }
 }

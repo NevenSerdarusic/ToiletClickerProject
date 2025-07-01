@@ -47,7 +47,6 @@ public class PreassureSystem : MonoBehaviour
         {
             CalculatePressureDecrease();
             UpdateSlider();
-
         }
 
         //If we are above the critical value, we count the time
@@ -65,11 +64,9 @@ public class PreassureSystem : MonoBehaviour
 
             //Start measuring time in overload
             overloadTimer += Time.deltaTime;
-
-
+            //If we stay longer than we have time, show us a game over message
             if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
             {
-                //gameManager.TriggerGameOver(GameOverReason.PressureOverload);
                 OnGameOverRequested?.Invoke(GameOverReason.PressureOverload);
             }
         }
@@ -89,8 +86,6 @@ public class PreassureSystem : MonoBehaviour
     public void OnClick()
     {
         CalculatePreassureOnClick();
-
-        //UpdateSlider();
 
         ApplyWeightLossPerClick();
     }
@@ -137,11 +132,11 @@ public class PreassureSystem : MonoBehaviour
         {
             if (isWeightLossPerClickBoostActivated)
             {
-                weightManager.SubtractWeight(gameConfig.weightLossPerClickUpgradeMultiplier); //-0.5
+                weightManager.SubtractWeight(gameConfig.weightLossPerClickUpgradeMultiplier);
             }
             else
             {
-                weightManager.SubtractWeight(gameConfig.weightLossPerClickStandard); //-0.01
+                weightManager.SubtractWeight(gameConfig.weightLossPerClickStandard);
             }
         }
         else

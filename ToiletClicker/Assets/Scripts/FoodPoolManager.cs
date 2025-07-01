@@ -91,6 +91,7 @@ public class FoodPoolManager : MonoBehaviour
                     {
                         float weightCalc = food.FoodWeightGain;
                         weightManager.AddWeight(food.FoodWeightGain);
+                        weightManager.UpdateIndividualWeightUI(food.FoodWeightGain);
                         rect.GetComponent<FoodSlot>().MarkAsEaten();
 
                         float duration = GetEatingAnimationDuration(rect);
@@ -99,6 +100,7 @@ public class FoodPoolManager : MonoBehaviour
                 }
 
                 RecycleSlot(rect);
+                
             }
                 
             
@@ -372,7 +374,7 @@ public class FoodPoolManager : MonoBehaviour
 
 
     //Eating Image Animation
-    //IVAN: dodati logiku za 3 spritea koje ?e se gasiti kako bi animirali konzumaciju hrane
+    //IVAN: dodati logiku za 3 spritea koje ce se gasiti kako bi animirali konzumaciju hrane
     float GetEatingAnimationDuration(RectTransform slot)
     {
         // Udaljenost koju slot mora pre?i do limitera (horizontalna)

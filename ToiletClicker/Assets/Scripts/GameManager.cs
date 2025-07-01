@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool isGamePaused;
     [SerializeField] private bool isGameOver;
     [SerializeField] private float currentClickMultiplier = 1f;
+    [SerializeField] private int totalCoins;
+    [SerializeField] private int totalXP;
 
     [Header("References")]
     [SerializeField] private GameConfig gameConfig;
@@ -61,8 +63,7 @@ public class GameManager : MonoBehaviour
 
 
     private int baseCoinsPerClick = 1;
-    private int totalCoins;
-    private int totalXP;
+    
     private bool showingShop = true;
     private readonly float shownPosition = -112.5f;
     private readonly float hiddenPosition = 115f;
@@ -86,8 +87,6 @@ public class GameManager : MonoBehaviour
         {
             clickTarget.OnClicked += HandleClick;
         }
-
-        //OnXPChanged += CheckUpgradeButtonsAndToggleShopButton;
     }
 
     private void OnDisable()
@@ -96,8 +95,6 @@ public class GameManager : MonoBehaviour
         {
             clickTarget.OnClicked -= HandleClick;
         }
-
-        //OnXPChanged -= CheckUpgradeButtonsAndToggleShopButton;
     }
 
 
@@ -191,8 +188,6 @@ public class GameManager : MonoBehaviour
         upgradePanel.anchoredPosition = new Vector2(hiddenPosition, upgradePanel.anchoredPosition.y);
     }
 
-
-
     private void HandleClick()
     {
         RegisterClick();
@@ -247,8 +242,8 @@ public class GameManager : MonoBehaviour
     {
         totalXP -= amount;
         totalXP = Mathf.Max(0, totalXP);
-        PlayerPrefsHandler.SetCoins(totalXP);
-        uiManager.UpdateCoins(totalXP);
+        PlayerPrefsHandler.SetXP(totalXP);
+        uiManager.UpdateXP(totalXP);
         OnXPChanged?.Invoke(totalXP);
     }
 
@@ -270,21 +265,6 @@ public class GameManager : MonoBehaviour
 
         GameOver();
     }
-
-    //Method that controls the interactivity of the upgrade button
-    //private void CheckUpgradeButtonsAndToggleShopButton(int _)
-    //{
-    //    foreach (var upgradeButton in upgradeButtons)
-    //    {
-    //        if (upgradeButton.gameObject.activeInHierarchy && upgradeButton.interactable)
-    //        {
-    //            purchaseButton.interactable = true;
-    //            return;
-    //        }
-    //    }
-
-    //    purchaseButton.interactable = false;
-    //}
 
     private void SetPanelsState(bool active)
     {
@@ -388,7 +368,7 @@ public class GameManager : MonoBehaviour
 
         totalCoins = 0;
         totalXP = 0;
-        weightManager.ResetCurrentWeight();
+        weightManager.ResetTotalWeight();
 
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();

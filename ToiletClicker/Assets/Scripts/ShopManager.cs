@@ -28,17 +28,17 @@ public class ShopManager : MonoBehaviour
     {
         var displayedItems = new HashSet<FoodItem>();
 
-        // Prvo uzimamo sve dostupne iteme koji nisu kupljeni
+        //Take all available items except one we already purchased from shop
         var availableItems = allShopItems.Except(purchasedItems).ToList();
 
-        // Miješamo dostupne iteme kako bi shop imao raznolikost
+        //Order by price of food
         availableItems = availableItems.OrderBy(item => item.cost).ToList();
 
         for (int i = 0; i < shopButtons.Count; i++)
         {
             FoodItem itemToAssign = null;
 
-            // Prona?i prvi koji nije ve? prikazan
+            //Find firt one taht is not already been shown
             foreach (var item in availableItems)
             {
                 if (!displayedItems.Contains(item))
@@ -55,7 +55,7 @@ public class ShopManager : MonoBehaviour
             }
             else
             {
-                shopButtons[i].Clear(); // Nema više dostupnih jedinstvenih itema
+                shopButtons[i].Clear();
             }
         }
     }
@@ -83,8 +83,8 @@ public class ShopManager : MonoBehaviour
 
         foodPoolManager.ReplaceFirstUnhealthyFoodWithHealthy(item);
 
-        // Dohvati sve trenutno prikazane iteme
-        var currentlyDisplayed = System.Linq.Enumerable.ToHashSet(
+        //Get all currently displayerd items
+        var currentlyDisplayed = Enumerable.ToHashSet(
                 shopButtons.Where(b => b.HasItem && b != button)
                .Select(b => b.GetItem())
                 );
@@ -109,13 +109,11 @@ public class ShopManager : MonoBehaviour
             button.Clear();
         }
 
-        UpdateButtonStates(); // refresh interactability
+        UpdateButtonStates(); //refresh interactability
     }
-
 
     public List<FoodItem> GetAllShopItems()
     {
         return allShopItems;
     }
-
 }
