@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class UIManager : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text gameOverText;
 
     [Header("GO References")]
-    //[SerializeField] private GameObject gameOverScreen;
     [SerializeField] private GameObject warningText;
 
     [Header("Timers")]
@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Game Background Components")]
     [SerializeField] private List<GameObject> gameBackgroundPanels;
-    
+
     [Header("General UI Settings")]
     [SerializeField] private Color warningColor;
     [SerializeField] private Color dangerColor;
@@ -36,8 +36,6 @@ public class UIManager : MonoBehaviour
 
     //Tweening:
     private int preassureTweenId = -1;
-
-    
 
     //PROPERTIES:
     public Color DefaultTextColor => defaultColor;
@@ -65,7 +63,6 @@ public class UIManager : MonoBehaviour
         }
 
         //Turn OFF listed GO
-        //gameOverScreen.SetActive(false);
         upgradeTimer.gameObject.SetActive(false);
         preassureTimer.gameObject.SetActive(false);
         upgradeTimerText.gameObject.SetActive(false);

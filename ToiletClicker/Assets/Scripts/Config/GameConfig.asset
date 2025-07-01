@@ -16,8 +16,8 @@ MonoBehaviour:
   maxWeight: 320
   idealWeight: 80
   xpPerHealthyFoodEaten: 5
-  pressurePerClickStandard: 3
-  pressureDecreasePerSecondStandard: 5
+  pressurePerClickStandard: 2
+  pressureDecreasePerSecondStandard: 6
   preWarningThreshold: 85
   criticalThreshold: 95
   preassureOverloadDurationBeforeGameOver: 10

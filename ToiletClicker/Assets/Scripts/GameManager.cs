@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
             clickTarget.OnClicked += HandleClick;
         }
 
-        OnXPChanged += CheckUpgradeButtonsAndToggleShopButton;
+        //OnXPChanged += CheckUpgradeButtonsAndToggleShopButton;
     }
 
     private void OnDisable()
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
             clickTarget.OnClicked -= HandleClick;
         }
 
-        OnXPChanged -= CheckUpgradeButtonsAndToggleShopButton;
+        //OnXPChanged -= CheckUpgradeButtonsAndToggleShopButton;
     }
 
 
@@ -189,7 +189,6 @@ public class GameManager : MonoBehaviour
         //Initial settings of shop/upgrade panels
         shopPanel.anchoredPosition = new Vector2(shownPosition, shopPanel.anchoredPosition.y);
         upgradePanel.anchoredPosition = new Vector2(hiddenPosition, upgradePanel.anchoredPosition.y);
-        upgradePanel.gameObject.SetActive(false);
     }
 
 
@@ -210,6 +209,8 @@ public class GameManager : MonoBehaviour
         //On each click, call an event to check the status of the button in the shop
         OnCoinsChanged?.Invoke(totalCoins);
 
+        OnXPChanged?.Invoke(totalXP);
+
         pressureSystem.OnClick();
     }
 
@@ -218,6 +219,7 @@ public class GameManager : MonoBehaviour
         totalXP += amount;
         uiManager.UpdateXP(totalXP);
         PlayerPrefsHandler.SetXP(totalXP);
+        OnXPChanged?.Invoke(totalXP);
     }
 
     public void SetClickMultiplier(float multiplier)
@@ -247,6 +249,7 @@ public class GameManager : MonoBehaviour
         totalXP = Mathf.Max(0, totalXP);
         PlayerPrefsHandler.SetCoins(totalXP);
         uiManager.UpdateCoins(totalXP);
+        OnXPChanged?.Invoke(totalXP);
     }
 
 
@@ -269,19 +272,19 @@ public class GameManager : MonoBehaviour
     }
 
     //Method that controls the interactivity of the upgrade button
-    private void CheckUpgradeButtonsAndToggleShopButton(int _)
-    {
-        foreach (var upgradeButton in upgradeButtons)
-        {
-            if (upgradeButton.gameObject.activeInHierarchy && upgradeButton.interactable)
-            {
-                purchaseButton.interactable = true;
-                return;
-            }
-        }
+    //private void CheckUpgradeButtonsAndToggleShopButton(int _)
+    //{
+    //    foreach (var upgradeButton in upgradeButtons)
+    //    {
+    //        if (upgradeButton.gameObject.activeInHierarchy && upgradeButton.interactable)
+    //        {
+    //            purchaseButton.interactable = true;
+    //            return;
+    //        }
+    //    }
 
-        purchaseButton.interactable = false;
-    }
+    //    purchaseButton.interactable = false;
+    //}
 
     private void SetPanelsState(bool active)
     {
@@ -421,7 +424,6 @@ public class GameManager : MonoBehaviour
     //Logic for animating panels: HEALTHY FOOD - UPGRADE
     private void SlideInPanel(RectTransform panel)
     {
-        panel.gameObject.SetActive(true);
         panel.anchoredPosition = new Vector2(hiddenPosition, panel.anchoredPosition.y);
 
         LeanTween.moveX(panel, shownPosition, panelSlideDuration)
@@ -431,7 +433,6 @@ public class GameManager : MonoBehaviour
     private void SlideOutPanel(RectTransform panel)
     {
         LeanTween.moveX(panel, hiddenPosition, panelSlideDuration)
-            .setEase(LeanTweenType.easeInCubic)
-            .setOnComplete(() => panel.gameObject.SetActive(false));
+            .setEase(LeanTweenType.easeInCubic);
     }
 }

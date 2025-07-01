@@ -15,15 +15,13 @@ public class UpgradeItemUI : MonoBehaviour
     private UpgradeData currentUpgrade;
     private System.Action<UpgradeData, UpgradeItemUI> onPurchase;
 
-    public bool HasUpgrade => assignedUpgrade != null;
-    private UpgradeData assignedUpgrade;
+    public bool HasUpgrade => currentUpgrade != null;
 
-    public UpgradeData GetUpgrade() => assignedUpgrade;
+    public UpgradeData GetUpgrade() => currentUpgrade;
+
 
     public void AssignUpgrade(UpgradeData upgrade, System.Action<UpgradeData, UpgradeItemUI> purchaseCallback)
     {
-        assignedUpgrade = upgrade;
-
         currentUpgrade = upgrade;
         onPurchase = purchaseCallback;
 
@@ -48,13 +46,12 @@ public class UpgradeItemUI : MonoBehaviour
     public void SetInteractable(bool state)
     {
         button.interactable = state;
+        ShowLockedOverlay(!state);
     }
-
 
     public void ShowLockedOverlay(bool show)
     {
-        // Npr. zaklju?aš button i staviš sivi overlay
-        lockedOverlay.gameObject.SetActive(show); // moraš imati taj GameObject u UI-ju
+        lockedOverlay.gameObject.SetActive(show);
     }
 
 }

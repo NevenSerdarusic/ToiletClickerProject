@@ -15,7 +15,7 @@ MonoBehaviour:
   type: 4
   upgradeName: Snack Decelerator
   upgradePrice: 100
-  upgradeDuration: 20
+  upgradeDuration: 40
   upgradeIcon: {fileID: 0}
   description: "Junk scroll speed cut in half\u2014no more frantic flicking!"
   isInstant: 0

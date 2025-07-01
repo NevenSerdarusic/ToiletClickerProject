@@ -16,7 +16,7 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private PreassureSystem preassureSystem;
 
     [Header("Upgrade Settings")]
-    [SerializeField] private List<UpgradeData> allUpgrades;
+    [SerializeField] private List<UpgradeData> allUpgrades; //SO Library Upgrade
 
     [Header("UI Setup")]
     [SerializeField] private UpgradeItemUI upgradeButtonPrefab;
@@ -27,22 +27,14 @@ public class UpgradeManager : MonoBehaviour
 
 
     private readonly Dictionary<UpgradeType, Coroutine> activeUpgrades = new();
-    private readonly List<UpgradeItemUI> instantiatedButtons = new();
+    private readonly List<UpgradeItemUI> upgradeButtons = new();
 
-    private void OnEnable()
-    {
-        gameManager.OnXPChanged += HandleXPChanged;
-    }
-
-    private void OnDisable()
-    {
-        gameManager.OnXPChanged -= HandleXPChanged;
-    }
 
     private void Start()
     {
         PopulateUpgrades();
-        HandleXPChanged(gameManager.GetTotalXP());
+        gameManager.OnXPChanged += HandleXPChanged; //Event subscription
+        HandleXPChanged(gameManager.GetTotalXP()); //Initial check of interactable buttons in Shop
     }
 
     private void PopulateUpgrades()
@@ -50,7 +42,7 @@ public class UpgradeManager : MonoBehaviour
         // O?isti stare buttone
         foreach (Transform child in upgradesShopContainer)
             Destroy(child.gameObject);
-        instantiatedButtons.Clear();
+        upgradeButtons.Clear();
 
         int currentXP = gameManager.GetTotalXP();
 
@@ -62,7 +54,6 @@ public class UpgradeManager : MonoBehaviour
             var upgrade = sortedUpgrades[i];
             var button = Instantiate(upgradeButtonPrefab, upgradesShopContainer);
            
-
             // Pomakni poziciju gumba vertikalno
             RectTransform rectTransform = button.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = new Vector2(0, -i * spacingBetweenInstantiatedPrefabs);
@@ -70,10 +61,8 @@ public class UpgradeManager : MonoBehaviour
             button.AssignUpgrade(upgrade, TryPurchaseUpgrade);
 
             bool isAvailable = currentXP >= upgrade.upgradePrice;
-            button.SetInteractable(isAvailable);
-            button.ShowLockedOverlay(!isAvailable);
 
-            instantiatedButtons.Add(button);
+            upgradeButtons.Add(button);
 
             var card = Instantiate(upgradeCardUIPrefab, upgradesInstructionContainer);
             var cardUI = card.GetComponent<UpgradeCardUI>();
@@ -90,19 +79,17 @@ public class UpgradeManager : MonoBehaviour
 
     private void HandleXPChanged(int currentXP)
     {
-        UpdateUpgradeButtonStates();
+        UpdateButtonStates();
     }
 
-    public void UpdateUpgradeButtonStates()
+    private void UpdateButtonStates()
     {
-        int currentXP = gameManager.GetTotalXP();
+        //int currentXP = gameManager.GetTotalXP();
 
-        foreach (var button in instantiatedButtons)
+        foreach (var button in upgradeButtons)
         {
-            var upgrade = button.GetUpgrade();
-            bool isAvailable = currentXP >= upgrade.upgradePrice;
-            button.SetInteractable(isAvailable);
-            button.ShowLockedOverlay(!isAvailable);
+            if (button.HasUpgrade)
+                button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
         }
     }
 
@@ -112,6 +99,8 @@ public class UpgradeManager : MonoBehaviour
         if (upgrade == null || gameManager.GetTotalXP() < upgrade.upgradePrice) return;
 
         gameManager.SpendXP(upgrade.upgradePrice);
+
+        UpdateButtonStates();
 
         if (upgrade.isInstant)
         {
@@ -246,7 +235,7 @@ public class UpgradeManager : MonoBehaviour
     //Retrieving all upgrade buttons
     public List<UpgradeItemUI> GetAllUpgradeButons()
     {
-        return instantiatedButtons;
+        return upgradeButtons;
     }
 
 }
