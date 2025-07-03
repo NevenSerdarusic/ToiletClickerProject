@@ -12,6 +12,10 @@ public class WeightManager : MonoBehaviour
 
     public event Action<GameOverReason> OnGameOverRequested;
 
+    public event System.Action<float> OnWeightChanged;
+
+    public float GetCurrentWeight() => currentWeight;
+
     private void Start()
     {
         //If no default weight is set, set the initial one from GameConfig
@@ -34,6 +38,7 @@ public class WeightManager : MonoBehaviour
         PlayerPrefsHandler.SetWeight(currentWeight);
         
         UpdateTotalWeightUI();
+        OnWeightChanged?.Invoke(currentWeight);
 
         if (currentWeight >= gameConfig.maxWeight)
         {
@@ -47,6 +52,7 @@ public class WeightManager : MonoBehaviour
         currentWeight = Mathf.Max(0f, currentWeight); //Protect negative number
         PlayerPrefsHandler.SetWeight(currentWeight);
         UpdateTotalWeightUI();
+        OnWeightChanged?.Invoke(currentWeight);
     }
 
 

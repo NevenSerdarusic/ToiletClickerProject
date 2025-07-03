@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e9b97990646cca4387931934504c1a1, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  startingWeight: 150
+  startingWeight: 125
   maxWeight: 320
   idealWeight: 80
   xpPerHealthyFoodEaten: 5
