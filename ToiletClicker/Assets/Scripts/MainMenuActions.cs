@@ -43,6 +43,8 @@ public class MainMenuActions : MonoBehaviour
     //Curtains logic
     public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
+        SoundManager.Instance.Play("Curtain");
+
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
         HideMenuButtonsAnimated(buttons);
@@ -67,6 +69,8 @@ public class MainMenuActions : MonoBehaviour
 
     public void WithdrawCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
+
+        SoundManager.Instance.Play("Curtain");
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
 
@@ -87,6 +91,8 @@ public class MainMenuActions : MonoBehaviour
 
                 onComplete?.Invoke();
             });
+
+       
     }
 
 

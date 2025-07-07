@@ -264,6 +264,8 @@ public class GameManager : MonoBehaviour
         clickTarget.BlockClicks(true);
 
         GameOver();
+
+        SoundManager.Instance.Play("Final Fart");
     }
 
     private void SetPanelsState(bool active)
@@ -290,8 +292,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            CloseMainPanel();
-
+            //CloseMainPanel();
+            mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
             mainMenuActions.AnimateBackgroundPanel(true);
             SetPanelsState(false);
         }

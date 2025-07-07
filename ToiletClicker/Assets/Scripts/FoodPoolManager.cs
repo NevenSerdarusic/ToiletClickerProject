@@ -100,6 +100,7 @@ public class FoodPoolManager : MonoBehaviour
                 }
 
                 RecycleSlot(rect);
+                SoundManager.Instance.Play("Toilet Flush");
                 
             }
                 

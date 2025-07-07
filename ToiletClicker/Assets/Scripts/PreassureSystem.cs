@@ -104,12 +104,14 @@ public class PreassureSystem : MonoBehaviour
         //Animacija??
         uiManager.ShowWarningMessage(uiManager.CriticalPreassure, uiManager.WarningTextDuration, true, uiManager.DangerTextColor);
         uiManager.StartPreassureTimer(gameConfig.preassureOverloadDurationBeforeGameOver);
+        SoundManager.Instance.PlayControlled("Countdown");
     }
 
     private void OnPressureBackToSafe()
     {
         uiManager.ShowWarningMessage(uiManager.SafePreassure, uiManager.WarningTextDuration, true, uiManager.WarningTextColor);
         uiManager.StopPreassureTimer();
+        SoundManager.Instance.Stop("Countdown");
     }
 
     private void CalculatePreassureOnClick()

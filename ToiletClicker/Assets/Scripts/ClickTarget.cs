@@ -64,6 +64,8 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
         //{
         //    characterAnimator.SetTrigger(clickAnimationTrigger);
         //}
+
+        SoundManager.Instance.PlayRandom();
     }
 
     public void SetClickMultiplier(float multiplier)
