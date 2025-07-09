@@ -23,18 +23,23 @@ public class SoundManager : MonoBehaviour
 
     [Header("Fart Sounds")]
     [SerializeField] private List<AudioClip> fartSounds;
-    [SerializeField] private float fartSoundVolume = 0.5f;
+    [SerializeField] private float fartStartSoundVolume = 0.25f;
+
+    [Header("Volume Slider")]
+    [SerializeField] private Slider volumeSlider;
 
     [Header("UI Buttons")]
     [SerializeField] private List<Button> gameButtonList;
 
-    [Header("Main Audio Source")]
-    [SerializeField] private AudioSource audioSource;
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource generalAudioSource;
+    [SerializeField] private AudioSource fartAudioSource;
+    [SerializeField] private AudioSource buttonAudioSource;
 
-    [SerializeField] private float soundVolume = 1f;
-
-    private Dictionary<string, AudioSource> activeSounds = new();
+    private readonly Dictionary<string, AudioSource> activeSounds = new();
     private Dictionary<string, SoundData> soundLookup = new();
+
+    private static bool buttonsInitialized = false;
 
     private void Awake()
     {
@@ -46,18 +51,37 @@ public class SoundManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (generalAudioSource == null || fartAudioSource == null || buttonAudioSource == null)
+            Debug.LogError("[SoundManager] AudioSources not properly assigned!");
+
+        fartStartSoundVolume = PlayerPrefsHandler.GetFartVolume();
+
+        soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
+        SoundsSettings();
     }
 
     private void Start()
     {
-        SetupAllUIButtonSounds();
-        SoundsSettings();
-        soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
+        if (volumeSlider != null)
+        {
+            volumeSlider.onValueChanged.AddListener(HandleFartVolumeChanged);
+        }
+
+        if (!buttonsInitialized)
+        {
+            SetupAllUIButtonSounds();
+            buttonsInitialized = true;
+        }
     }
 
     private void SetupAllUIButtonSounds()
     {
-        gameButtonList = FindObjectsOfType<Button>(true).ToList();
+        gameButtonList = Resources.FindObjectsOfTypeAll<Button>()
+        .Where(b => b.gameObject.hideFlags == HideFlags.None && !string.IsNullOrEmpty(b.gameObject.scene.name))
+        .ToList();
+
+
         foreach (var button in gameButtonList)
         {
             button.onClick.AddListener(() => PlayClick());
@@ -67,15 +91,15 @@ public class SoundManager : MonoBehaviour
     private void PlayClick()
     {
         if (clickSound != null)
-            audioSource.PlayOneShot(clickSound);
+            buttonAudioSource.PlayOneShot(clickSound);
     }
 
     public void Play(string clipName)
     {
         if (soundLookup.TryGetValue(clipName, out var soundData))
         {
-            audioSource.volume = soundData.volume;
-            audioSource.PlayOneShot(soundData.clip);
+            generalAudioSource.volume = soundData.volume;
+            generalAudioSource.PlayOneShot(soundData.clip);
         }
         else
         {
@@ -127,14 +151,37 @@ public class SoundManager : MonoBehaviour
         if (fartSounds.Count == 0) return;
 
         AudioClip randomClip = fartSounds[Random.Range(0, fartSounds.Count)];
-        audioSource.volume = fartSoundVolume;
-        audioSource.PlayOneShot(randomClip);
+        fartAudioSource.volume = fartStartSoundVolume;
+        fartAudioSource.PlayOneShot(randomClip);
     }
 
     private void SoundsSettings()
     {
-        audioSource.volume = soundVolume;
-        audioSource.loop = false;
-        audioSource.playOnAwake = false;
+        ApplyAudioSettings(generalAudioSource, 1f);
+        ApplyAudioSettings(buttonAudioSource, 1f);
+        ApplyAudioSettings(fartAudioSource, fartStartSoundVolume);
+    }
+
+    private void ApplyAudioSettings(AudioSource source, float volume)
+    {
+        if (source == null) return;
+
+        source.volume = volume;
+        source.loop = false;
+        source.playOnAwake = false;
+    }
+
+    //Method for managing volume slider of fartAudioSource
+    private void HandleFartVolumeChanged(float newValue)
+    {
+        fartStartSoundVolume = newValue;
+
+        if (fartAudioSource != null)
+        {
+            fartAudioSource.volume = fartStartSoundVolume;
+            PlayRandom(); //Plays a new fart every time the slider moves
+        }
+
+        PlayerPrefsHandler.SetFartVolume(newValue);
     }
 }

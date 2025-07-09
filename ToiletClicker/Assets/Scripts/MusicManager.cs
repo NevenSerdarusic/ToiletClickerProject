@@ -1,8 +1,11 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class MusicManager : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private GameConfig gameConfig;
     [SerializeField] private WeightManager weightManager;
 
     [Header("Audio Clips by Weight Range")]
@@ -11,40 +14,28 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip musicClip_03; // 161 - 200
     [SerializeField] private AudioClip musicClip_04; // 201+
 
-    [Header("Weight Ranges")]
-    [SerializeField] private float range1Min = 80f;
-    [SerializeField] private float range1Max = 120f;
-
-    [SerializeField] private float range2Min = 121f;
-    [SerializeField] private float range2Max = 160f;
-
-    [SerializeField] private float range3Min = 161f;
-    [SerializeField] private float range3Max = 200f;
-
-    [SerializeField] private float range4Min = 201f;
-
     [Header("Audio Source Reference")]
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioSource backgroundMusicAudioSource;
 
-    [Header("Audio Source Settings")]
-    [SerializeField] private float backgroundMusicVolume = 0.7f;
+    [Header("Background Music Settings")]
+    [SerializeField] private float backgroundMusicVolume = 0.2f;
+    [SerializeField] private float backgroundMusicFadeInduration = 5f;
 
     private AudioClip currentClip;
 
 
-
     private void Start()
     {
-        if (weightManager == null || audioSource == null)
+        if (weightManager == null || backgroundMusicAudioSource == null)
         {
             Debug.LogError("WeightManager or AudioSource is not assigned!");
             return;
         }
 
+        BackgroundMusicSettings();
+
         //Initial background music
         UpdateMusicByWeight(weightManager.GetCurrentWeight());
-
-        MainMusicSettings();
     }
 
     private void OnEnable()
@@ -64,29 +55,68 @@ public class MusicManager : MonoBehaviour
         if (newClip != null && newClip != currentClip)
         {
             currentClip = newClip;
-            audioSource.clip = currentClip;
-            audioSource.Play();
+            backgroundMusicAudioSource.clip = currentClip;
+            backgroundMusicAudioSource.Play();
         }
     }
 
     private AudioClip GetClipForWeight(float weight)
     {
-        if (weight >= range1Min && weight <= range1Max)
+        if (weight >= gameConfig.range1Min && weight <= gameConfig.range1Max)
             return musicClip_01;
-        else if (weight > range2Min && weight <= range2Max)
+        else if (weight > gameConfig.range2Min && weight <= gameConfig.range2Max)
             return musicClip_02;
-        else if (weight > range3Min && weight <= range3Max)
+        else if (weight > gameConfig.range3Min && weight <= gameConfig.range3Max)
             return musicClip_03;
-        else if (weight > range4Min)
+        else if (weight > gameConfig.range4Min)
             return musicClip_04;
         else
             return null;
     }
 
-    private void MainMusicSettings()
+    private void BackgroundMusicSettings()
     {
-        audioSource.volume = backgroundMusicVolume;
-        audioSource.loop = true;
-        audioSource.playOnAwake = true;
+        backgroundMusicAudioSource.loop = true;
+        backgroundMusicAudioSource.playOnAwake = true;
+
+        //Check and set mute status from PlayerPrefs
+        bool isMuted = PlayerPrefsHandler.IsMusicMuted();
+        backgroundMusicAudioSource.mute = isMuted;
+
+        //if the music is not muted then gradually make a Fade in
+        if (!isMuted)
+        {
+            StartCoroutine(FadeInMusic(backgroundMusicVolume, backgroundMusicFadeInduration));
+        }
+    }
+
+
+    //Method for mute/unmute background music
+    public void ToggleBackgroundMusicMute()
+    {
+        bool isMuted = PlayerPrefsHandler.IsMusicMuted();
+        bool newMuteStatus = !isMuted;         
+
+        PlayerPrefsHandler.SetMusicMuted(newMuteStatus);
+        backgroundMusicAudioSource.mute = newMuteStatus;
+        backgroundMusicAudioSource.volume = backgroundMusicVolume;
+    }
+
+    //Method for FadeIn Background Music on Start
+    private IEnumerator FadeInMusic(float targetVolume, float duration)
+    {
+        backgroundMusicAudioSource.volume = 0f;
+        backgroundMusicAudioSource.Play();
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            backgroundMusicAudioSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / duration);
+            yield return null;
+        }
+
+        backgroundMusicAudioSource.volume = targetVolume;
     }
 }

@@ -40,11 +40,11 @@ public class MainMenuActions : MonoBehaviour
 
     private Coroutine titleCoroutine;
 
+    public float CurtainSlideDuration => curtainSlideDuration;
+
     //Curtains logic
     public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
-        SoundManager.Instance.Play("Curtain");
-
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
         HideMenuButtonsAnimated(buttons);
@@ -64,13 +64,14 @@ public class MainMenuActions : MonoBehaviour
             {
                 onComplete?.Invoke();
             });
+
+        SoundManager.Instance.Play("Curtain");
     }
 
 
     public void WithdrawCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
-
-        SoundManager.Instance.Play("Curtain");
+        
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
 
@@ -92,7 +93,7 @@ public class MainMenuActions : MonoBehaviour
                 onComplete?.Invoke();
             });
 
-       
+        SoundManager.Instance.Play("Curtain");
     }
 
 
@@ -177,11 +178,6 @@ public class MainMenuActions : MonoBehaviour
         var buttons = panelGO.GetComponentsInChildren<Button>(true)
                         .Select(b => b.GetComponent<RectTransform>())
                         .ToList();
-
-        foreach (var rect in buttons)
-        {
-            Debug.Log(rect.gameObject.name);
-        }
 
         return buttons;
     }
@@ -329,7 +325,7 @@ public class MainMenuActions : MonoBehaviour
     }
 
     //Animate logic of hidding and showing subPanel of InfoPanel
-    public void AnimateInstructionalPanelTransparency(GameObject panel, bool transparent)
+    public void AnimateSubPanelTransparency(GameObject panel, bool transparent)
     {
         // Uzmi ili dodaj CanvasGroup
         var cg = panel.GetComponent<CanvasGroup>();

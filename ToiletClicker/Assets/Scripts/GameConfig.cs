@@ -3,10 +3,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameConfig", menuName = "Configs/GameConfig")]
 public class GameConfig : ScriptableObject
 {
-    [Header("Player Settings")]
+    [Header("Player Weight Settings")]
     public float startingWeight = 450f;
     public float maxWeight = 500f;
     public float idealWeight = 80f;
+
+    [Header("Weight Ranges")]
+    public float range1Min = 80f;
+    public float range1Max = 120f;
+    public float range2Min = 121f;
+    public float range2Max = 160f;
+    public float range3Min = 161f;
+    public float range3Max = 200f;
+    public float range4Min = 201f;
 
     [Header("XP Settings")]
     public int xpPerHealthyFoodEaten = 5;

@@ -6,7 +6,8 @@ public static class PlayerPrefsHandler
     private const string CoinsKey = "TotalCoins";
     private const string WeightKey = "PlayerWeight";
     private const string XPKey = "TotalXP";
-
+    private const string FartVolumeKey = "FartVolume";
+    private const string MusicMutedKey = "MusicMuted";  // 0 = not muted, 1 = muted
 
 
     // ----------- COINS -----------
@@ -42,4 +43,27 @@ public static class PlayerPrefsHandler
         PlayerPrefs.SetInt(XPKey, amount);
     }
 
+    // ----------- FART VOLUME -----------
+    public static float GetFartVolume()
+    {
+        return PlayerPrefs.GetFloat(FartVolumeKey, 0.5f); // Default: 0.5f
+    }
+
+    public static void SetFartVolume(float value)
+    {
+        PlayerPrefs.SetFloat(FartVolumeKey, value);
+    }
+
+
+    // ----------- MAIN MUSIC MUTE STATUS -----------
+    public static bool IsMusicMuted()
+    {
+        return PlayerPrefs.GetInt(MusicMutedKey, 0) == 1;
+    }
+
+    public static void SetMusicMuted(bool isMuted)
+    {
+        PlayerPrefs.SetInt(MusicMutedKey, isMuted ? 1 : 0);
+        PlayerPrefs.Save();
+    }
 }

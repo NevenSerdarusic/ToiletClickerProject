@@ -122,30 +122,41 @@ public class UIActions : MonoBehaviour
     {
         if (preassureTimer == null || preassureTimerText == null) return -1;
 
+        // Osiguraj da se prethodni tween zaustavi
+        if (LeanTween.isTweening(preassureTweenId))
+        {
+            LeanTween.cancel(preassureTweenId);
+        }
+
         preassureTimer.fillAmount = 0f;
         preassureTimer.gameObject.SetActive(true);
 
         AnimateTimerText(preassureTimerText.gameObject, timerText);
 
-        return LeanTween.value(preassureTimer.gameObject, 0f, 1f, duration)
+        preassureTweenId = LeanTween.value(preassureTimer.gameObject, 0f, 1f, duration)
             .setOnUpdate(val => preassureTimer.fillAmount = val)
             .setEase(LeanTweenType.linear)
             .setOnComplete(() =>
             {
                 preassureTimer.gameObject.SetActive(false);
+                preassureTweenId = -1;
                 onComplete?.Invoke();
             }).id;
+
+        return preassureTweenId;
     }
+
 
     public void StopPreassureTimer(Image preassureTimer)
     {
-        //Stop tween if is active
         if (LeanTween.isTweening(preassureTweenId))
         {
             LeanTween.cancel(preassureTweenId);
             preassureTweenId = -1;
         }
 
+        preassureTimer.fillAmount = 0f;
         preassureTimer.gameObject.SetActive(false);
     }
+
 }

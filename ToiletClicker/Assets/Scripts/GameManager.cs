@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private WeightManager weightManager;
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
+    [SerializeField] private MusicManager musicManager;
 
     [Header("Menu Panels")]
     [SerializeField] private GameObject mainPanel;
@@ -41,6 +43,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button infoBackButton;
     [SerializeField] private Button playAgainButton;
     [SerializeField] private Button gameOverBackButton;
+    [SerializeField] private Button muteMusicButton;
 
     [Header("Shop/Upgrade Panels")]
     [SerializeField] private RectTransform shopPanel;
@@ -57,6 +60,7 @@ public class GameManager : MonoBehaviour
     [Header("Menu Sub Panels")]
     [SerializeField] private GameObject instructionalSubPanel;
     [SerializeField] private GameObject gameOverReasonSubPanel;
+    [SerializeField] private GameObject volumeSubPanel;
 
     [Header("Shop & Upgrade Panel Toogle Animation Settings")]
     [SerializeField] private float panelSlideDuration = 0.5f;
@@ -113,6 +117,7 @@ public class GameManager : MonoBehaviour
 
         instructionalSubPanel.GetComponent<CanvasGroup>().alpha = 0;
         gameOverReasonSubPanel.GetComponent<CanvasGroup>().alpha = 0;
+        volumeSubPanel.GetComponent<CanvasGroup>().alpha = 0;
 
         InitializeButtonListeners();
 
@@ -178,6 +183,11 @@ public class GameManager : MonoBehaviour
         if (gameOverBackButton != null)
         {
             gameOverBackButton.onClick.AddListener(CloseGameOverPanel);
+        }
+
+        if (muteMusicButton != null)
+        {
+            muteMusicButton.onClick.AddListener(SetMusicMuted);
         }
     }
 
@@ -268,8 +278,10 @@ public class GameManager : MonoBehaviour
         SoundManager.Instance.Play("Final Fart");
     }
 
-    private void SetPanelsState(bool active)
+    private IEnumerator SetPanelsState(bool active)
     {
+        yield return new WaitForSeconds(mainMenuActions.CurtainSlideDuration);
+
         foreach (var panel in panels)
         {
             panel.SetActive(active);
@@ -292,10 +304,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            //CloseMainPanel();
-            mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+            CloseMainPanel();
             mainMenuActions.AnimateBackgroundPanel(true);
-            SetPanelsState(false);
+            StartCoroutine(SetPanelsState(false));
         }
     }
 
@@ -305,17 +316,21 @@ public class GameManager : MonoBehaviour
         isGamePaused = true;
         OpenMainPanel();
         mainMenuActions.AnimateBackgroundPanel(false);
-        SetPanelsState(true);
+        StartCoroutine(SetPanelsState(true));
     }
 
     //Panel Management
     public void OpenMainPanel()
     {
         mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+
+        mainMenuActions.AnimateSubPanelTransparency(volumeSubPanel, false);
     }
     private void CloseMainPanel()
     {
         mainMenuActions.PullCurtain(mainPanel, openCurtain, mainTitleCharRects);
+
+        mainMenuActions.AnimateSubPanelTransparency(volumeSubPanel, true);
     }
 
     public void OpenInfoPanel()
@@ -324,12 +339,12 @@ public class GameManager : MonoBehaviour
 
         mainMenuActions.WithdrawCurtain(infoPanel, closedCurtain, infoTitleCharRects);
 
-        mainMenuActions.AnimateInstructionalPanelTransparency(instructionalSubPanel, false);
+        mainMenuActions.AnimateSubPanelTransparency(instructionalSubPanel, false);
     }
 
     public void CloseInfoPanel()
     {
-        mainMenuActions.AnimateInstructionalPanelTransparency(instructionalSubPanel, true);
+        mainMenuActions.AnimateSubPanelTransparency(instructionalSubPanel, true);
 
         mainMenuActions.PullCurtain(infoPanel, openCurtain, infoTitleCharRects);
 
@@ -339,7 +354,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         mainMenuActions.WithdrawCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
-        mainMenuActions.AnimateInstructionalPanelTransparency(gameOverReasonSubPanel, false);
+        mainMenuActions.AnimateSubPanelTransparency(gameOverReasonSubPanel, false);
         SetPanelsState(true);
     }
 
@@ -348,12 +363,12 @@ public class GameManager : MonoBehaviour
         mainMenuActions.PullCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
         ResetGame();
         StartGame();
-        SetPanelsState(false);
+        StartCoroutine(SetPanelsState(false));
     }
 
     private void CloseGameOverPanel()
     {
-        mainMenuActions.AnimateInstructionalPanelTransparency(gameOverReasonSubPanel, true);
+        mainMenuActions.AnimateSubPanelTransparency(gameOverReasonSubPanel, true);
         mainMenuActions.PullCurtain(gameOverPanel, openCurtain, gameOverTitleRects);
         mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
     }
@@ -416,5 +431,18 @@ public class GameManager : MonoBehaviour
     {
         LeanTween.moveX(panel, hiddenPosition, panelSlideDuration)
             .setEase(LeanTweenType.easeInCubic);
+    }
+
+
+    private void SetMusicMuted()
+    {
+        if (musicManager != null)
+        {
+            musicManager.ToggleBackgroundMusicMute();
+        }
+        else
+        {
+            Debug.LogWarning("Music Manager not set in Inspector!");
+        }
     }
 }

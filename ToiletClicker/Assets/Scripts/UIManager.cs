@@ -133,6 +133,8 @@ public class UIManager : MonoBehaviour
         {
             uIActions.AnimatePreassureTimer(preassureTimer, preassureTimerText, duration, StringLibrary.preassureTimerText);
         }
+
+        Debug.Log("Preassure Timer Activated!");
     }
 
     public void StopPreassureTimer()
@@ -143,6 +145,8 @@ public class UIManager : MonoBehaviour
         {
             uIActions.StopPreassureTimer(preassureTimer);
         }
+
+        Debug.Log("Preassure Timer Deactivated!");
     }
 
 
