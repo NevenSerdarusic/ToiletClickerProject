@@ -295,7 +295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -4440, y: 0}
+  m_AnchoredPosition: {x: -4381.6226, y: 0}
   m_SizeDelta: {x: 0, y: 200}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &33277785
@@ -1786,7 +1786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.4745098}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2511,7 +2511,7 @@ MonoBehaviour:
   gameConfig: {fileID: 11400000, guid: 4d86ce4d2533e824dacfada1cfe0d4f4, type: 2}
   uiManager: {fileID: 460194651}
   upgradeManager: {fileID: 460194656}
-  pressureSystem: {fileID: 460194655}
+  preassureSystem: {fileID: 460194655}
   weightManager: {fileID: 460194653}
   mainMenuActions: {fileID: 460194657}
   clickTarget: {fileID: 564778217}
@@ -2535,6 +2535,7 @@ MonoBehaviour:
   shopIcon: {fileID: 21300000, guid: 5ba4ddc8404ead6419e3a771cfb6afa8, type: 3}
   upgradeIcon: {fileID: 21300000, guid: 29a510767c0577241b58c608c540f7cf, type: 3}
   panels:
+  - {fileID: 630518752}
   - {fileID: 314052122}
   - {fileID: 248103346}
   - {fileID: 1435356041}
@@ -2757,7 +2758,7 @@ MonoBehaviour:
   hideEase: 5
   backgroundPanelRect: {fileID: 630518753}
   clickableTargetRect: {fileID: 564778214}
-  rectAnimDuration: 2
+  rectAnimDuration: 1
   rectAnimEase: 7
   fadeDuration: 1
   fadeEase: 4
@@ -4913,7 +4914,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 3.2
   m_wordSpacing: 5
-  m_lineSpacing: 0
+  m_lineSpacing: 50
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -7408,7 +7409,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: 900, y: 100}
+  m_SizeDelta: {x: 950, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1393716082
 MonoBehaviour:
@@ -7457,8 +7458,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44
-  m_fontSizeBase: 44
+  m_fontSize: 48
+  m_fontSizeBase: 48
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -9594,7 +9595,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '0
+  m_text: '
 
 '
   m_isRightToLeft: 0

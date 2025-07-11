@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    private enum GameState { MainMenu, Playing, Paused, Info, GameOver }
-
     [Header("Game State")]
     [SerializeField] private bool isGamePaused;
     [SerializeField] private bool isGameOver;
@@ -20,7 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private UpgradeManager upgradeManager;
-    [SerializeField] private PreassureSystem pressureSystem;
+    [SerializeField] private PreassureSystem preassureSystem;
     [SerializeField] private WeightManager weightManager;
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
@@ -87,18 +85,16 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        if (clickTarget != null)
-        {
-            clickTarget.OnClicked += HandleClick;
-        }
+        clickTarget.OnClicked += HandleClick;
+        preassureSystem.OnGameOverRequested += TriggerGameOver;
+        weightManager.OnGameOverRequested += TriggerGameOver;
     }
 
     private void OnDisable()
     {
-        if (clickTarget != null)
-        {
-            clickTarget.OnClicked -= HandleClick;
-        }
+        clickTarget.OnClicked -= HandleClick;
+        preassureSystem.OnGameOverRequested -= TriggerGameOver;
+        weightManager.OnGameOverRequested -= TriggerGameOver;
     }
 
 
@@ -211,12 +207,11 @@ public class GameManager : MonoBehaviour
         uiManager.UpdateCoins(totalCoins);
         PlayerPrefsHandler.SetCoins(totalCoins);
 
-        //On each click, call an event to check the status of the button in the shop
         OnCoinsChanged?.Invoke(totalCoins);
 
         OnXPChanged?.Invoke(totalXP);
 
-        pressureSystem.OnClick();
+        preassureSystem.OnClick();
     }
 
     public void AddXP(int amount)
@@ -353,9 +348,9 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        StartCoroutine(SetPanelsState(true));
         mainMenuActions.WithdrawCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
         mainMenuActions.AnimateSubPanelTransparency(gameOverReasonSubPanel, false);
-        SetPanelsState(true);
     }
 
     public void PlayAgain()
