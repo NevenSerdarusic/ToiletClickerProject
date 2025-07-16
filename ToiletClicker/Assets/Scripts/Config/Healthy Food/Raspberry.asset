@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Raspberry
   foodImage: {fileID: 21300000, guid: 56a1e7c804ddc384190d8e1ae34bceb1, type: 3}
-  cost: 200
+  cost: 70
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 5.5
+  fibersContent: 2.6

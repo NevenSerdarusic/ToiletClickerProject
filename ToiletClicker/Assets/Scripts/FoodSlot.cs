@@ -6,7 +6,7 @@ public class FoodSlot : MonoBehaviour
     [SerializeField] private Image foodImage;
     private FoodItem currentFood;
 
-    public bool HasBeenEaten { get; private set; } = false;
+    public bool HasBeenEaten { get; set; } = false;
 
     public void SetFood(FoodItem food)
     {

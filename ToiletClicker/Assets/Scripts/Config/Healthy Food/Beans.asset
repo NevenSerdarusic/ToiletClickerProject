@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Beans
   foodImage: {fileID: 21300000, guid: 8ba2a6fe8e53aa546a1582d838b28541, type: 3}
-  cost: 240
+  cost: 80
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 6.5
+  fibersContent: 3

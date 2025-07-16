@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text weightTotalText;
     [SerializeField] private TMP_Text weightIndividualText;
     [SerializeField] private TMP_Text gameOverText;
+    [SerializeField] private TMP_Text bestScoreText;
 
     [Header("GO References")]
     [SerializeField] private GameObject warningText;
@@ -95,6 +96,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
+
+    public void UpdateBestScoreWeight(float defaultWeight)
+    {
+        float best = PlayerPrefsHandler.GetBestScoreWeight(defaultWeight);
+
+        bestScoreText.text = best.ToString("F1") + " kg";
+    }
 
 
     //Method for displaying a panel indicating the end of the game

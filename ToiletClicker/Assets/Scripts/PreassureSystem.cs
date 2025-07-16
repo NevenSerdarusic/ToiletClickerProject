@@ -28,8 +28,8 @@ public class PreassureSystem : MonoBehaviour
     private bool isPreassurePerClickBoostActivated = false;
     private bool isWeightLossPerClickBoostActivated = false;
 
-
     public event Action<GameOverReason> OnGameOverRequested;
+
 
     private void Start()
     {
@@ -97,6 +97,14 @@ public class PreassureSystem : MonoBehaviour
 
         if (fillImage != null)
             fillImage.color = Color.Lerp(Color.green, Color.red, currentPressure / 100f);
+    }
+
+    public void ResetPreassure()
+    {
+        currentPressure = 0f;
+        
+        if (pressureSlider != null)
+            pressureSlider.value = currentPressure / 100f;
     }
 
     private void OnCriticalPressureReached()

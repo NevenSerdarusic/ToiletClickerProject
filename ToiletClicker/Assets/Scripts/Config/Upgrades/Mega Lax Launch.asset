@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   upgradeName: Mega Lax Lunch
-  upgradePrice: 280
+  upgradePrice: 150
   upgradeDuration: 0
   upgradeIcon: {fileID: 0}
   description: "Unleash an instant 5\u202Fkg drop\u2014watch the scale plummet!"

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   upgradeName: Quintuple Click
-  upgradePrice: 180
-  upgradeDuration: 20
+  upgradePrice: 120
+  upgradeDuration: 10
   upgradeIcon: {fileID: 0}
   description: Each tap now showers you with five gleaming ducks!
   isInstant: 0

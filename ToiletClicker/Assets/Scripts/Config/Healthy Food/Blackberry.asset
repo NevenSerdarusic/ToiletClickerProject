@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Blackberies
   foodImage: {fileID: 21300000, guid: c8198245b7733624597e0b673208785a, type: 3}
-  cost: 180
+  cost: 70
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 5
+  fibersContent: 2.6

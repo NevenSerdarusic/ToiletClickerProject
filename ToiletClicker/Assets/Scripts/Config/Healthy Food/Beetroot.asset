@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Beetroot
   foodImage: {fileID: 21300000, guid: e41dfbf2b6a88cf48a01feb62bd66e88, type: 3}
-  cost: 140
+  cost: 60
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 4
+  fibersContent: 2.2

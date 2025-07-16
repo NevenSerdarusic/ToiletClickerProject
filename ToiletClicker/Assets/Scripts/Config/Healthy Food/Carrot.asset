@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Carrot
   foodImage: {fileID: 21300000, guid: 92977a8b9734dfc46a7871f7c59512a6, type: 3}
-  cost: 105
+  cost: 50
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 3
+  fibersContent: 1.8

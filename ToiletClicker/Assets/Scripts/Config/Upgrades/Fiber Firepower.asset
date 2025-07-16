@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 6
   upgradeName: Fiber Firepower
-  upgradePrice: 200
+  upgradePrice: 90
   upgradeDuration: 30
   upgradeIcon: {fileID: 0}
   description: Supercharge your healthy buys so each item scorches extra weight off

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 10
   upgradeName: Scale Smasher
-  upgradePrice: 350
+  upgradePrice: 120
   upgradeDuration: 10
   upgradeIcon: {fileID: 0}
   description: "One tap equal minus 1\u202Fkg on the dial\u2014your finger is a fat\u2011blasting

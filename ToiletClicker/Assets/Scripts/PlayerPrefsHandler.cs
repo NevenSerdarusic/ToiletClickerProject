@@ -8,6 +8,8 @@ public static class PlayerPrefsHandler
     private const string XPKey = "TotalXP";
     private const string FartVolumeKey = "FartVolume";
     private const string MusicMutedKey = "MusicMuted";  // 0 = not muted, 1 = muted
+    private const string BestScoreWeightKey = "BestScoreWeight";
+    private const string GameCompletedKey = "GameCompleted";
 
 
     // ----------- COINS -----------
@@ -66,4 +68,32 @@ public static class PlayerPrefsHandler
         PlayerPrefs.SetInt(MusicMutedKey, isMuted ? 1 : 0);
         PlayerPrefs.Save();
     }
+
+
+
+    // ----------- BEST SCORE (lowest weight) -----------
+    public static float GetBestScoreWeight(float defaultWeight)
+    {
+        return PlayerPrefs.GetFloat(BestScoreWeightKey, defaultWeight); 
+    }
+
+    public static void SetBestScoreWeight(float weight)
+    {
+        PlayerPrefs.SetFloat(BestScoreWeightKey, weight);
+        PlayerPrefs.Save();
+    }
+
+
+    // ----------- GAME COMPLETION STATUS -----------
+    public static bool IsGameCompleted()
+    {
+        return PlayerPrefs.GetInt(GameCompletedKey, 0) == 1;
+    }
+
+    public static void SetGameCompleted(bool completed)
+    {
+        PlayerPrefs.SetInt(GameCompletedKey, completed ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
 }

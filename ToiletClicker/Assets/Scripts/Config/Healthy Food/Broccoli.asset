@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Broccoli
   foodImage: {fileID: 21300000, guid: e24476b3dae9135438ed7058fce2dbf0, type: 3}
-  cost: 300
+  cost: 100
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 8
+  fibersContent: 3.8

@@ -3,12 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
+
+public enum PanelType { Main, Info, GameOver, GameCompleted }
+
+[Serializable]
+public class ButtonAction
+{
+    public Button button;
+    public UnityEvent onClick;
+}
+
+[Serializable]
+public class PanelCurtain
+{
+    public PanelType type;
+    public GameObject panel;
+    public List<RectTransform> titleCharRects;
+    public List<GameObject> subPanels;
+}
+
+public static class SaveManager
+{
+    private const string CoinsKey = "Coins";
+    private const string XPKey = "XP";
+
+    public static int Coins
+    {
+        get => PlayerPrefs.GetInt(CoinsKey, 0);
+        set { PlayerPrefs.SetInt(CoinsKey, value); PlayerPrefs.Save(); }
+    }
+
+    public static int XP
+    {
+        get => PlayerPrefs.GetInt(XPKey, 0);
+        set { PlayerPrefs.SetInt(XPKey, value); PlayerPrefs.Save(); }
+    }
+}
 
 public class GameManager : MonoBehaviour
 {
     [Header("Game State")]
-    [SerializeField] private bool isGamePaused;
+    [SerializeField] private bool isGamePaused = true;
     [SerializeField] private bool isGameOver;
     [SerializeField] private float currentClickMultiplier = 1f;
     [SerializeField] private int totalCoins;
@@ -23,25 +60,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
     [SerializeField] private MusicManager musicManager;
+    [SerializeField] private FoodPoolManager foodPoolManager;
 
-    [Header("Menu Panels")]
-    [SerializeField] private GameObject mainPanel;
-    [SerializeField] private GameObject infoPanel;
+    [Header("Menu Buttons & Actions")]
+    [SerializeField] private List<ButtonAction> menuButtons;
+
+    [Header("Curtains & Panels")]
+    [SerializeField] private List<PanelCurtain> curtains;
+    [SerializeField] private List<GameObject> panels;
     [SerializeField] private GameObject backgroundPanel;
-    [SerializeField] private GameObject gameOverPanel;
-    private float closedCurtain = 0f;
-    private float openCurtain = 1080f;
-
-    [Header("Menu Buttons")]
-    [SerializeField] private Button startButton;
-    [SerializeField] private Button quitButton;
-    [SerializeField] private Button pauseButton;
-    [SerializeField] private Button purchaseButton;
-    [SerializeField] private Button infoButton;
-    [SerializeField] private Button infoBackButton;
-    [SerializeField] private Button playAgainButton;
-    [SerializeField] private Button gameOverBackButton;
-    [SerializeField] private Button muteMusicButton;
+    [SerializeField] private float closedCurtain = 0f;
+    [SerializeField] private float openCurtain = 1080f;
 
     [Header("Shop/Upgrade Panels")]
     [SerializeField] private RectTransform shopPanel;
@@ -49,45 +78,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image shopButtonImage;
     [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite upgradeIcon;
-    [SerializeField] private List<GameObject> panels;
-
-
-    [Header("Upgrade Buttons")]
-    [SerializeField] private List<Button> upgradeButtons;
-
-    [Header("Menu Sub Panels")]
-    [SerializeField] private GameObject instructionalSubPanel;
-    [SerializeField] private GameObject gameOverReasonSubPanel;
-    [SerializeField] private GameObject volumeSubPanel;
-
-    [Header("Shop & Upgrade Panel Toogle Animation Settings")]
     [SerializeField] private float panelSlideDuration = 0.5f;
 
+    [Header("Sub-Panel Settings")]
+    [SerializeField] private float subPanelDelay = 0.5f;
 
+    private PanelType? currentActivePanel = null;
     private int baseCoinsPerClick = 1;
-    
     private bool showingShop = true;
-    private readonly float shownPosition = -112.5f;
-    private readonly float hiddenPosition = 115f;
+    private const float shownPosition = -112.5f;
+    private const float hiddenPosition = 115f;
 
-    private List<RectTransform> mainTitleCharRects = new();
-    private List<RectTransform> infoTitleCharRects = new();
-    private List<RectTransform> gameOverTitleRects = new();
+    // Events
+    public event Action<int> OnCoinsChanged;
+    public event Action<int> OnXPChanged;
+
+    public int GetTotalCoins() => totalCoins;
+
+    public int GetTotalXP() => totalXP;
 
     public bool IsGamePaused => isGamePaused;
     public bool IsGameOver => isGameOver;
-
-    //Event with which we monitor the interactable state of the buttons in Healthy Food panel
-    public event System.Action<int> OnCoinsChanged;
-    //Event with which we monitor the interactable state of the buttons in Upgrade panel
-    public event System.Action<int> OnXPChanged;
-
 
     private void OnEnable()
     {
         clickTarget.OnClicked += HandleClick;
         preassureSystem.OnGameOverRequested += TriggerGameOver;
         weightManager.OnGameOverRequested += TriggerGameOver;
+        weightManager.OnIdealWeightAchived += TriggerGameCompleted;
     }
 
     private void OnDisable()
@@ -95,101 +113,54 @@ public class GameManager : MonoBehaviour
         clickTarget.OnClicked -= HandleClick;
         preassureSystem.OnGameOverRequested -= TriggerGameOver;
         weightManager.OnGameOverRequested -= TriggerGameOver;
+        weightManager.OnIdealWeightAchived -= TriggerGameCompleted;
     }
-
 
     private void Awake()
     {
         isGamePaused = true;
-        InitilizePanelsProperties();
+        BindMenuButtons();
     }
 
     private void Start()
     {
-        totalCoins = PlayerPrefsHandler.GetCoins();
-        totalXP = PlayerPrefsHandler.GetXP();
+        totalCoins = SaveManager.Coins;
+        totalXP = SaveManager.XP;
         uiManager.UpdateCoins(totalCoins);
         uiManager.UpdateXP(totalXP);
-
-        instructionalSubPanel.GetComponent<CanvasGroup>().alpha = 0;
-        gameOverReasonSubPanel.GetComponent<CanvasGroup>().alpha = 0;
-        volumeSubPanel.GetComponent<CanvasGroup>().alpha = 0;
-
-        InitializeButtonListeners();
-
-        upgradeManager.GetAllUpgradeButons().Select(upg => upg.Button).ToList();
-
+        InitializeCurtains();
         InitializePurchasePanels();
 
-        OpenMainPanel();
+        foreach (var c in curtains)
+        {
+            // Hide sub-panels
+            c.subPanels?.ForEach(sp => sp.SetActive(false));
+        }
+
+        ShowPanel(PanelType.Main);
     }
 
-    private void InitilizePanelsProperties()
+    private void InitializeCurtains()
     {
-        mainMenuActions.GenerateCharacters(mainPanel, mainTitleCharRects);
-        mainMenuActions.GenerateCharacters(infoPanel, infoTitleCharRects);
-        mainMenuActions.GenerateCharacters(gameOverPanel, gameOverTitleRects);
-
-        mainMenuActions.SetPanelsStartPosition(mainPanel);
-        mainMenuActions.SetPanelsStartPosition(infoPanel);
-        mainMenuActions.SetPanelsStartPosition(gameOverPanel);
-
-        mainMenuActions.InitializeMenuButtons(mainPanel);
-        mainMenuActions.InitializeMenuButtons(infoPanel);
-        mainMenuActions.InitializeMenuButtons(gameOverPanel);
+        foreach (var c in curtains)
+        {
+            mainMenuActions.GenerateCharacters(c.panel, c.titleCharRects);
+            mainMenuActions.SetPanelsStartPosition(c.panel);
+            mainMenuActions.InitializeMenuButtons(c.panel);
+        }
     }
 
-    private void InitializeButtonListeners()
+    private void BindMenuButtons()
     {
-        if (startButton != null)
+        foreach (var ba in menuButtons)
         {
-            startButton.onClick.AddListener(StartGame);
-        }
-
-        if (quitButton != null)
-        {
-            quitButton.onClick.AddListener(QuitGame);
-        }
-
-        if (pauseButton != null)
-        {
-            pauseButton.onClick.AddListener(PauseGame);
-        }
-
-        if (purchaseButton != null)
-        {
-            purchaseButton.onClick.AddListener(ToggleShopUpgradePanel);
-        }
-
-        if (infoButton != null)
-        {
-            infoButton.onClick.AddListener(OpenInfoPanel);
-        }
-
-        if (infoBackButton != null)
-        {
-            infoBackButton.onClick.AddListener(CloseInfoPanel);
-        }
-
-        if (playAgainButton != null)
-        {
-            playAgainButton.onClick.AddListener(StartGame);
-        }
-
-        if (gameOverBackButton != null)
-        {
-            gameOverBackButton.onClick.AddListener(CloseGameOverPanel);
-        }
-
-        if (muteMusicButton != null)
-        {
-            muteMusicButton.onClick.AddListener(SetMusicMuted);
+            if (ba.button != null && ba.onClick != null)
+                ba.button.onClick.AddListener(() => ba.onClick.Invoke());
         }
     }
 
     private void InitializePurchasePanels()
     {
-        //Initial settings of shop/upgrade panels
         shopPanel.anchoredPosition = new Vector2(shownPosition, shopPanel.anchoredPosition.y);
         upgradePanel.anchoredPosition = new Vector2(hiddenPosition, upgradePanel.anchoredPosition.y);
     }
@@ -201,243 +172,198 @@ public class GameManager : MonoBehaviour
 
     public void RegisterClick()
     {
-        int actualCoins = Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
-        totalCoins += actualCoins;
-
-        uiManager.UpdateCoins(totalCoins);
-        PlayerPrefsHandler.SetCoins(totalCoins);
-
-        OnCoinsChanged?.Invoke(totalCoins);
-
-        OnXPChanged?.Invoke(totalXP);
-
+        int coinsGained = Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
+        totalCoins += coinsGained;
+        UpdateCoins();
         preassureSystem.OnClick();
     }
 
     public void AddXP(int amount)
     {
         totalXP += amount;
-        uiManager.UpdateXP(totalXP);
-        PlayerPrefsHandler.SetXP(totalXP);
-        OnXPChanged?.Invoke(totalXP);
+        UpdateXP();
     }
 
-    public void SetClickMultiplier(float multiplier)
+    public void SetClickMultiplier(float multiplier) => currentClickMultiplier = multiplier;
+
+    private void UpdateCoins()
     {
-        currentClickMultiplier = multiplier;
-    }
-
-    public int GetTotalCoins() => totalCoins;
-
-    public int GetTotalXP() => totalXP;
-
-
-    //Method that manages the withdrawal of coins after a purchase in a shop
-    public void SpendCoins(int amount)
-    {
-        totalCoins -= amount;
-        totalCoins = Mathf.Max(0, totalCoins);
-        PlayerPrefsHandler.SetCoins(totalCoins);
+        SaveManager.Coins = totalCoins;
         uiManager.UpdateCoins(totalCoins);
         OnCoinsChanged?.Invoke(totalCoins);
     }
 
-    //Method that manages the withdrawal of XP after a purchase in a shop
-    public void SpendXP(int amount)
+    private void UpdateXP()
     {
-        totalXP -= amount;
-        totalXP = Mathf.Max(0, totalXP);
-        PlayerPrefsHandler.SetXP(totalXP);
+        SaveManager.XP = totalXP;
         uiManager.UpdateXP(totalXP);
         OnXPChanged?.Invoke(totalXP);
     }
 
+    public void SpendCoins(int amount)
+    {
+        totalCoins = Mathf.Max(0, totalCoins - amount);
+        UpdateCoins();
+    }
 
-    //Two reasons for GAME OVER: 1.Overweight 2.Constant High Preassure
+    public void SpendXP(int amount)
+    {
+        totalXP = Mathf.Max(0, totalXP - amount);
+        UpdateXP();
+    }
+
     public void TriggerGameOver(GameOverReason reason)
     {
+        if (isGameOver) return;
         isGameOver = true;
+        isGamePaused = true;
 
+        SetPanelsActive(true);
+        ShowPanel(PanelType.GameOver);
         uiManager.ShowGameOverReason(reason);
-
-        // Reset all upgrades
-        if (TryGetComponent<UpgradeManager>(out var upgradeManager))
-        {
-            upgradeManager.ResetAllUpgrades();
-        }
-
         clickTarget.BlockClicks(true);
-
-        GameOver();
-
         SoundManager.Instance.Play("Final Fart");
+        weightManager.CheckAndSaveBestScore();
+        upgradeManager.ResetAllUpgrades();
+        weightManager.UpdateBestScore();
     }
 
-    private IEnumerator SetPanelsState(bool active)
-    {
-        yield return new WaitForSeconds(mainMenuActions.CurtainSlideDuration);
-
-        foreach (var panel in panels)
-        {
-            panel.SetActive(active);
-        }
-    }
-
-
-    //Logic related to the main game buttons
-    //Start Game
     public void StartGame()
     {
         isGamePaused = false;
 
         if (isGameOver)
         {
-            mainMenuActions.PullCurtain(gameOverPanel, openCurtain, gameOverTitleRects);
-            mainMenuActions.AnimateBackgroundPanel(true);
+            HidePanel(currentActivePanel ?? PanelType.Main);
             ResetGame();
             isGameOver = false;
+            clickTarget.BlockClicks(false);
         }
         else
         {
-            CloseMainPanel();
-            mainMenuActions.AnimateBackgroundPanel(true);
-            StartCoroutine(SetPanelsState(false));
+            HidePanel(PanelType.Main);
         }
+
+        ShowBackground(true);
+        SetPanelsActive(false, mainMenuActions.CurtainSlideDuration);
     }
 
-    //Pause Game
+
     public void PauseGame()
     {
         isGamePaused = true;
-        OpenMainPanel();
-        mainMenuActions.AnimateBackgroundPanel(false);
-        StartCoroutine(SetPanelsState(true));
+        SetPanelsActive(true);
+        ShowPanel(PanelType.Main);
+        ShowBackground(false);
     }
 
-    //Panel Management
-    public void OpenMainPanel()
+    public void OpenMainPanel() => ShowPanel(PanelType.Main);
+    public void CloseMainPanel() => HidePanel(PanelType.Main);
+    public void OpenInfoPanel() => ShowPanel(PanelType.Info);
+    public void CloseInfoPanel() => HidePanel(PanelType.Info);
+    public void OpenGameOverPanel() => ShowPanel(PanelType.GameOver);
+    public void CloseGameOverPanel() => HidePanel(PanelType.GameOver);
+    public void OpenGameCompletedPanel() => ShowPanel(PanelType.GameCompleted);
+    public void CloseGameCompletedPanel() => HidePanel(PanelType.GameCompleted);
+
+
+    private void ShowPanel(PanelType type)
     {
-        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+        currentActivePanel = type;
 
-        mainMenuActions.AnimateSubPanelTransparency(volumeSubPanel, false);
-    }
-    private void CloseMainPanel()
-    {
-        mainMenuActions.PullCurtain(mainPanel, openCurtain, mainTitleCharRects);
-
-        mainMenuActions.AnimateSubPanelTransparency(volumeSubPanel, true);
-    }
-
-    public void OpenInfoPanel()
-    {
-        mainMenuActions.PullCurtain(mainPanel, openCurtain, mainTitleCharRects);
-
-        mainMenuActions.WithdrawCurtain(infoPanel, closedCurtain, infoTitleCharRects);
-
-        mainMenuActions.AnimateSubPanelTransparency(instructionalSubPanel, false);
+        var c = curtains.First(x => x.type == type);
+        mainMenuActions.WithdrawCurtain(c.panel, closedCurtain, c.titleCharRects);
+        if (c.subPanels != null && c.subPanels.Count > 0)
+            StartCoroutine(EnableSubPanelsWithDelay(c.subPanels)); //Enable SubPanels on panel
     }
 
-    public void CloseInfoPanel()
+    private IEnumerator EnableSubPanelsWithDelay(List<GameObject> subPanels)
     {
-        mainMenuActions.AnimateSubPanelTransparency(instructionalSubPanel, true);
-
-        mainMenuActions.PullCurtain(infoPanel, openCurtain, infoTitleCharRects);
-
-        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
+        yield return new WaitForSeconds(subPanelDelay);
+        subPanels.ForEach(sp => sp.SetActive(true));
     }
 
-    public void GameOver()
+    private void HidePanel(PanelType type)
     {
-        StartCoroutine(SetPanelsState(true));
-        mainMenuActions.WithdrawCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
-        mainMenuActions.AnimateSubPanelTransparency(gameOverReasonSubPanel, false);
-    }
-
-    public void PlayAgain()
-    {
-        mainMenuActions.PullCurtain(gameOverPanel, closedCurtain, gameOverTitleRects);
-        ResetGame();
-        StartGame();
-        StartCoroutine(SetPanelsState(false));
-    }
-
-    private void CloseGameOverPanel()
-    {
-        mainMenuActions.AnimateSubPanelTransparency(gameOverReasonSubPanel, true);
-        mainMenuActions.PullCurtain(gameOverPanel, openCurtain, gameOverTitleRects);
-        mainMenuActions.WithdrawCurtain(mainPanel, closedCurtain, mainTitleCharRects);
-    }
-
-    //Quit Game
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
-    //Reset Game
-    private void ResetGame()
-    {
-        isGameOver = false;
-
-        totalCoins = 0;
-        totalXP = 0;
-        weightManager.ResetTotalWeight();
-
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-
-        uiManager.UpdateCoins(totalCoins);
-        uiManager.UpdateXP(totalXP);
+        var c = curtains.First(x => x.type == type);
+        c.subPanels?.ForEach(sp => sp.SetActive(false)); //Disable SubPanels on panel
+        mainMenuActions.PullCurtain(c.panel, openCurtain, c.titleCharRects);
     }
 
 
-    //Logic for changing Shop and Upgrade Panel
-    private void ToggleShopUpgradePanel()
-    {
-        if (showingShop)
-        {
-            //Move shop panel out, show upgrade panel
-            SlideOutPanel(shopPanel);
-            SlideInPanel(upgradePanel);
-            shopButtonImage.sprite = shopIcon;
-        }
-        else
-        {
-            //Move the upgrade panel out, show the shop panel
-            SlideOutPanel(upgradePanel);
-            SlideInPanel(shopPanel);
-            shopButtonImage.sprite = upgradeIcon;
-        }
+    private void ShowBackground(bool show) => mainMenuActions.AnimateBackgroundPanel(show);
 
+    private void SetPanelsActive(bool active, float delay = 0f)
+    {
+        StopAllCoroutines();
+        StartCoroutine(DoSetPanels(active, delay));
+    }
+
+    private IEnumerator DoSetPanels(bool active, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        panels.ForEach(p => p.SetActive(active));
+    }
+
+    public void ToggleShopUpgradePanel()
+    {
+        var inPanel = showingShop ? shopPanel : upgradePanel;
+        var outPanel = showingShop ? upgradePanel : shopPanel;
+        SlideOutPanel(inPanel);
+        SlideInPanel(outPanel);
+        shopButtonImage.sprite = showingShop ? upgradeIcon : shopIcon;
         showingShop = !showingShop;
     }
 
-
-
-    //Logic for animating panels: HEALTHY FOOD - UPGRADE
     private void SlideInPanel(RectTransform panel)
     {
         panel.anchoredPosition = new Vector2(hiddenPosition, panel.anchoredPosition.y);
-
-        LeanTween.moveX(panel, shownPosition, panelSlideDuration)
-            .setEase(LeanTweenType.easeOutCubic);
+        LeanTween.moveX(panel, shownPosition, panelSlideDuration).setEase(LeanTweenType.easeOutCubic);
     }
 
     private void SlideOutPanel(RectTransform panel)
     {
-        LeanTween.moveX(panel, hiddenPosition, panelSlideDuration)
-            .setEase(LeanTweenType.easeInCubic);
+        LeanTween.moveX(panel, hiddenPosition, panelSlideDuration).setEase(LeanTweenType.easeInCubic);
     }
 
+    public void QuitGame() => Application.Quit();
 
-    private void SetMusicMuted()
+    private void ResetGame()
     {
-        if (musicManager != null)
-        {
-            musicManager.ToggleBackgroundMusicMute();
-        }
-        else
-        {
-            Debug.LogWarning("Music Manager not set in Inspector!");
-        }
+        totalCoins = 0;
+        totalXP = 0;
+        foodPoolManager.ResetFoodPoolToJunk();
+        weightManager.ResetTotalWeight();
+        preassureSystem.ResetPreassure();
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+        UpdateCoins();
+        UpdateXP();
+    }
+
+    public void SetMusicMuted() => musicManager?.ToggleBackgroundMusicMute();
+
+    //Game Passed - Ideal weight achived
+    private void TriggerGameCompleted()
+    {
+        if (isGameOver) return;
+        isGameOver = true;
+        isGamePaused = true;
+
+        SetPanelsActive(true);
+
+        ShowPanel(PanelType.GameCompleted);
+
+        /*SoundManager.Instance.Play("VictoryFart"); *///Joco novi zvuk
+
+        weightManager.CheckAndSaveBestScore();
+
+        upgradeManager.ResetAllUpgrades();
+
+        PlayerPrefsHandler.SetGameCompleted(true);
+
+        weightManager.UpdateBestScore();
+
+        //Animacija
     }
 }

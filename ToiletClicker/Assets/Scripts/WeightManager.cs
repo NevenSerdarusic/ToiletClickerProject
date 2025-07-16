@@ -12,7 +12,9 @@ public class WeightManager : MonoBehaviour
 
     public event Action<GameOverReason> OnGameOverRequested;
 
-    public event System.Action<float> OnWeightChanged;
+    public event Action<float> OnWeightChanged;
+
+    public event Action OnIdealWeightAchived;
 
     public float GetCurrentWeight() => currentWeight;
 
@@ -30,6 +32,8 @@ public class WeightManager : MonoBehaviour
         }
 
         UpdateTotalWeightUI();
+
+        UpdateBestScore();
     }
 
     public void AddWeight(float amount)
@@ -53,6 +57,11 @@ public class WeightManager : MonoBehaviour
         PlayerPrefsHandler.SetWeight(currentWeight);
         UpdateTotalWeightUI();
         OnWeightChanged?.Invoke(currentWeight);
+
+        if (currentWeight <= gameConfig.idealWeight)
+        {
+            OnIdealWeightAchived?.Invoke();
+        }
     }
 
 
@@ -72,9 +81,29 @@ public class WeightManager : MonoBehaviour
         }
     }
 
+    public void UpdateBestScore()
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateBestScoreWeight(gameConfig.startingWeight);
+        }
+    }
+
     public void ResetTotalWeight()
     {
         currentWeight = gameConfig.startingWeight;
         UpdateTotalWeightUI();
     }
+
+    //Method for checking and saving the lowest point of weight in any played game, as a BestScore
+    public void CheckAndSaveBestScore()
+    {
+        float best = PlayerPrefsHandler.GetBestScoreWeight(gameConfig.startingWeight);
+
+        if (currentWeight < best)
+        {
+            PlayerPrefsHandler.SetBestScoreWeight(currentWeight);
+        }
+    }
+
 }

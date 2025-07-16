@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 9
   upgradeName: Preassure Brake
-  upgradePrice: 250
-  upgradeDuration: 25
+  upgradePrice: 100
+  upgradeDuration: 30
   upgradeIcon: {fileID: 0}
   description: "Every tap eases the squeeze\u2014pressure builds up more slowly!"
   isInstant: 0

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Blueberries
   foodImage: {fileID: 21300000, guid: 4ba94dc95a8df124f9ef18ce2307e7cf, type: 3}
-  cost: 270
+  cost: 90
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 7.5
+  fibersContent: 3.4

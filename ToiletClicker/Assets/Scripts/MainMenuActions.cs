@@ -352,14 +352,13 @@ public class MainMenuActions : MonoBehaviour
         RectTransform rectTransform = panelGO.GetComponent<RectTransform>();
         if (rectTransform == null)
         {
-            Debug.LogWarning("RectTransform nije pronađen na GameObjectu: " + panelGO.name);
+            Debug.LogWarning("RectTransform not found on GameObject: " + panelGO.name);
             return;
         }
 
-        rectTransform.anchorMin = new Vector2(0, 0);
-        rectTransform.anchorMax = new Vector2(1, 1); // ili (1, 0) ako ne rastežeš po Y
-
-        rectTransform.offsetMin = new Vector2(0, rectTransform.offsetMin.y);       // Left = 0
-        rectTransform.offsetMax = new Vector2(-1080, rectTransform.offsetMax.y);   // Right = 1080
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = Vector2.zero;
+        rectTransform.offsetMax = new Vector2(-1080f,0);
     }
 }

@@ -373,6 +373,28 @@ public class FoodPoolManager : MonoBehaviour
         }
     }
 
+    //On the game over event I need to call this method to reset the scroll rect so that there are no healthy foods left in it
+    public void ResetFoodPoolToJunk()
+    {
+        for (int i = 0; i < slotRects.Count; i++)
+        {
+            var rect = slotRects[i];
+            if (rect.TryGetComponent(out FoodSlot slot))
+            {
+                //Clear flag if it was eaten
+                rect.GetComponent<FoodSlot>().HasBeenEaten = false;
+
+                //Set random junk food
+                var junk = GetRandomFood();
+                slot.SetFood(junk);
+            }
+        }
+
+        //Return contentTransform to the beginning
+        contentTransform.anchoredPosition = Vector2.zero;
+    }
+
+
 
     //Eating Image Animation
     //IVAN: dodati logiku za 3 spritea koje ce se gasiti kako bi animirali konzumaciju hrane

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 8
   upgradeName: Rapid Relief
-  upgradePrice: 150
+  upgradePrice: 80
   upgradeDuration: 20
   upgradeIcon: {fileID: 0}
   description: Each click slashes pressure faster than ever!

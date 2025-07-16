@@ -17,5 +17,5 @@ MonoBehaviour:
   cost: 0
   foodEatingSound: {fileID: 0}
   fatContent: 10
-  sugarContent: 50
+  sugarContent: 22
   fibersContent: 0

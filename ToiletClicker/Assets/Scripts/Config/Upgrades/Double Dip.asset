@@ -15,7 +15,7 @@ MonoBehaviour:
   type: 0
   upgradeName: Double Dip
   upgradePrice: 50
-  upgradeDuration: 10
+  upgradeDuration: 20
   upgradeIcon: {fileID: 0}
   description: Every tap now pockets you two ducks instead of one!
   isInstant: 0

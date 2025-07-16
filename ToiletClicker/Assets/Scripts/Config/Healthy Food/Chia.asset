@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodName: Chia
   foodImage: {fileID: 21300000, guid: 1f36eaae82ebdee4880bad11ef8a5e41, type: 3}
-  cost: 250
+  cost: 90
   foodEatingSound: {fileID: 0}
   fatContent: 1
   sugarContent: 1
-  fibersContent: 7
+  fibersContent: 3.4

@@ -16,6 +16,6 @@ MonoBehaviour:
   foodImage: {fileID: 21300000, guid: 4f8bc6d3c500528438425e162acc2204, type: 3}
   cost: 0
   foodEatingSound: {fileID: 0}
-  fatContent: 5
-  sugarContent: 60
+  fatContent: 4
+  sugarContent: 30
   fibersContent: 0
