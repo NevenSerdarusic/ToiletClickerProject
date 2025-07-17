@@ -3041,8 +3041,8 @@ MonoBehaviour:
   - {fileID: 2014704163}
   - {fileID: 928308664}
   - {fileID: 346348273}
-  warningColor: {r: 0.8901961, g: 0.7176471, b: 0.36862746, a: 1}
-  dangerColor: {r: 0.75686276, g: 0.26666668, b: 0.05490196, a: 1}
+  warningColor: {r: 0.8584906, g: 0.41001144, b: 0.10933607, a: 1}
+  dangerColor: {r: 0.9339623, g: 0.066082224, b: 0.07485062, a: 1}
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
   warningTextDuration: 2
   defaultGameBackgroundColor: {r: 0.36862746, g: 0.7058824, b: 0.6509804, a: 1}
@@ -3829,8 +3829,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -112.500244, y: 12.5}
-  m_SizeDelta: {x: -224.99998, y: -375}
+  m_AnchoredPosition: {x: -112.5, y: 12.5}
+  m_SizeDelta: {x: -225, y: -375}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &564778215
 MonoBehaviour:

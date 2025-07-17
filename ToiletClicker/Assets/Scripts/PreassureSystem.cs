@@ -43,43 +43,45 @@ public class PreassureSystem : MonoBehaviour
 
     private void Update()
     {
-        if (currentPressure > 0)
+        if (currentPressure > 0f)
         {
             CalculatePressureDecrease();
             UpdateSlider();
         }
 
-        //If we are above the critical value, we count the time
-        if (currentPressure >= gameConfig.preWarningThreshold)
+        if (currentPressure >= gameConfig.criticalThreshold)
         {
-            //If we are just now entering the overload zone, show a warning
-            if (currentPressure >= gameConfig.criticalThreshold)
+            if (!isOverloaded)
             {
-                if (!isOverloaded)
-                {
-                    isOverloaded = true;
-                    OnCriticalPressureReached();
-                }
-            }
-
-            //Start measuring time in overload
-            overloadTimer += Time.deltaTime;
-            //If we stay longer than we have time, show us a game over message
-            if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
-            {
-                OnGameOverRequested?.Invoke(GameOverReason.PressureOverload);
+                isOverloaded = true;
+                OnCriticalPressureReached();
             }
         }
-        else
+        else if (currentPressure < gameConfig.preWarningThreshold)
         {
-            //If we fall below criticalThreshold, reset overload state
             if (isOverloaded)
             {
                 isOverloaded = false;
                 OnPressureBackToSafe();
             }
-
             overloadTimer = 0f;
+        }
+
+        if (isOverloaded)
+        {
+            overloadTimer += Time.deltaTime;
+            if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
+                OnGameOverRequested?.Invoke(GameOverReason.PressureOverload);
+        }
+
+        if (currentPressure >= gameConfig.preWarningThreshold)
+        {
+            uiManager.ShowWarningMessage(
+                uiManager.CriticalPreassure,
+                uiManager.WarningTextDuration,
+                true,
+                uiManager.DangerTextColor
+            );
         }
     }
 
@@ -110,7 +112,6 @@ public class PreassureSystem : MonoBehaviour
     private void OnCriticalPressureReached()
     {
         //Animacija??
-        uiManager.ShowWarningMessage(uiManager.CriticalPreassure, uiManager.WarningTextDuration, true, uiManager.DangerTextColor);
         uiManager.StartPreassureTimer(gameConfig.preassureOverloadDurationBeforeGameOver);
         SoundManager.Instance.PlayControlled("Countdown");
     }

@@ -80,37 +80,43 @@ public class ShopManager : MonoBehaviour
 
         gameManager.SpendCoins(item.cost);
         purchasedItems.Add(item);
-
         foodPoolManager.ReplaceFirstUnhealthyFoodWithHealthy(item);
 
-        //Get all currently displayerd items
-        var currentlyDisplayed = Enumerable.ToHashSet(
-                shopButtons.Where(b => b.HasItem && b != button)
-               .Select(b => b.GetItem())
-                );
+        // Skupi sve trenutno prikazane
+        var displayed = shopButtons
+            .Where(b => b.HasItem)
+            .Select(b => b.GetItem())
+            .ToHashSet();
 
-        var remaining = allShopItems
-            .Except(purchasedItems)
-            .Except(currentlyDisplayed)
-            .ToList();
-
-        if (remaining.Count > 0)
+        // Funkcija koja dohva?a sljede?i item
+        FoodItem GetNext()
         {
-            remaining = remaining.OrderBy(i => i.cost).ToList();
-
-            int lowestCost = remaining[0].cost;
-            var cheapestItems = remaining.Where(i => i.cost == lowestCost).ToList();
-
-            var newItem = cheapestItems[Random.Range(0, cheapestItems.Count)];
-            button.AssignItem(newItem, TryPurchaseItem);
+            return allShopItems
+                .Except(purchasedItems)
+                .Except(displayed)
+                .OrderBy(i => i.cost)
+                .FirstOrDefault();
         }
+
+        // Pokušaj na?i nextItem
+        var nextItem = GetNext();
+
+        // Ako nema više novih, "resetiraj shop" te ponovno uzmi najjeftinije
+        if (nextItem == null)
+        {
+            purchasedItems.Clear();
+            nextItem = GetNext();
+        }
+
+        // Ako i dalje nema (vrlo neuobi?ajeno, zna?i da shopButtons > allShopItems), o?isti
+        if (nextItem != null)
+            button.AssignItem(nextItem, TryPurchaseItem);
         else
-        {
             button.Clear();
-        }
 
-        UpdateButtonStates(); //refresh interactability
+        UpdateButtonStates();
     }
+
 
     public List<FoodItem> GetAllShopItems()
     {
