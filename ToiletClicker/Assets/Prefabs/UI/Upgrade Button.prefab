@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &771884492025455242
 RectTransform:
   m_ObjectHideFlags: 0
@@ -352,7 +352,6 @@ MonoBehaviour:
   costText: {fileID: 1807356434174911795}
   icon: {fileID: 2334123025309172677}
   button: {fileID: 844826810264223533}
-  lockedOverlay: {fileID: 1796859549535522968}
 --- !u!1 &5702784464521411999
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +522,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5344473045597253408
 RectTransform:
   m_ObjectHideFlags: 0

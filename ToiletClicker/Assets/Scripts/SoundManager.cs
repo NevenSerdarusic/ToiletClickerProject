@@ -23,7 +23,9 @@ public class SoundManager : MonoBehaviour
 
     [Header("Fart Sounds")]
     [SerializeField] private List<AudioClip> fartSounds;
-    [SerializeField] private float fartStartSoundVolume = 0.25f;
+	[SerializeField] private float minimalFartStartSoundVolume;
+	[SerializeField] private float maximalFartStartSoundVolume;
+	[SerializeField] private float fartStartSoundVolume;
 
     [Header("Volume Slider")]
     [SerializeField] private Slider volumeSlider;
@@ -55,9 +57,11 @@ public class SoundManager : MonoBehaviour
         if (generalAudioSource == null || fartAudioSource == null || buttonAudioSource == null)
             Debug.LogError("[SoundManager] AudioSources not properly assigned!");
 
-        fartStartSoundVolume = PlayerPrefsHandler.GetFartVolume();
+        //fartStartSoundVolume = PlayerPrefsHandler.GetFartVolume();
 
-        soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
+
+
+		soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
         SoundsSettings();
     }
 
@@ -151,8 +155,10 @@ public class SoundManager : MonoBehaviour
         if (fartSounds.Count == 0) return;
 
         AudioClip randomClip = fartSounds[Random.Range(0, fartSounds.Count)];
-        fartAudioSource.volume = fartStartSoundVolume;
-        fartAudioSource.PlayOneShot(randomClip);
+		//fartAudioSource.volume = fartStartSoundVolume;
+
+		fartAudioSource.volume = Random.Range(minimalFartStartSoundVolume, maximalFartStartSoundVolume);
+		fartAudioSource.PlayOneShot(randomClip);
     }
 
     private void SoundsSettings()

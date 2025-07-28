@@ -8,7 +8,7 @@ public class UpgradeItemUI : MonoBehaviour
     [SerializeField] private TMP_Text costText;
     [SerializeField] private Image icon;
     [SerializeField] private Button button;
-    [SerializeField] private Image lockedOverlay;
+    //[SerializeField] private Image lockedOverlay;
 
     public Button Button => button;
 
@@ -28,7 +28,7 @@ public class UpgradeItemUI : MonoBehaviour
         nameText.text = upgrade.upgradeName;
         costText.text = upgrade.upgradePrice.ToString();
         icon.sprite = upgrade.upgradeIcon;
-        button.interactable = false;
+        //button.interactable = false;
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onPurchase?.Invoke(currentUpgrade, this));
@@ -40,18 +40,18 @@ public class UpgradeItemUI : MonoBehaviour
         nameText.text = "";
         costText.text = "";
         icon.sprite = null;
-        button.interactable = false;
+        //button.interactable = false;
     }
 
-    public void SetInteractable(bool state)
-    {
-        button.interactable = state;
-        ShowLockedOverlay(!state);
-    }
+    //public void SetInteractable(bool state)
+    //{
+    //    button.interactable = state;
+    //    ShowLockedOverlay(!state);
+    //}
 
-    public void ShowLockedOverlay(bool show)
-    {
-        lockedOverlay.gameObject.SetActive(show);
-    }
+    //public void ShowLockedOverlay(bool show)
+    //{
+    //    lockedOverlay.gameObject.SetActive(show);
+    //}
 
 }

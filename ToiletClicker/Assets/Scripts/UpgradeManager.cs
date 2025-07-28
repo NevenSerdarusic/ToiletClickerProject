@@ -81,17 +81,17 @@ public class UpgradeManager : MonoBehaviour
     {
         //int currentXP = gameManager.GetTotalXP();
 
-        foreach (var button in upgradeButtons)
-        {
-            if (button.HasUpgrade)
-                button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
-        }
+        //foreach (var button in upgradeButtons)
+        //{
+        //    if (button.HasUpgrade)
+        //        button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
+        //}
     }
 
 
     public void TryPurchaseUpgrade(UpgradeData upgrade, UpgradeItemUI button)
     {
-        if (upgrade == null || gameManager.GetTotalXP() < upgrade.upgradePrice) return;
+        //if (upgrade == null || gameManager.GetTotalXP() < upgrade.upgradePrice) return;
 
         gameManager.SpendXP(upgrade.upgradePrice);
 

@@ -10,6 +10,9 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameConfig gameConfig;
 
+    [Header("Events")]
+    [SerializeField] private GameEventChannel clickEvent;
+
     [Header("Character Animations")]
     [SerializeField] private Animator characterAnimator;
     [SerializeField] private string clickAnimationTrigger = "Click";
@@ -47,7 +50,12 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (isBlocked || gameManager.IsGameOver) return;
+        if (isBlocked || gameManager.IsGameOver && clickEvent) return;
+
+        if(clickEvent != null)
+        {
+            clickEvent.RaiseEvent();
+        }
 
         OnClicked?.Invoke();
 
