@@ -76,48 +76,48 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
         SoundManager.Instance.PlayRandom();
     }
 
-    public void SetClickMultiplier(float multiplier)
-    {
-        if (gameManager != null)
-        {
-            gameManager.SetClickMultiplier(multiplier);
-        }
-        else
-        {
-            Debug.LogWarning("GameManager reference not set!");
-        }
-    }
+    //public void SetClickMultiplier(float multiplier)
+    //{
+    //    if (gameManager != null)
+    //    {
+    //        gameManager.SetClickMultiplier(multiplier);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("GameManager reference not set!");
+    //    }
+    //}
 
     //AutoClick Upgrade Settings
-    public void EnableAutoClick(bool enable)
-    {
-        if (enable)
-        {
-            if (autoClickRoutine == null)
-                autoClickRoutine = StartCoroutine(AutoClickRoutine());
-        }
-        else
-        {
-            if (autoClickRoutine != null)
-            {
-                StopCoroutine(autoClickRoutine);
-                autoClickRoutine = null;
-            }
-        }
-    }
+    //public void EnableAutoClick(bool enable)
+    //{
+    //    if (enable)
+    //    {
+    //        if (autoClickRoutine == null)
+    //            autoClickRoutine = StartCoroutine(AutoClickRoutine());
+    //    }
+    //    else
+    //    {
+    //        if (autoClickRoutine != null)
+    //        {
+    //            StopCoroutine(autoClickRoutine);
+    //            autoClickRoutine = null;
+    //        }
+    //    }
+    //}
 
-    private IEnumerator AutoClickRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(gameConfig.autoClickInterval);
-            OnClicked?.Invoke();
+    //private IEnumerator AutoClickRoutine()
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(gameConfig.autoClickInterval);
+    //        OnClicked?.Invoke();
 
-            // Animacija
-            // if (characterAnimator != null)
-            //     characterAnimator.SetTrigger(clickAnimationTrigger);
-        }
-    }
+    //        // Animacija
+    //        // if (characterAnimator != null)
+    //        //     characterAnimator.SetTrigger(clickAnimationTrigger);
+    //    }
+    //}
 
     //Animate logic for Flying Clickable Bonuses
     public void ActivateFlyingClickableEvent(Vector2 screenPosition, Vector2 endPosition)

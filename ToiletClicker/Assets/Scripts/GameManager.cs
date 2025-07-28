@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour
     [Header("Shop & Upgrade Panel Toogle Animation Settings")]
     [SerializeField] private float panelSlideDuration = 0.5f;
 
+    private int tapValue = 1;       // value that adds on click- it increases with doubledip upgrade
+
 
     private int baseCoinsPerClick = 1;
     
@@ -199,10 +201,15 @@ public class GameManager : MonoBehaviour
         RegisterClick();
     }
 
+
+    public void ChangeTapValue(int amount)
+    {
+        tapValue = amount;
+    }
     public void RegisterClick()
     {
         int actualCoins = Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
-        totalCoins += actualCoins;
+        totalCoins += tapValue;
 
         uiManager.UpdateCoins(totalCoins);
         PlayerPrefsHandler.SetCoins(totalCoins);
@@ -439,5 +446,12 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("Music Manager not set in Inspector!");
         }
+    }
+
+
+    public void AddCoins(int amount)
+    {
+        totalCoins += amount;
+        uiManager.UpdateCoins(totalCoins);
     }
 }

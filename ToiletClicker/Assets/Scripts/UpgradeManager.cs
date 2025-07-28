@@ -25,16 +25,28 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private Transform upgradesInstructionContainer;
     [SerializeField] private float spacingBetweenInstantiatedPrefabs = 100f;
 
-
-    private readonly Dictionary<UpgradeType, Coroutine> activeUpgrades = new();
+    //private readonly Dictionary<UpgradeType, Coroutine> activeUpgrades = new();
     private readonly List<UpgradeItemUI> upgradeButtons = new();
+
+    [Header("Event Listener")]
+    [SerializeField] private TimeCounterEvent timecounterEvent;
+
+    private void OnEnable()
+    {
+        timecounterEvent.OnEventRaised += CallAllUpgradeEffects;
+    }
+
+    private void OnDisable()
+    {
+        timecounterEvent.OnEventRaised -= CallAllUpgradeEffects;
+    }
 
 
     private void Start()
     {
         PopulateUpgrades();
-        gameManager.OnXPChanged += HandleXPChanged; //Event subscription
-        HandleXPChanged(gameManager.GetTotalXP()); //Initial check of interactable buttons in Shop
+        //gameManager.OnXPChanged += HandleXPChanged; //Event subscription
+        //HandleXPChanged(gameManager.GetTotalXP()); //Initial check of interactable buttons in Shop
     }
 
     private void PopulateUpgrades()
@@ -72,155 +84,179 @@ public class UpgradeManager : MonoBehaviour
 
 
 
-    private void HandleXPChanged(int currentXP)
-    {
-        UpdateButtonStates();
-    }
+    //private void HandleXPChanged(int currentXP)
+    //{
+    //    UpdateButtonStates();
+    //}
 
-    private void UpdateButtonStates()
-    {
-        //int currentXP = gameManager.GetTotalXP();
+    //private void UpdateButtonStates()
+    //{
+    //    //int currentXP = gameManager.GetTotalXP();
 
-        //foreach (var button in upgradeButtons)
-        //{
-        //    if (button.HasUpgrade)
-        //        button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
-        //}
-    }
+    //    //foreach (var button in upgradeButtons)
+    //    //{
+    //    //    if (button.HasUpgrade)
+    //    //        button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
+    //    //}
+    //}
 
 
     public void TryPurchaseUpgrade(UpgradeData upgrade, UpgradeItemUI button)
     {
-        //if (upgrade == null || gameManager.GetTotalXP() < upgrade.upgradePrice) return;
+      
+        if (upgrade == null || gameManager.GetTotalCoins() < upgrade.upgradePrice) return;
 
-        gameManager.SpendXP(upgrade.upgradePrice);
+        CheckIfPurchaseIsStaticUpgrades(upgrade);
+        gameManager.SpendCoins(upgrade.upgradePrice);
+        upgrade.upgradeLevel = upgrade.upgradeLevel + 1;
 
-        UpdateButtonStates();
+        Debug.Log("Try Purchase Upgrade " + upgrade + " and upgrade level is" + upgrade.upgradeLevel);
+        //UpdateButtonStates();
+    }
 
-        if (upgrade.isInstant)
+
+   
+
+
+    private void AutoTap(int upgradeLevel)
+    {
+        int calculateAmountOfCoins = upgradeLevel * 5;
+        gameManager.AddCoins(calculateAmountOfCoins);
+    }
+
+    private void IncreaseTapValue(int amount)
+    {
+        gameManager.ChangeTapValue(amount);
+    }
+
+
+    private void CallAllUpgradeEffects()
+    {
+        foreach(var upgrade in allUpgrades)
         {
             ApplyUpgradeEffect(upgrade);
         }
-        else
-        {
-            if (activeUpgrades.ContainsKey(upgrade.type))
-                StopCoroutine(activeUpgrades[upgrade.type]);
-
-            //Start upgrade timer
-            uiManager.StartUpgradeTimer(upgrade.upgradeDuration);
-
-            Coroutine co = StartCoroutine(HandleTimedUpgrade(upgrade));
-            activeUpgrades[upgrade.type] = co;
-        }
-
-        HandleXPChanged(gameManager.GetTotalXP()); // Refresh UI
     }
-
-
-    //Active upgrades counter
-    private IEnumerator HandleTimedUpgrade(UpgradeData upgrade)
-    {
-        ApplyUpgradeEffect(upgrade);
-        yield return new WaitForSeconds(upgrade.upgradeDuration);
-        RemoveUpgradeEffect(upgrade);
-    }
-
     private void ApplyUpgradeEffect(UpgradeData upgrade)
     {
-        switch (upgrade.type)
+        if (upgrade.type == UpgradeType.AutoTap)
         {
-            case UpgradeType.DoubleDip:
-                clickTarget.SetClickMultiplier(gameConfig.duobleTapMultiplier);
-                break;
-            case UpgradeType.QuintupleClick:
-                clickTarget.SetClickMultiplier(gameConfig.megaTapMultiplier);
-                break;
-            case UpgradeType.MegaLaxLaunch:
-                weightManager.SubtractWeight(gameConfig.laxativeWeightReduction);
-                break;
-            case UpgradeType.HealthSwap:
-                foodPoolManager.ReplaceJunkWithHealthy(gameConfig.detoxBombReplacingSlotCount);
-                break;
-            case UpgradeType.SnackDecelerator:
-                foodPoolManager.SlowScroll(true);
-                break;
-            case UpgradeType.AutoTap:
-                clickTarget.EnableAutoClick(true);
-                break;
-            case UpgradeType.FiberFirepower:
-                foodPoolManager.BoostFiberInHealthy(true);
-                break;
-            case UpgradeType.LightweightJunk:
-                foodPoolManager.ReduceJunkNutrition(true);
-                break;
-            case UpgradeType.RapidRelief:
-                preassureSystem.PreassureDecreaseBoost(true);
-                break;
-            case UpgradeType.PreasureBrake:
-                preassureSystem.PreassurePerClickBoost(true);
-                break;
-            case UpgradeType.ScaleSmasher:
-                preassureSystem.WeightPerClickDrop(true);
-                break;
+            AutoTap(upgrade.upgradeLevel);
         }
+       
     }
 
-    private void RemoveUpgradeEffect(UpgradeData upgrade)
+    private void CheckIfPurchaseIsStaticUpgrades(UpgradeData upgrade)//za provjeravanje staticnog upgradea(doubledip)
     {
         switch (upgrade.type)
         {
             case UpgradeType.DoubleDip:
-            case UpgradeType.QuintupleClick:
-                clickTarget.SetClickMultiplier(1f);
-                break;
-            case UpgradeType.SnackDecelerator:
-                foodPoolManager.SlowScroll(false);
-                break;
-            case UpgradeType.AutoTap:
-                clickTarget.EnableAutoClick(false);
-                break;
-            case UpgradeType.FiberFirepower:
-                foodPoolManager.BoostFiberInHealthy(false);
-                break;
-            case UpgradeType.LightweightJunk:
-                foodPoolManager.ReduceJunkNutrition(false);
-                break;
-            case UpgradeType.RapidRelief:
-                preassureSystem.PreassureDecreaseBoost(false);
-                break;
-            case UpgradeType.PreasureBrake:
-                preassureSystem.PreassurePerClickBoost(false);
-                break;
-            case UpgradeType.ScaleSmasher:
-                preassureSystem.WeightPerClickDrop(false);
+                IncreaseTapValue(upgrade.upgradeLevel);
                 break;
         }
 
-        if (activeUpgrades.ContainsKey(upgrade.type))
-            activeUpgrades.Remove(upgrade.type);
     }
+
+    //private void ApplyUpgradeEffect(UpgradeData upgrade)
+    //{
+    //    if(upgrade.type ==UpgradeType.AutoTap)
+    //    {
+    //        AutoTap(upgrade.upgradeLevel);
+    //    }
+    //    //switch (upgrade.type)
+    //    //{
+    //    //    case UpgradeType.DoubleDip:
+    //    //        clickTarget.SetClickMultiplier(gameConfig.duobleTapMultiplier);
+    //    //        break;
+    //    //    case UpgradeType.QuintupleClick:
+    //    //        clickTarget.SetClickMultiplier(gameConfig.megaTapMultiplier);
+    //    //        break;
+    //    //    case UpgradeType.MegaLaxLaunch:
+    //    //        weightManager.SubtractWeight(gameConfig.laxativeWeightReduction);
+    //    //        break;
+    //    //    case UpgradeType.HealthSwap:
+    //    //        foodPoolManager.ReplaceJunkWithHealthy(gameConfig.detoxBombReplacingSlotCount);
+    //    //        break;
+    //    //    case UpgradeType.SnackDecelerator:
+    //    //        foodPoolManager.SlowScroll(true);
+    //    //        break;
+    //    //    //case UpgradeType.AutoTap:
+    //    //    //    clickTarget.EnableAutoClick(true);
+    //    //    //    break;
+    //    //    case UpgradeType.FiberFirepower:
+    //    //        foodPoolManager.BoostFiberInHealthy(true);
+    //    //        break;
+    //    //    case UpgradeType.LightweightJunk:
+    //    //        foodPoolManager.ReduceJunkNutrition(true);
+    //    //        break;
+    //    //    case UpgradeType.RapidRelief:
+    //    //        preassureSystem.PreassureDecreaseBoost(true);
+    //    //        break;
+    //    //    case UpgradeType.PreasureBrake:
+    //    //        preassureSystem.PreassurePerClickBoost(true);
+    //    //        break;
+    //    //    case UpgradeType.ScaleSmasher:
+    //    //        preassureSystem.WeightPerClickDrop(true);
+    //    //        break;
+    //    //}
+    //}
+
+    //private void RemoveUpgradeEffect(UpgradeData upgrade)
+    //{
+    //    switch (upgrade.type)
+    //    {
+    //        case UpgradeType.DoubleDip:
+    //        case UpgradeType.QuintupleClick:
+    //            clickTarget.SetClickMultiplier(1f);
+    //            break;
+    //        case UpgradeType.SnackDecelerator:
+    //            foodPoolManager.SlowScroll(false);
+    //            break;
+    //        //case UpgradeType.AutoTap:
+    //        //    clickTarget.EnableAutoClick(false);
+    //        //    break;
+    //        case UpgradeType.FiberFirepower:
+    //            foodPoolManager.BoostFiberInHealthy(false);
+    //            break;
+    //        case UpgradeType.LightweightJunk:
+    //            foodPoolManager.ReduceJunkNutrition(false);
+    //            break;
+    //        case UpgradeType.RapidRelief:
+    //            preassureSystem.PreassureDecreaseBoost(false);
+    //            break;
+    //        case UpgradeType.PreasureBrake:
+    //            preassureSystem.PreassurePerClickBoost(false);
+    //            break;
+    //        case UpgradeType.ScaleSmasher:
+    //            preassureSystem.WeightPerClickDrop(false);
+    //            break;
+    //    }
+
+    //    if (activeUpgrades.ContainsKey(upgrade.type))
+    //        activeUpgrades.Remove(upgrade.type);
+    //}
 
 
     //In case of game over status, reset all upgrades
     public void ResetAllUpgrades()
     {
-        // Zaustavi sve aktivne upgradeove i ukloni efekte
-        foreach (var kvp in activeUpgrades)
-        {
-            StopCoroutine(kvp.Value);
+        //// Zaustavi sve aktivne upgradeove i ukloni efekte
+        //foreach (var kvp in activeUpgrades)
+        //{
+        //    StopCoroutine(kvp.Value);
 
-            var upgrade = allUpgrades.FirstOrDefault(u => u.type == kvp.Key);
-            if (upgrade != null)
-            {
-                RemoveUpgradeEffect(upgrade);
-            }
-        }
+        //    var upgrade = allUpgrades.FirstOrDefault(u => u.type == kvp.Key);
+        //    if (upgrade != null)
+        //    {
+        //        RemoveUpgradeEffect(upgrade);
+        //    }
+        //}
 
-        activeUpgrades.Clear();
+        //activeUpgrades.Clear();
 
         // Resetiraj rucno efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
-        clickTarget.SetClickMultiplier(1f);
-        clickTarget.EnableAutoClick(false);
+        //clickTarget.SetClickMultiplier(1f);
+        //clickTarget.EnableAutoClick(false);
         foodPoolManager.SlowScroll(false);
         foodPoolManager.BoostFiberInHealthy(false);
         foodPoolManager.ReduceJunkNutrition(false);

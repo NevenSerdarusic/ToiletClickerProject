@@ -2567,6 +2567,7 @@ GameObject:
   - component: {fileID: 460194656}
   - component: {fileID: 460194659}
   - component: {fileID: 460194660}
+  - component: {fileID: 460194661}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2833,6 +2834,7 @@ MonoBehaviour:
   upgradesShopContainer: {fileID: 1669308486}
   upgradesInstructionContainer: {fileID: 1792157423}
   spacingBetweenInstantiatedPrefabs: 200
+  timecounterEvent: {fileID: 11400000, guid: efd5bbe9ad62f8f4184e7fca2167ced9, type: 2}
 --- !u!114 &460194657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2944,6 +2946,19 @@ MonoBehaviour:
   generalAudioSource: {fileID: 2035987650}
   fartAudioSource: {fileID: 844129881}
   buttonAudioSource: {fileID: 758413735}
+--- !u!114 &460194661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 460194648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9a164e55e9e35b4581e0a559ff93c39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerCounterEvent: {fileID: 11400000, guid: efd5bbe9ad62f8f4184e7fca2167ced9, type: 2}
 --- !u!224 &493254668 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4064825238382778081, guid: 8d0db033f70f20c4bb5d23998c93c832, type: 3}
