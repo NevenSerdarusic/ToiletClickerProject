@@ -8,7 +8,7 @@ public class UpgradeCardUI : MonoBehaviour
     [SerializeField] private TMP_Text upgradeNameText;
     [SerializeField] private Image upgradeIconImage;
     [SerializeField] private TMP_Text upgradeDescriptionText;
-    //[SerializeField] private TMP_Text upgradePriceText;
+    [SerializeField] private TMP_Text upgradePriceText;
     //[SerializeField] private TMP_Text upgradeDurationText;
 
     private UpgradeData currentUpgrade;
@@ -19,8 +19,9 @@ public class UpgradeCardUI : MonoBehaviour
         upgradeNameText.text = data.upgradeName;
         upgradeIconImage.sprite = data.upgradeIcon;
         upgradeDescriptionText.text = data.description;
-        //upgradePriceText.text = data.upgradePrice.ToString();
+        upgradePriceText.text = data.upgradePrice.ToString();
         
+
     }
 
     public void AssignUpgrade(UpgradeData upgrade, System.Action<UpgradeData, UpgradeItemUI> purchaseCallback)

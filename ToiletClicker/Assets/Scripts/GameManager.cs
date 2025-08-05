@@ -18,8 +18,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private UpgradeManager upgradeManager;
-    [SerializeField] private PreassureSystem preassureSystem;
-    [SerializeField] private WeightManager weightManager;
+    //[SerializeField] private PreassureSystem preassureSystem;
+    //[SerializeField] private WeightManager weightManager;
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
     [SerializeField] private MusicManager musicManager;
@@ -88,15 +88,15 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         clickTarget.OnClicked += HandleClick;
-        preassureSystem.OnGameOverRequested += TriggerGameOver;
-        weightManager.OnGameOverRequested += TriggerGameOver;
+        //preassureSystem.OnGameOverRequested += TriggerGameOver;
+        //weightManager.OnGameOverRequested += TriggerGameOver;
     }
 
     private void OnDisable()
     {
         clickTarget.OnClicked -= HandleClick;
-        preassureSystem.OnGameOverRequested -= TriggerGameOver;
-        weightManager.OnGameOverRequested -= TriggerGameOver;
+        //preassureSystem.OnGameOverRequested -= TriggerGameOver;
+        //weightManager.OnGameOverRequested -= TriggerGameOver;
     }
 
 
@@ -218,7 +218,7 @@ public class GameManager : MonoBehaviour
 
         OnXPChanged?.Invoke(totalXP);
 
-        preassureSystem.OnClick();
+        //preassureSystem.OnClick();
     }
 
     public void AddXP(int amount)
@@ -387,7 +387,7 @@ public class GameManager : MonoBehaviour
 
         totalCoins = 0;
         totalXP = 0;
-        weightManager.ResetTotalWeight();
+        //weightManager.ResetTotalWeight();
 
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();

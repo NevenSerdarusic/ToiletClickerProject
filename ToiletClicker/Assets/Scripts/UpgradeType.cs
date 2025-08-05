@@ -12,5 +12,5 @@ public enum UpgradeType
     LightweightJunk,
     RapidRelief,
     PreasureBrake,
-    ScaleSmasher
+	laxative
 }

@@ -6,6 +6,7 @@ public class UpgradeItemUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
+    [SerializeField] private TMP_Text upgradeLevel;
     [SerializeField] private Image icon;
     [SerializeField] private Button button;
     //[SerializeField] private Image lockedOverlay;
@@ -28,12 +29,18 @@ public class UpgradeItemUI : MonoBehaviour
         nameText.text = upgrade.upgradeName;
         costText.text = upgrade.upgradePrice.ToString();
         icon.sprite = upgrade.upgradeIcon;
-        //button.interactable = false;
+        upgradeLevel.text = upgrade.upgradeLevel.ToString();
+
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onPurchase?.Invoke(currentUpgrade, this));
     }
 
+    public void UpdateCardUIAfterPurchase(int newPrice, int newLevel)
+    {
+        costText.text = newPrice.ToString();
+        upgradeLevel.text = newLevel.ToString();
+    }
     public void Clear()
     {
         currentUpgrade = null;

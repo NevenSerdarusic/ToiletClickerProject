@@ -84,31 +84,36 @@ public class UpgradeManager : MonoBehaviour
 
 
 
-    //private void HandleXPChanged(int currentXP)
-    //{
-    //    UpdateButtonStates();
-    //}
+	//private void HandleXPChanged(int currentXP)
+	//{
+	//    UpdateButtonStates();
+	//}
 
-    //private void UpdateButtonStates()
-    //{
-    //    //int currentXP = gameManager.GetTotalXP();
+	//private void UpdateButtonStates()
+	//{
+	//    //int currentXP = gameManager.GetTotalXP();
 
-    //    //foreach (var button in upgradeButtons)
-    //    //{
-    //    //    if (button.HasUpgrade)
-    //    //        button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
-    //    //}
-    //}
+	//    //foreach (var button in upgradeButtons)
+	//    //{
+	//    //    if (button.HasUpgrade)
+	//    //        button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
+	//    //}
+	//}
 
-
-    public void TryPurchaseUpgrade(UpgradeData upgrade, UpgradeItemUI button)
+	public List<UpgradeItemUI> GetAllUpgradeButons()
+	{
+		return upgradeButtons;
+	}
+	public void TryPurchaseUpgrade(UpgradeData upgrade, UpgradeItemUI button)
     {
       
         if (upgrade == null || gameManager.GetTotalCoins() < upgrade.upgradePrice) return;
 
         CheckIfPurchaseIsStaticUpgrades(upgrade);
         gameManager.SpendCoins(upgrade.upgradePrice);
-        upgrade.upgradeLevel = upgrade.upgradeLevel + 1;
+        int newUpgradeLevel = upgrade.upgradeLevel + 1;
+        upgrade.upgradeLevel = newUpgradeLevel;
+        button.UpdateCardUIAfterPurchase(150, newUpgradeLevel);
 
         Debug.Log("Try Purchase Upgrade " + upgrade + " and upgrade level is" + upgrade.upgradeLevel);
         //UpdateButtonStates();
@@ -257,16 +262,13 @@ public class UpgradeManager : MonoBehaviour
         // Resetiraj rucno efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
         //clickTarget.SetClickMultiplier(1f);
         //clickTarget.EnableAutoClick(false);
-        foodPoolManager.SlowScroll(false);
-        foodPoolManager.BoostFiberInHealthy(false);
-        foodPoolManager.ReduceJunkNutrition(false);
+        //foodPoolManager.SlowScroll(false);
+        //foodPoolManager.BoostFiberInHealthy(false);
+        //foodPoolManager.ReduceJunkNutrition(false);
     }
 
 
     //Retrieving all upgrade buttons
-    public List<UpgradeItemUI> GetAllUpgradeButons()
-    {
-        return upgradeButtons;
-    }
+    
 
 }
