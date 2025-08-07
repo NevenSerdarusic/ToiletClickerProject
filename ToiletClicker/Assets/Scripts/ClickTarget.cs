@@ -15,7 +15,7 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
     [SerializeField] private string clickAnimationTrigger = "Click";
 
     [Header("Flying Clickable Bonus")]
-    [SerializeField] private FlyingClickableBonus prefab;
+    [SerializeField] private List<FlyingClickableBonus> prefabs;
     [SerializeField] private Canvas canvas;
     [SerializeField] private int poolSize = 7;
     [SerializeField] private Transform parentCanvas;
@@ -31,14 +31,16 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
 
     private void Awake()
     {
-        //Populate CLICKABLE POOL and turn OFF all childs od pool
         for (int i = 0; i < poolSize; i++)
         {
-            var instance = Instantiate(prefab, parentCanvas);
+            // Random prefab izme?u 0 i 1
+            var randomPrefab = prefabs[UnityEngine.Random.Range(0, prefabs.Count)];
+            var instance = Instantiate(randomPrefab, parentCanvas);
             instance.gameObject.SetActive(false);
             pool.Enqueue(instance);
         }
     }
+
 
     public void BlockClicks(bool block)
     {
@@ -65,7 +67,7 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
         //    characterAnimator.SetTrigger(clickAnimationTrigger);
         //}
 
-        SoundManager.Instance.PlayRandom();
+        SoundManager.Instance.PlayTypingSound();
     }
 
     public void SetClickMultiplier(float multiplier)

@@ -4,26 +4,25 @@ using UnityEngine;
 
 public class ShopItemUI : MonoBehaviour
 {
-    [SerializeField] private TMP_Text nameText;
+    [SerializeField] private TMP_Text codeDisplayText;
     [SerializeField] private TMP_Text costText;
-    [SerializeField] private Image icon;
+    [SerializeField] private GameObject glow;
     [SerializeField] private Button button;
 
-    private FoodItem currentItem;
-    private System.Action<FoodItem, ShopItemUI> onPurchase;
+    private CodeFragment currentItem;
+    private System.Action<CodeFragment, ShopItemUI> onPurchase;
 
     public bool HasItem => currentItem != null;
-    public FoodItem GetItem() => currentItem;
+    public CodeFragment GetItem() => currentItem;
 
-    public void AssignItem(FoodItem item, System.Action<FoodItem, ShopItemUI> purchaseCallback)
+    public void AssignItem(CodeFragment item, System.Action<CodeFragment, ShopItemUI> purchaseCallback)
     {
         currentItem = item;
         onPurchase = purchaseCallback;
 
-        nameText.text = item.foodName;
         costText.text = item.cost.ToString();
-        icon.sprite = item.foodImage;
-        button.interactable = false;
+        codeDisplayText.text = item.fragmentDisplayText;
+        SetInteractable(false);
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onPurchase?.Invoke(currentItem, this));
@@ -32,14 +31,15 @@ public class ShopItemUI : MonoBehaviour
     public void Clear()
     {
         currentItem = null;
-        nameText.text = "";
         costText.text = "";
-        icon.sprite = null;
-        button.interactable = false;
+        SetInteractable(false);
     }
 
     public void SetInteractable(bool state)
     {
         button.interactable = state;
+
+        if (glow != null)
+            glow.SetActive(state);
     }
 }

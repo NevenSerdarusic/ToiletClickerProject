@@ -5,11 +5,12 @@ using TMPro;
 using UnityEngine;
 using Button = UnityEngine.UI.Button;
 using System;
+using UnityEngine.UI;
 
 public class MainMenuActions : MonoBehaviour
 {
     [Header("Panel/Curtain Animation Settings")]
-    [SerializeField] private float curtainSlideDuration = 2f;
+    [SerializeField] private float panelSlideDuration = 1f;
 
     [Header("Panel Button Animation Settings")]
     [SerializeField] private float buttonSlideDistance = 300f;
@@ -30,20 +31,27 @@ public class MainMenuActions : MonoBehaviour
     [SerializeField] private LeanTweenType rectAnimEase = LeanTweenType.easeInOutCubic;
 
     [Header("Instruction Panel Animation Settings")]
-    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private LeanTweenType fadeEase = LeanTweenType.easeInOutQuad;
 
+    [Header("Sirene Lights On Game Over Animation")]
+    [SerializeField] private Image[] sireneLights;
+    [SerializeField] private float sireneLightsAnimationDuration = 1f;
+    [SerializeField] private bool loop = true;
+    private List<int> tweenIds = new List<int>();
+    private bool isAnimating = false;
+
     private const string panelTitleName = "Panel Title";
-    private const string letterParentName = "Panel Title Letters Parent";
+    private const string letterParentName = "Panel Title Char Rect";
     private readonly Dictionary<RectTransform, Vector2> originalButtonPositions = new();
     private readonly Dictionary<RectTransform, Vector2> originalCharPositions = new();
 
     private Coroutine titleCoroutine;
 
-    public float CurtainSlideDuration => curtainSlideDuration;
+    public float CurtainSlideDuration => panelSlideDuration;
 
     //Curtains logic
-    public void PullCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
+    public void PullPanel(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
         var panel = panelGO.GetComponent<RectTransform>();
         var buttons = GetButtons(panelGO);
@@ -54,7 +62,7 @@ public class MainMenuActions : MonoBehaviour
         if (titleChars != null)
             HidePanelTitle(panelGO, titleChars);
 
-        LeanTween.value(gameObject, startRight, targetRight, curtainSlideDuration)
+        LeanTween.value(gameObject, startRight, targetRight, panelSlideDuration)
             .setEase(LeanTweenType.easeInOutCubic)
             .setOnUpdate((float val) =>
             {
@@ -65,11 +73,11 @@ public class MainMenuActions : MonoBehaviour
                 onComplete?.Invoke();
             });
 
-        SoundManager.Instance.Play("Curtain");
+        SoundManager.Instance.Play("PanelExchange");
     }
 
 
-    public void WithdrawCurtain(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
+    public void WithdrawPanel(GameObject panelGO, float targetRight, List<RectTransform> titleChars, Action onComplete = null)
     {
         
         var panel = panelGO.GetComponent<RectTransform>();
@@ -78,7 +86,7 @@ public class MainMenuActions : MonoBehaviour
         float startRight = panel.offsetMax.x;
         
 
-        LeanTween.value(gameObject, -startRight, targetRight, curtainSlideDuration)
+        LeanTween.value(gameObject, -startRight, targetRight, panelSlideDuration)
             .setEase(LeanTweenType.easeInOutCubic)
             .setOnUpdate((float val) =>
             {
@@ -93,7 +101,7 @@ public class MainMenuActions : MonoBehaviour
                 onComplete?.Invoke();
             });
 
-        SoundManager.Instance.Play("Curtain");
+        SoundManager.Instance.Play("PanelExchange");
     }
 
 
@@ -184,8 +192,16 @@ public class MainMenuActions : MonoBehaviour
 
     private RectTransform FindLettersParent(GameObject panelGO)
     {
-        return panelGO.GetComponentsInChildren<RectTransform>(true)
-            .FirstOrDefault(rt => rt.name == letterParentName);
+        var match = panelGO.GetComponentsInChildren<RectTransform>(true)
+                        .FirstOrDefault(rt => rt.name == letterParentName);
+
+        if (match == null)
+        {
+            Debug.LogWarning($"Could not find RectTransform with name '{letterParentName}' under '{panelGO.name}'. " +
+                             $"Make sure the object hasn't been renamed in the Hierarchy.");
+        }
+
+        return match;
     }
 
     private TMP_Text FindPanelTitle(GameObject panelGO)
@@ -360,5 +376,60 @@ public class MainMenuActions : MonoBehaviour
         rectTransform.anchorMax = Vector2.one;
         rectTransform.offsetMin = Vector2.zero;
         rectTransform.offsetMax = new Vector2(-1080f,0);
+    }
+
+
+    //Sirene Lights Animation
+    public void StartLightAnimation()
+    {
+        if (isAnimating) return;
+        isAnimating = true;
+        AnimateSireneLightsSequentially(0);
+    }
+
+    private void AnimateSireneLightsSequentially(int index)
+    {
+        if (!isAnimating) return;
+
+        if (index >= sireneLights.Length)
+        {
+            if (loop)
+                AnimateSireneLightsSequentially(0); // restart
+            else
+                isAnimating = false;
+
+            return;
+        }
+
+        Image currentImage = sireneLights[index];
+        CanvasGroup group = currentImage.GetComponent<CanvasGroup>();
+        if (group == null)
+            group = currentImage.gameObject.AddComponent<CanvasGroup>();
+
+        group.alpha = 0f;
+
+        int fadeInId = LeanTween.alphaCanvas(group, 1f, fadeDuration).setOnComplete(() =>
+        {
+            int fadeOutId = LeanTween.alphaCanvas(group, 0f, fadeDuration).setOnComplete(() =>
+            {
+                AnimateSireneLightsSequentially(index + 1);
+            }).uniqueId;
+            tweenIds.Add(fadeOutId);
+
+        }).uniqueId;
+
+        tweenIds.Add(fadeInId);
+    }
+
+    public void StopLightAnimation()
+    {
+        isAnimating = false;
+
+        foreach (int id in tweenIds)
+        {
+            LeanTween.cancel(id);
+        }
+
+        tweenIds.Clear();
     }
 }

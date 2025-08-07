@@ -2,23 +2,25 @@ using UnityEngine;
 
 public static class StringLibrary
 {
-    //Preassure Reached
-    public const string criticalPressure = "CRITICAL PRESSURE! You need to stop pushing";
-    public const string safePreassure = "Pressure stabilized. You can continue pushing.";
+    //Trace Detection Reached
+    public const string criticalDetectionLevel = "TRACE ALERT! You've triggered critical system pressure.\nLay off the clicks or risk getting traced!";
+    public const string safeDetectionLevel = "System stabilized. You're safe to continue cracking.";
 
     //Timers Activated
-    public const string upgradeTimerText = "Upgrade activated";
-    public const string preassureTimerText = "Preassure activated";
+    public const string upgradeTimerActivationText = "Upgrade Timer Activated!";
+    public const string traceScannerTimerActivationText = "Trace Scanner Timer Activated!";
 
     //Game Over Reasons
-    public const string weightLimitReached = " Game Over! \n" +
-    "You’ve tipped the scales beyond their limit—your weight has reached its peak.\n" +
-    "Remember, every great journey is built on balance. Try pacing your taps and swapping junk for healthy bites to keep your numbers in check!\n" +
-    "Next round, focus on lightening the load early—your future self will thank you.";
+    public const string firewallBreachFailure = "SYSTEM LOCKDOWN! \n" +
+    "You failed to bypass the firewall in time—security protocols have shut you out.\n" +
+    "Tip: Act quickly and invest Crack Points in decryption speed upgrades to avoid future blocks.";
 
+    public const string traceOverload = "TRACE COMPLETE! \n" +
+    "You've been tracked. System pressure exceeded safe limits and you were traced back.\n" +
+    "Use trace-jamming tools and moderate your click bursts to stay hidden longer.\n" +
+    "Hack smart—too much noise and you're an easy catch.";
 
-    public const string preassureOverloadReached = " Game Over! \n" +
-    "You lingered too long on the porcelain throne—your pressure gauge has officially blown past safe levels.\n" +
-    "Tip: Fast relief comes from smart upgrades. Use pressure?slowdown and auto?click boosts to keep your meter calm.\n" +
-    "Moderation is key—dial back the pressure and you’ll last longer in the next session!";
+    //Processed Code Display
+    public const string encryptedCodeMessageDisplay = "DENIED";
+    public const string decodedCodeMessageDispay = "SUCCESS";
 }

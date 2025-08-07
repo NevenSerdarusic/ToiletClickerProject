@@ -2,6 +2,6 @@ using UnityEngine;
 
 public enum GameOverReason
 {
-    WeightLimit,
-    PressureOverload
+    FirewallTimeout,
+    TraceDetected
 }

@@ -3,35 +3,35 @@ using UnityEngine;
 public static class PlayerPrefsHandler
 {
     //KEYS:
-    private const string CoinsKey = "TotalCoins";
-    private const string WeightKey = "PlayerWeight";
+    private const string CPKey = "TotalCP";
+    private const string FirewallProtectionKey = "Firewall";
     private const string XPKey = "TotalXP";
-    private const string FartVolumeKey = "FartVolume";
-    private const string MusicMutedKey = "MusicMuted";  // 0 = not muted, 1 = muted
-    private const string BestScoreWeightKey = "BestScoreWeight";
+    private const string MusicMutedKey = "MusicMuted";
+    private const string BestScoreFirewallDecreaseKey = "BestScoreFirewall";
     private const string GameCompletedKey = "GameCompleted";
+    private const string TypingVolumeKey = "TypingVolume";
 
 
-    // ----------- COINS -----------
-    public static int GetCoins()
+    // ----------- CP -----------
+    public static int GetCP()
     {
-        return PlayerPrefs.GetInt(CoinsKey, 0);
+        return PlayerPrefs.GetInt(CPKey, 0);
     }
 
-    public static void SetCoins(int amount)
+    public static void SetCP(int amount)
     {
-        PlayerPrefs.SetInt(CoinsKey, amount);
+        PlayerPrefs.SetInt(CPKey, amount);
     }
 
-    // ----------- WEIGHT -----------
-    public static float GetWeight()
+    // ----------- FIREWALL -----------
+    public static float GetFirewallProtection(float startingFirewallProtection)
     {
-        return PlayerPrefs.GetFloat(WeightKey, 450f); // default je 450kg
+        return PlayerPrefs.GetFloat(FirewallProtectionKey, startingFirewallProtection);
     }
 
-    public static void SetWeight(float weight)
+    public static void SetFirewallProtection(float amount)
     {
-        PlayerPrefs.SetFloat(WeightKey, weight);
+        PlayerPrefs.SetFloat(FirewallProtectionKey, amount);
     }
 
     // ----------- XP -----------
@@ -45,18 +45,6 @@ public static class PlayerPrefsHandler
         PlayerPrefs.SetInt(XPKey, amount);
     }
 
-    // ----------- FART VOLUME -----------
-    public static float GetFartVolume()
-    {
-        return PlayerPrefs.GetFloat(FartVolumeKey, 0.5f); // Default: 0.5f
-    }
-
-    public static void SetFartVolume(float value)
-    {
-        PlayerPrefs.SetFloat(FartVolumeKey, value);
-    }
-
-
     // ----------- MAIN MUSIC MUTE STATUS -----------
     public static bool IsMusicMuted()
     {
@@ -69,17 +57,15 @@ public static class PlayerPrefsHandler
         PlayerPrefs.Save();
     }
 
-
-
     // ----------- BEST SCORE (lowest weight) -----------
-    public static float GetBestScoreWeight(float defaultWeight)
+    public static float GetBestScoreFirewallDecrease(float defaultFirewall)
     {
-        return PlayerPrefs.GetFloat(BestScoreWeightKey, defaultWeight); 
+        return PlayerPrefs.GetFloat(BestScoreFirewallDecreaseKey, defaultFirewall); 
     }
 
-    public static void SetBestScoreWeight(float weight)
+    public static void SetBestScoreFirewallDecrease(float amount)
     {
-        PlayerPrefs.SetFloat(BestScoreWeightKey, weight);
+        PlayerPrefs.SetFloat(BestScoreFirewallDecreaseKey, amount);
         PlayerPrefs.Save();
     }
 
@@ -96,4 +82,15 @@ public static class PlayerPrefsHandler
         PlayerPrefs.Save();
     }
 
+    // ----------- SOUND VOLUME (EFFECTS / TYPING / SLIDER) -----------
+    public static float GetTypingVolume()
+    {
+        return PlayerPrefs.GetFloat(TypingVolumeKey, 0.5f); // Default: full volume
+    }
+
+    public static void SetTypingVolume(float value)
+    {
+        PlayerPrefs.SetFloat(TypingVolumeKey, value);
+        PlayerPrefs.Save();
+    }
 }

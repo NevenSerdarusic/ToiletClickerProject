@@ -12,25 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e9b97990646cca4387931934504c1a1, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  startingWeight: 125
-  maxWeight: 320
-  idealWeight: 80
-  xpPerHealthyFoodEaten: 5
+  startingFirewallProtection: 85
+  maxFirewallProtection: 100
+  nonFirewallProtection: 0
   pressurePerClickStandard: 2
   pressureDecreasePerSecondStandard: 6
   preWarningThreshold: 85
   criticalThreshold: 95
   preassureOverloadDurationBeforeGameOver: 10
-  weightLossPerClickStandard: 0.01
-  autoClickInterval: 0.5
+  firewallDecreasePerClickStandard: 0.025
+  autoClickInterval: 0.1
   duobleTapMultiplier: 2
   megaTapMultiplier: 5
-  laxativeWeightReduction: 5
-  detoxBombReplacingSlotCount: 5
-  snackLagMultiplier: 0.5
-  fiberOverloadBonusAmount: 3
-  junkFoodFatReduction: 1
-  junkFoodSugarReduction: 1
-  pressureDecreasePerSecondUpgradeMultiplier: 10
+  firewallProtectionDecreaseImpact: 5
+  codeReplacingSlotCount: 5
+  scrollRectDecreaseSpeedMultiplier: 0.5
+  encryptedCodeOptimizationMultiplier: 3.5
+  encryptedCodeJunkMultiplier: 1
+  encryptedCodeDetectionMultiplier: 1
+  detectionPerSecondMultiplier: 10
   preassurePerClickUpgradeMultiplier: 1
-  weightLossPerClickUpgradeMultiplier: 0.5
+  firewallProtectionDecreasePerClickMultiplier: 0.5

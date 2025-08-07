@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227cecd162d7e00499852d90278ac077, type: 3}
+  m_Name: Smack Down
+  m_EditorClassIdentifier: 
+  type: 10
+  upgradeName: Smack Down
+  upgradePrice: 120
+  upgradeDuration: 10
+  upgradeIcon: {fileID: 21300000, guid: 6eaa433ed0b2d3747834885931856b61, type: 3}
+  description: "Every tap crushes 1% of the firewall\u2014brute force, baby!"
+  isInstant: 0

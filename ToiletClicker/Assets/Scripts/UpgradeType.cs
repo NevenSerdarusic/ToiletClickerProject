@@ -2,15 +2,16 @@ using UnityEngine;
 
 public enum UpgradeType
 {
-    DoubleDip,
-    QuintupleClick,
-    MegaLaxLaunch,
-    HealthSwap,
-    SnackDecelerator,
-    AutoTap,
-    FiberFirepower,
-    LightweightJunk,
-    RapidRelief,
-    PreasureBrake,
-    ScaleSmasher
+    DualTap,
+    MegaTap,
+    FirewallShock,
+    ProxySwap,
+    CodeFreeze,
+    BotPress,
+    ExploitMax,
+    ImpactDrop,
+    TraceDrop,
+    GhostTrace,
+    SmackDown,
+    None
 }

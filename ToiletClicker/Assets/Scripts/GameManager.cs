@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public enum PanelType { Main, Info, GameOver, GameCompleted }
+public enum PanelType { Main, Info, Settings,GameOver, GameCompleted }
 
 [Serializable]
 public class ButtonAction
@@ -16,7 +17,7 @@ public class ButtonAction
 }
 
 [Serializable]
-public class PanelCurtain
+public class GamePanel
 {
     public PanelType type;
     public GameObject panel;
@@ -26,13 +27,13 @@ public class PanelCurtain
 
 public static class SaveManager
 {
-    private const string CoinsKey = "Coins";
+    private const string CPKey = "CP";
     private const string XPKey = "XP";
 
-    public static int Coins
+    public static int CP
     {
-        get => PlayerPrefs.GetInt(CoinsKey, 0);
-        set { PlayerPrefs.SetInt(CoinsKey, value); PlayerPrefs.Save(); }
+        get => PlayerPrefs.GetInt(CPKey, 0);
+        set { PlayerPrefs.SetInt(CPKey, value); PlayerPrefs.Save(); }
     }
 
     public static int XP
@@ -48,34 +49,36 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool isGamePaused = true;
     [SerializeField] private bool isGameOver;
     [SerializeField] private float currentClickMultiplier = 1f;
-    [SerializeField] private int totalCoins;
+    [SerializeField] private int totalCP;
     [SerializeField] private int totalXP;
 
     [Header("References")]
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private UpgradeManager upgradeManager;
-    [SerializeField] private PreassureSystem preassureSystem;
-    [SerializeField] private WeightManager weightManager;
+    [SerializeField] private UIActions uiActions;
+    [SerializeField] private TraceScannerManager traceScannerManager;
+    [SerializeField] private FirewallManager firewallManager;
     [SerializeField] private MainMenuActions mainMenuActions;
     [SerializeField] private ClickTarget clickTarget;
     [SerializeField] private MusicManager musicManager;
-    [SerializeField] private FoodPoolManager foodPoolManager;
+    [SerializeField] private EncryptedDataPoolManager encryptedDataPoolManager;
+
 
     [Header("Menu Buttons & Actions")]
     [SerializeField] private List<ButtonAction> menuButtons;
 
-    [Header("Curtains & Panels")]
-    [SerializeField] private List<PanelCurtain> curtains;
+    [Header("Menu Panels")]
+    [SerializeField] private List<GamePanel> gamePanels;
     [SerializeField] private List<GameObject> panels;
     [SerializeField] private GameObject backgroundPanel;
-    [SerializeField] private float closedCurtain = 0f;
-    [SerializeField] private float openCurtain = 1080f;
+    [SerializeField] private float closedPanelPosition = 0f;
+    [SerializeField] private float openPanelPosition = 1080f;
 
     [Header("Shop/Upgrade Panels")]
     [SerializeField] private RectTransform shopPanel;
     [SerializeField] private RectTransform upgradePanel;
-    [SerializeField] private Image shopButtonImage;
+    [SerializeField] private Image purchaseButtonImage;
     [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite upgradeIcon;
     [SerializeField] private float panelSlideDuration = 0.5f;
@@ -89,11 +92,13 @@ public class GameManager : MonoBehaviour
     private const float shownPosition = -112.5f;
     private const float hiddenPosition = 115f;
 
+    private ButtonAction playButtonAction;
+
     // Events
     public event Action<int> OnCoinsChanged;
     public event Action<int> OnXPChanged;
 
-    public int GetTotalCoins() => totalCoins;
+    public int GetTotalCoins() => totalCP;
 
     public int GetTotalXP() => totalXP;
 
@@ -103,35 +108,37 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         clickTarget.OnClicked += HandleClick;
-        preassureSystem.OnGameOverRequested += TriggerGameOver;
-        weightManager.OnGameOverRequested += TriggerGameOver;
-        weightManager.OnIdealWeightAchived += TriggerGameCompleted;
+        traceScannerManager.OnGameOverRequested += TriggerGameOver;
+        firewallManager.OnGameOverRequested += TriggerGameOver;
+        firewallManager.OnNonProtectionAchived += TriggerGameCompleted;
     }
 
     private void OnDisable()
     {
         clickTarget.OnClicked -= HandleClick;
-        preassureSystem.OnGameOverRequested -= TriggerGameOver;
-        weightManager.OnGameOverRequested -= TriggerGameOver;
-        weightManager.OnIdealWeightAchived -= TriggerGameCompleted;
+        traceScannerManager.OnGameOverRequested -= TriggerGameOver;
+        firewallManager.OnGameOverRequested -= TriggerGameOver;
+        firewallManager.OnNonProtectionAchived -= TriggerGameCompleted;
     }
 
     private void Awake()
     {
         isGamePaused = true;
         BindMenuButtons();
+        playButtonAction = menuButtons
+           .FirstOrDefault(ba => ba.button.name == "Play Button");
     }
 
     private void Start()
     {
-        totalCoins = SaveManager.Coins;
+        totalCP = SaveManager.CP;
         totalXP = SaveManager.XP;
-        uiManager.UpdateCoins(totalCoins);
+        uiManager.UpdateCP(totalCP);
         uiManager.UpdateXP(totalXP);
-        InitializeCurtains();
+        InitializeGamePanels();
         InitializePurchasePanels();
 
-        foreach (var c in curtains)
+        foreach (var c in gamePanels)
         {
             // Hide sub-panels
             c.subPanels?.ForEach(sp => sp.SetActive(false));
@@ -140,9 +147,9 @@ public class GameManager : MonoBehaviour
         ShowPanel(PanelType.Main);
     }
 
-    private void InitializeCurtains()
+    private void InitializeGamePanels()
     {
-        foreach (var c in curtains)
+        foreach (var c in gamePanels)
         {
             mainMenuActions.GenerateCharacters(c.panel, c.titleCharRects);
             mainMenuActions.SetPanelsStartPosition(c.panel);
@@ -173,9 +180,9 @@ public class GameManager : MonoBehaviour
     public void RegisterClick()
     {
         int coinsGained = Mathf.RoundToInt(baseCoinsPerClick * currentClickMultiplier);
-        totalCoins += coinsGained;
+        totalCP += coinsGained;
         UpdateCoins();
-        preassureSystem.OnClick();
+        traceScannerManager.OnClick();
     }
 
     public void AddXP(int amount)
@@ -188,9 +195,9 @@ public class GameManager : MonoBehaviour
 
     private void UpdateCoins()
     {
-        SaveManager.Coins = totalCoins;
-        uiManager.UpdateCoins(totalCoins);
-        OnCoinsChanged?.Invoke(totalCoins);
+        SaveManager.CP = totalCP;
+        uiManager.UpdateCP(totalCP);
+        OnCoinsChanged?.Invoke(totalCP);
     }
 
     private void UpdateXP()
@@ -202,7 +209,7 @@ public class GameManager : MonoBehaviour
 
     public void SpendCoins(int amount)
     {
-        totalCoins = Mathf.Max(0, totalCoins - amount);
+        totalCP = Mathf.Max(0, totalCP - amount);
         UpdateCoins();
     }
 
@@ -222,10 +229,11 @@ public class GameManager : MonoBehaviour
         ShowPanel(PanelType.GameOver);
         uiManager.ShowGameOverReason(reason);
         clickTarget.BlockClicks(true);
-        SoundManager.Instance.Play("Final Fart");
-        weightManager.CheckAndSaveBestScore();
+        SoundManager.Instance.PlayLoopingSound("Alarm");
+        firewallManager.CheckAndSaveBestScore();
         upgradeManager.ResetAllUpgrades();
-        weightManager.UpdateBestScore();
+        firewallManager.UpdateBestScore();
+        mainMenuActions.StartLightAnimation();
     }
 
     public void StartGame()
@@ -246,6 +254,13 @@ public class GameManager : MonoBehaviour
 
         ShowBackground(true);
         SetPanelsActive(false, mainMenuActions.CurtainSlideDuration);
+        //change text inside button on PLAY
+        if (playButtonAction != null)
+        {
+            var txt = playButtonAction.button.GetComponentInChildren<TMP_Text>();
+            if (txt != null)
+                txt.text = "Play";
+        }
     }
 
 
@@ -255,6 +270,13 @@ public class GameManager : MonoBehaviour
         SetPanelsActive(true);
         ShowPanel(PanelType.Main);
         ShowBackground(false);
+        //change text inside button on CONTINUE
+        if (playButtonAction != null)
+        {
+            var txt = playButtonAction.button
+                        .GetComponentInChildren<TMP_Text>();
+            if (txt != null) txt.text = "Continue";
+        }
     }
 
     public void OpenMainPanel() => ShowPanel(PanelType.Main);
@@ -265,14 +287,17 @@ public class GameManager : MonoBehaviour
     public void CloseGameOverPanel() => HidePanel(PanelType.GameOver);
     public void OpenGameCompletedPanel() => ShowPanel(PanelType.GameCompleted);
     public void CloseGameCompletedPanel() => HidePanel(PanelType.GameCompleted);
+    public void CloseSettingsPanel() => HidePanel(PanelType.Settings);
+    public void OpenSettingsPanel() => ShowPanel(PanelType.Settings);
+
 
 
     private void ShowPanel(PanelType type)
     {
         currentActivePanel = type;
 
-        var c = curtains.First(x => x.type == type);
-        mainMenuActions.WithdrawCurtain(c.panel, closedCurtain, c.titleCharRects);
+        var c = gamePanels.First(x => x.type == type);
+        mainMenuActions.WithdrawPanel(c.panel, closedPanelPosition, c.titleCharRects);
         if (c.subPanels != null && c.subPanels.Count > 0)
             StartCoroutine(EnableSubPanelsWithDelay(c.subPanels)); //Enable SubPanels on panel
     }
@@ -285,9 +310,9 @@ public class GameManager : MonoBehaviour
 
     private void HidePanel(PanelType type)
     {
-        var c = curtains.First(x => x.type == type);
+        var c = gamePanels.First(x => x.type == type);
         c.subPanels?.ForEach(sp => sp.SetActive(false)); //Disable SubPanels on panel
-        mainMenuActions.PullCurtain(c.panel, openCurtain, c.titleCharRects);
+        mainMenuActions.PullPanel(c.panel, openPanelPosition, c.titleCharRects);
     }
 
 
@@ -309,9 +334,20 @@ public class GameManager : MonoBehaviour
     {
         var inPanel = showingShop ? shopPanel : upgradePanel;
         var outPanel = showingShop ? upgradePanel : shopPanel;
+
         SlideOutPanel(inPanel);
         SlideInPanel(outPanel);
-        shopButtonImage.sprite = showingShop ? upgradeIcon : shopIcon;
+
+        if (outPanel == upgradePanel)
+        {
+            uiActions.StartUpgradePointerAnimation();
+        }
+        if (inPanel == upgradePanel)
+        {
+            uiActions.StopUpgradePointerAnimation();
+        }
+
+        purchaseButtonImage.sprite = showingShop ? shopIcon : upgradeIcon;
         showingShop = !showingShop;
     }
 
@@ -330,15 +366,19 @@ public class GameManager : MonoBehaviour
 
     private void ResetGame()
     {
-        totalCoins = 0;
+        totalCP = 0;
         totalXP = 0;
-        foodPoolManager.ResetFoodPoolToJunk();
-        weightManager.ResetTotalWeight();
-        preassureSystem.ResetPreassure();
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
+        PlayerPrefsHandler.SetXP(0);
+        PlayerPrefsHandler.SetCP(0);
+        firewallManager.ResetTotalFirewallProtection();
+        traceScannerManager.ResetTraceDetection();
         UpdateCoins();
         UpdateXP();
+    }
+
+    public void StopAlarm()
+    {
+        SoundManager.Instance.StopLoopingSound("Alarm");
     }
 
     public void SetMusicMuted() => musicManager?.ToggleBackgroundMusicMute();
@@ -354,16 +394,19 @@ public class GameManager : MonoBehaviour
 
         ShowPanel(PanelType.GameCompleted);
 
-        /*SoundManager.Instance.Play("VictoryFart"); *///Joco novi zvuk
+        //Play Sound
 
-        weightManager.CheckAndSaveBestScore();
+        firewallManager.CheckAndSaveBestScore();
 
         upgradeManager.ResetAllUpgrades();
 
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+
         PlayerPrefsHandler.SetGameCompleted(true);
 
-        weightManager.UpdateBestScore();
+        firewallManager.UpdateBestScore();
 
-        //Animacija
+        //Start Animation
     }
 }

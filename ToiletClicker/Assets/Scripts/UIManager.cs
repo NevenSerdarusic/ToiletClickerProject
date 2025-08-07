@@ -8,23 +8,17 @@ public class UIManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private UIActions uIActions;
+    [SerializeField] private GameConfig gameConfig;
     
     [Header("Text References")]
-    [SerializeField] private TMP_Text coinSaldo;
+    [SerializeField] private TMP_Text cpSaldo;
     [SerializeField] private TMP_Text xpSaldo;
-    [SerializeField] private TMP_Text weightTotalText;
-    [SerializeField] private TMP_Text weightIndividualText;
+    [SerializeField] private TMP_Text firewallProtectionTotalText;
     [SerializeField] private TMP_Text gameOverText;
     [SerializeField] private TMP_Text bestScoreText;
 
     [Header("GO References")]
     [SerializeField] private GameObject warningText;
-
-    [Header("Timers")]
-    [SerializeField] private Image upgradeTimer;
-    [SerializeField] private Image preassureTimer;
-    [SerializeField] private TMP_Text upgradeTimerText;
-    [SerializeField] private TMP_Text preassureTimerText;
 
     [Header("Game Background Components")]
     [SerializeField] private List<GameObject> gameBackgroundPanels;
@@ -38,21 +32,20 @@ public class UIManager : MonoBehaviour
     
     private Coroutine warningCoroutine;
 
-    
     //PROPERTIES:
     public Color DefaultTextColor => defaultColor;
     public Color WarningTextColor => warningColor;
     public Color DangerTextColor => dangerColor;
-    public string CriticalPreassure => StringLibrary.criticalPressure;
-    public string SafePreassure => StringLibrary.safePreassure; 
+    public string CriticalPreassure => StringLibrary.criticalDetectionLevel;
+    public string SafePreassure => StringLibrary.safeDetectionLevel; 
     public float WarningTextDuration => warningTextDuration;
 
     private void Start()
     {
-        SetMainUISettings();
+        SetupInitialization();
     }
 
-    private void SetMainUISettings()
+    private void SetupInitialization()
     {
         //Apply the default color to all main game panels
         foreach (var panelObject in gameBackgroundPanels)
@@ -64,44 +57,51 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        //Turn OFF listed GO
-        upgradeTimer.gameObject.SetActive(false);
-        preassureTimer.gameObject.SetActive(false);
-        upgradeTimerText.gameObject.SetActive(false);
-        preassureTimerText.gameObject.SetActive(false);
+        uIActions.TimersSetupInitialization();
     }
 
-    //Methods for updating text components on the scene
-    public void UpdateCoins(int amount)
+    //Update Text Components in Stats Panel
+    public void UpdateCP(int amount)
     {
-        coinSaldo.text = amount.ToString();
+        cpSaldo.text = amount.ToString();
     }
-
     public void UpdateXP(int amount) 
     {
         xpSaldo.text = amount.ToString();
     }
 
-    public void UpdateTotalWeight(float amount)
+    //TOTAL FIREWALL PROTECTION PERCENTAGE
+    public void UpdateTotalFirewallProtection(float amount)
     {
-        weightTotalText.text = $"{amount:F2}";
+        firewallProtectionTotalText.text = $"{amount:F2}%";
     }
-
-    public void UpdateIndividualWeight(float amount)
+    //INDIVIDUAL FIREWALL PROTECTION PERCENTAGE
+    public void UpdateIndividualFirewallProtection(float amount)
     {
-        weightIndividualText.text = $"{(amount > 0 ? "+" : "")}{amount:F2} KG";
         if (uIActions != null)
         {
-            uIActions.AnimateWeightChange(amount);
+            if (amount > 0f)
+            {
+                uIActions.AnimateIndividualFirewallProtectionImpact(amount, dangerColor);
+            }
+            else if (amount < 0f)
+            {
+                uIActions.AnimateIndividualFirewallProtectionImpact(amount, warningColor);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("UIAction component is missing!");
         }
     }
 
 
-    public void UpdateBestScoreWeight(float defaultWeight)
+    //Update Best Score Text
+    public void UpdateBestScoreFirewallProtectionDecrease(float defaultFirewallProtection)
     {
-        float best = PlayerPrefsHandler.GetBestScoreWeight(defaultWeight);
+        float best = PlayerPrefsHandler.GetBestScoreFirewallDecrease(defaultFirewallProtection);
 
-        bestScoreText.text = best.ToString("F1") + " kg";
+        bestScoreText.text = best.ToString("F2") + "%";
     }
 
 
@@ -110,51 +110,40 @@ public class UIManager : MonoBehaviour
     {
         switch (reason)
         {
-            case GameOverReason.WeightLimit:
-                gameOverText.text = StringLibrary.weightLimitReached;
+            case GameOverReason.FirewallTimeout:
+                gameOverText.text = StringLibrary.firewallBreachFailure;
                 break;
 
-            case GameOverReason.PressureOverload:
-                gameOverText.text = StringLibrary.preassureOverloadReached;
+            case GameOverReason.TraceDetected:
+                gameOverText.text = StringLibrary.traceOverload;
                 break;
         }
     }
 
 
-    //Timers logic and animation
+    //Timers logic
     public void StartUpgradeTimer(float duration)
     {
-        if (upgradeTimer == null) return;
-
         if (uIActions != null)
         {
-            
-            uIActions.AnimateUpgradeTimer(upgradeTimer, upgradeTimerText, duration, StringLibrary.upgradeTimerText);
+            uIActions.AnimateUpgradeTimer(duration, warningColor, dangerColor);
         }
     }
 
-    public void StartPreassureTimer(float duration)
+    public void StartTraceScannerTimer(float duration)
     {
-        if (preassureTimer == null) return;
-
         if (uIActions != null)
         {
-            uIActions.AnimatePreassureTimer(preassureTimer, preassureTimerText, duration, StringLibrary.preassureTimerText);
+            uIActions.AnimateTrackDetectionTimer(duration);
         }
-
-        Debug.Log("Preassure Timer Activated!");
     }
 
-    public void StopPreassureTimer()
+    public void StopTraceDetectionTimer()
     {
-        if (preassureTimer == null) return;
-
         if (uIActions != null)
         {
-            uIActions.StopPreassureTimer(preassureTimer);
+            uIActions.StopPreassureTimer();
         }
-
-        Debug.Log("Preassure Timer Deactivated!");
     }
 
 
@@ -182,7 +171,7 @@ public class UIManager : MonoBehaviour
         if (warningText != null)
         {
             warningText.SetActive(false);
-            yield return null; //wait one frame
+            yield return null;
 
             TMP_Text textComponent = warningText.GetComponent<TMP_Text>();
             if (textComponent != null)

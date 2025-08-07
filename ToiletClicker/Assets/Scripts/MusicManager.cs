@@ -6,13 +6,10 @@ public class MusicManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameConfig gameConfig;
-    [SerializeField] private WeightManager weightManager;
+    //[SerializeField] private FirewallManager firewallManager;
 
-    [Header("Audio Clips by Weight Range")]
-    [SerializeField] private AudioClip musicClip_01; // 80 - 120
-    [SerializeField] private AudioClip musicClip_02; // 121 - 160
-    [SerializeField] private AudioClip musicClip_03; // 161 - 200
-    [SerializeField] private AudioClip musicClip_04; // 201+
+    [Header("Background Music")]
+    [SerializeField] private AudioClip backgroundMusicClip;
 
     [Header("Audio Source Reference")]
     [SerializeField] private AudioSource backgroundMusicAudioSource;
@@ -21,57 +18,25 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private float backgroundMusicVolume = 0.2f;
     [SerializeField] private float backgroundMusicFadeInduration = 5f;
 
-    private AudioClip currentClip;
+    //private AudioClip currentClip;
 
 
     private void Start()
     {
-        if (weightManager == null || backgroundMusicAudioSource == null)
+        if (backgroundMusicAudioSource == null)
         {
-            Debug.LogError("WeightManager or AudioSource is not assigned!");
+            Debug.LogError("AudioSource for background music is not assigned!");
             return;
         }
 
         BackgroundMusicSettings();
-
-        //Initial background music
-        UpdateMusicByWeight(weightManager.GetCurrentWeight());
+        PlayBackgroundMusic();
     }
 
-    private void OnEnable()
+    private void PlayBackgroundMusic()
     {
-        weightManager.OnWeightChanged += UpdateMusicByWeight;
-    }
-
-    private void OnDisable()
-    {
-        weightManager.OnWeightChanged -= UpdateMusicByWeight;
-    }
-
-    private void UpdateMusicByWeight(float weight)
-    {
-        AudioClip newClip = GetClipForWeight(weight);
-
-        if (newClip != null && newClip != currentClip)
-        {
-            currentClip = newClip;
-            backgroundMusicAudioSource.clip = currentClip;
-            backgroundMusicAudioSource.Play();
-        }
-    }
-
-    private AudioClip GetClipForWeight(float weight)
-    {
-        if (weight >= gameConfig.range1Min && weight <= gameConfig.range1Max)
-            return musicClip_01;
-        else if (weight > gameConfig.range2Min && weight <= gameConfig.range2Max)
-            return musicClip_02;
-        else if (weight > gameConfig.range3Min && weight <= gameConfig.range3Max)
-            return musicClip_03;
-        else if (weight > gameConfig.range4Min)
-            return musicClip_04;
-        else
-            return null;
+        backgroundMusicAudioSource.clip = backgroundMusicClip;
+        backgroundMusicAudioSource.Play();
     }
 
     private void BackgroundMusicSettings()
@@ -89,7 +54,6 @@ public class MusicManager : MonoBehaviour
             StartCoroutine(FadeInMusic(backgroundMusicVolume, backgroundMusicFadeInduration));
         }
     }
-
 
     //Method for mute/unmute background music
     public void ToggleBackgroundMusicMute()

@@ -22,8 +22,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private List<SoundData> generalSounds;
 
     [Header("Fart Sounds")]
-    [SerializeField] private List<AudioClip> fartSounds;
-    [SerializeField] private float fartStartSoundVolume = 0.25f;
+    [SerializeField] private AudioClip typingSound;
+    [SerializeField] private float typingSoundVolume = 0.5f;
 
     [Header("Volume Slider")]
     [SerializeField] private Slider volumeSlider;
@@ -33,13 +33,14 @@ public class SoundManager : MonoBehaviour
 
     [Header("Audio Sources")]
     [SerializeField] private AudioSource generalAudioSource;
-    [SerializeField] private AudioSource fartAudioSource;
+    [SerializeField] private AudioSource typingAudioSource;
     [SerializeField] private AudioSource buttonAudioSource;
 
     private readonly Dictionary<string, AudioSource> activeSounds = new();
     private Dictionary<string, SoundData> soundLookup = new();
 
     private static bool buttonsInitialized = false;
+    
 
     private void Awake()
     {
@@ -52,10 +53,8 @@ public class SoundManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (generalAudioSource == null || fartAudioSource == null || buttonAudioSource == null)
+        if (generalAudioSource == null || typingAudioSource == null || buttonAudioSource == null)
             Debug.LogError("[SoundManager] AudioSources not properly assigned!");
-
-        fartStartSoundVolume = PlayerPrefsHandler.GetFartVolume();
 
         soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
         SoundsSettings();
@@ -65,7 +64,15 @@ public class SoundManager : MonoBehaviour
     {
         if (volumeSlider != null)
         {
-            volumeSlider.onValueChanged.AddListener(HandleFartVolumeChanged);
+            volumeSlider.onValueChanged.AddListener(HandleTypingVolumeChanged);
+
+            // Set slider on saved value in PlayerPrefs
+            float savedVolume = PlayerPrefsHandler.GetTypingVolume();
+            volumeSlider.value = savedVolume;
+
+            // Set AudioSource volume on same value as savedVolume
+            typingSoundVolume = savedVolume;
+            typingAudioSource.volume = typingSoundVolume;
         }
 
         if (!buttonsInitialized)
@@ -146,20 +153,61 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlayRandom()
+    public void PlayTypingSound()
     {
-        if (fartSounds.Count == 0) return;
+        if (typingSound == null) return;
 
-        AudioClip randomClip = fartSounds[Random.Range(0, fartSounds.Count)];
-        fartAudioSource.volume = fartStartSoundVolume;
-        fartAudioSource.PlayOneShot(randomClip);
+        typingAudioSource.volume = typingSoundVolume;
+        typingAudioSource.PlayOneShot(typingSound);
     }
+
+    //Looping Sounds (Bank Alarm)
+    // Add this method to play a looping sound
+    public void PlayLoopingSound(string clipName)
+    {
+        if (!soundLookup.TryGetValue(clipName, out var soundData))
+        {
+            Debug.LogWarning($"[SoundManager] Looping clip '{clipName}' not found.");
+            return;
+        }
+
+        if (activeSounds.ContainsKey(clipName))
+        {
+            Debug.Log($"[SoundManager] Looping sound '{clipName}' is already playing.");
+            return;
+        }
+
+        AudioSource loopSource = gameObject.AddComponent<AudioSource>();
+        loopSource.clip = soundData.clip;
+        loopSource.volume = soundData.volume;
+        loopSource.loop = true;
+        loopSource.playOnAwake = false;
+        loopSource.Play();
+
+        activeSounds.Add(clipName, loopSource);
+    }
+
+    // Add this method to stop a looping sound
+    public void StopLoopingSound(string clipName)
+    {
+        if (activeSounds.TryGetValue(clipName, out var source))
+        {
+            source.Stop();
+            Destroy(source);
+            activeSounds.Remove(clipName);
+        }
+        else
+        {
+            Debug.LogWarning($"[SoundManager] Looping sound '{clipName}' is not currently playing.");
+        }
+    }
+
 
     private void SoundsSettings()
     {
         ApplyAudioSettings(generalAudioSource, 1f);
         ApplyAudioSettings(buttonAudioSource, 1f);
-        ApplyAudioSettings(fartAudioSource, fartStartSoundVolume);
+        ApplyAudioSettings(typingAudioSource, typingSoundVolume);
     }
 
     private void ApplyAudioSettings(AudioSource source, float volume)
@@ -172,16 +220,16 @@ public class SoundManager : MonoBehaviour
     }
 
     //Method for managing volume slider of fartAudioSource
-    private void HandleFartVolumeChanged(float newValue)
+    private void HandleTypingVolumeChanged(float newValue)
     {
-        fartStartSoundVolume = newValue;
+        typingSoundVolume = newValue;
 
-        if (fartAudioSource != null)
+        if (typingAudioSource != null)
         {
-            fartAudioSource.volume = fartStartSoundVolume;
-            PlayRandom(); //Plays a new fart every time the slider moves
+            typingAudioSource.volume = typingSoundVolume;
+            PlayTypingSound(); //Play typing sound when sliding on slider
         }
 
-        PlayerPrefsHandler.SetFartVolume(newValue);
+        PlayerPrefsHandler.SetTypingVolume(newValue);
     }
 }

@@ -8,14 +8,14 @@ public class ShopManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private FoodPoolManager foodPoolManager;
+    [SerializeField] private EncryptedDataPoolManager encryptedDataPoolManager;
 
     [Header("Shop Setup")]
-    [SerializeField] private List<FoodItem> allShopItems; //SO Library Healthy Food
+    [SerializeField] private List<CodeFragment> allShopItems; //SO Library Healthy Food
     [SerializeField] private List<ShopItemUI> shopButtons; //All available buttons in Shop
 
     //Track purchased items so that the same item that was just purchased is not added to the shop
-    private readonly HashSet<FoodItem> purchasedItems = new HashSet<FoodItem>();
+    private readonly HashSet<CodeFragment> purchasedItems = new HashSet<CodeFragment>();
 
     private void Start()
     {
@@ -26,7 +26,7 @@ public class ShopManager : MonoBehaviour
 
     private void PopulateShop()
     {
-        var displayedItems = new HashSet<FoodItem>();
+        var displayedItems = new HashSet<CodeFragment>();
 
         //Take all available items except one we already purchased from shop
         var availableItems = allShopItems.Except(purchasedItems).ToList();
@@ -36,7 +36,7 @@ public class ShopManager : MonoBehaviour
 
         for (int i = 0; i < shopButtons.Count; i++)
         {
-            FoodItem itemToAssign = null;
+            CodeFragment itemToAssign = null;
 
             //Find firt one taht is not already been shown
             foreach (var item in availableItems)
@@ -74,13 +74,13 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    private void TryPurchaseItem(FoodItem item, ShopItemUI button)
+    private void TryPurchaseItem(CodeFragment item, ShopItemUI button)
     {
         if (gameManager.GetTotalCoins() < item.cost) return;
 
         gameManager.SpendCoins(item.cost);
         purchasedItems.Add(item);
-        foodPoolManager.ReplaceFirstUnhealthyFoodWithHealthy(item);
+        encryptedDataPoolManager.ReplaceFirstEncryptedCodeWithDecoded(item);
 
         // Skupi sve trenutno prikazane
         var displayed = shopButtons
@@ -89,7 +89,7 @@ public class ShopManager : MonoBehaviour
             .ToHashSet();
 
         // Funkcija koja dohva?a sljede?i item
-        FoodItem GetNext()
+        CodeFragment GetNext()
         {
             return allShopItems
                 .Except(purchasedItems)
@@ -118,7 +118,7 @@ public class ShopManager : MonoBehaviour
     }
 
 
-    public List<FoodItem> GetAllShopItems()
+    public List<CodeFragment> GetAllShopItems()
     {
         return allShopItems;
     }

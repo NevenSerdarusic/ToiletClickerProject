@@ -10,10 +10,10 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private GameConfig gameConfig;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private UIManager uiManager;
-    [SerializeField] private FoodPoolManager foodPoolManager;
-    [SerializeField] private WeightManager weightManager;
+    [SerializeField] private EncryptedDataPoolManager encryptedDataPoolManager;
+    [SerializeField] private FirewallManager firewallManager;
     [SerializeField] private ClickTarget clickTarget;
-    [SerializeField] private PreassureSystem preassureSystem;
+    [SerializeField] private TraceScannerManager traceScannerManager;
 
     [Header("Upgrade Settings")]
     [SerializeField] private List<UpgradeData> allUpgrades; //SO Library Upgrade
@@ -129,38 +129,39 @@ public class UpgradeManager : MonoBehaviour
     {
         switch (upgrade.type)
         {
-            case UpgradeType.DoubleDip:
+            case UpgradeType.DualTap:
                 clickTarget.SetClickMultiplier(gameConfig.duobleTapMultiplier);
                 break;
-            case UpgradeType.QuintupleClick:
+            case UpgradeType.MegaTap:
                 clickTarget.SetClickMultiplier(gameConfig.megaTapMultiplier);
                 break;
-            case UpgradeType.MegaLaxLaunch:
-                weightManager.SubtractWeight(gameConfig.laxativeWeightReduction);
+            case UpgradeType.FirewallShock:
+                firewallManager.SubtractFirewallProtection(gameConfig.firewallProtectionDecreaseImpact);
                 break;
-            case UpgradeType.HealthSwap:
-                foodPoolManager.ReplaceJunkWithHealthy(gameConfig.detoxBombReplacingSlotCount);
+            case UpgradeType.ProxySwap:
+                encryptedDataPoolManager.ReplaceEncryptedWithDecoded(gameConfig.codeReplacingSlotCount);
                 break;
-            case UpgradeType.SnackDecelerator:
-                foodPoolManager.SlowScroll(true);
+            case UpgradeType.CodeFreeze:
+                encryptedDataPoolManager.SlowScroll(true);
                 break;
-            case UpgradeType.AutoTap:
+            case UpgradeType.BotPress:
                 clickTarget.EnableAutoClick(true);
+                traceScannerManager.DisableTrace();
                 break;
-            case UpgradeType.FiberFirepower:
-                foodPoolManager.BoostFiberInHealthy(true);
+            case UpgradeType.ExploitMax:
+                encryptedDataPoolManager.BoostCodeOptimization(true);
                 break;
-            case UpgradeType.LightweightJunk:
-                foodPoolManager.ReduceJunkNutrition(true);
+            case UpgradeType.ImpactDrop:
+                encryptedDataPoolManager.ReduceEncryptedCodeSensibility(true);
                 break;
-            case UpgradeType.RapidRelief:
-                preassureSystem.PreassureDecreaseBoost(true);
+            case UpgradeType.TraceDrop:
+                traceScannerManager.DetectionDecreaseBoost(true);
                 break;
-            case UpgradeType.PreasureBrake:
-                preassureSystem.PreassurePerClickBoost(true);
+            case UpgradeType.GhostTrace:
+                traceScannerManager.DetectionPerClickBoost(true);
                 break;
-            case UpgradeType.ScaleSmasher:
-                preassureSystem.WeightPerClickDrop(true);
+            case UpgradeType.SmackDown:
+                traceScannerManager.FirewallPerClickDecrease(true);
                 break;
         }
     }
@@ -169,30 +170,31 @@ public class UpgradeManager : MonoBehaviour
     {
         switch (upgrade.type)
         {
-            case UpgradeType.DoubleDip:
-            case UpgradeType.QuintupleClick:
+            case UpgradeType.DualTap:
+            case UpgradeType.MegaTap:
                 clickTarget.SetClickMultiplier(1f);
                 break;
-            case UpgradeType.SnackDecelerator:
-                foodPoolManager.SlowScroll(false);
+            case UpgradeType.CodeFreeze:
+                encryptedDataPoolManager.SlowScroll(false);
                 break;
-            case UpgradeType.AutoTap:
+            case UpgradeType.BotPress:
                 clickTarget.EnableAutoClick(false);
+                traceScannerManager.EnableTrace();
                 break;
-            case UpgradeType.FiberFirepower:
-                foodPoolManager.BoostFiberInHealthy(false);
+            case UpgradeType.ExploitMax:
+                encryptedDataPoolManager.BoostCodeOptimization(false);
                 break;
-            case UpgradeType.LightweightJunk:
-                foodPoolManager.ReduceJunkNutrition(false);
+            case UpgradeType.ImpactDrop:
+                encryptedDataPoolManager.ReduceEncryptedCodeSensibility(false);
                 break;
-            case UpgradeType.RapidRelief:
-                preassureSystem.PreassureDecreaseBoost(false);
+            case UpgradeType.TraceDrop:
+                traceScannerManager.DetectionDecreaseBoost(false);
                 break;
-            case UpgradeType.PreasureBrake:
-                preassureSystem.PreassurePerClickBoost(false);
+            case UpgradeType.GhostTrace:
+                traceScannerManager.DetectionPerClickBoost(false);
                 break;
-            case UpgradeType.ScaleSmasher:
-                preassureSystem.WeightPerClickDrop(false);
+            case UpgradeType.SmackDown:
+                traceScannerManager.FirewallPerClickDecrease(false);
                 break;
         }
 
@@ -221,9 +223,9 @@ public class UpgradeManager : MonoBehaviour
         // Resetiraj rucno efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
         clickTarget.SetClickMultiplier(1f);
         clickTarget.EnableAutoClick(false);
-        foodPoolManager.SlowScroll(false);
-        foodPoolManager.BoostFiberInHealthy(false);
-        foodPoolManager.ReduceJunkNutrition(false);
+        encryptedDataPoolManager.SlowScroll(false);
+        encryptedDataPoolManager.BoostCodeOptimization(false);
+        encryptedDataPoolManager.ReduceEncryptedCodeSensibility(false);
     }
 
 
