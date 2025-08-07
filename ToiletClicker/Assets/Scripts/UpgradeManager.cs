@@ -130,16 +130,16 @@ public class UpgradeManager : MonoBehaviour
         switch (upgrade.type)
         {
             case UpgradeType.DualTap:
-                clickTarget.SetClickMultiplier(gameConfig.duobleTapMultiplier);
+                clickTarget.SetClickMultiplier(gameConfig.Current.duobleTapMultiplier);
                 break;
             case UpgradeType.MegaTap:
-                clickTarget.SetClickMultiplier(gameConfig.megaTapMultiplier);
+                clickTarget.SetClickMultiplier(gameConfig.Current.megaTapMultiplier);
                 break;
             case UpgradeType.FirewallShock:
-                firewallManager.SubtractFirewallProtection(gameConfig.firewallProtectionDecreaseImpact);
+                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallProtectionDecreaseImpact);
                 break;
             case UpgradeType.ProxySwap:
-                encryptedDataPoolManager.ReplaceEncryptedWithDecoded(gameConfig.codeReplacingSlotCount);
+                encryptedDataPoolManager.ReplaceEncryptedWithDecoded(gameConfig.Current.codeReplacingSlotCount);
                 break;
             case UpgradeType.CodeFreeze:
                 encryptedDataPoolManager.SlowScroll(true);

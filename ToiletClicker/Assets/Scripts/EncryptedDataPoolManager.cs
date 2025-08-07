@@ -295,7 +295,7 @@ public class EncryptedDataPoolManager : MonoBehaviour
             if (!isScrollSlowed)
             {
                 defaultScrollSpeed = scrollSpeed;
-                scrollSpeed *= gameConfig.scrollRectDecreaseSpeedMultiplier;
+                scrollSpeed *= gameConfig.Current.scrollRectDecreaseSpeedMultiplier;
                 isScrollSlowed = true;
             }
         }
@@ -321,7 +321,7 @@ public class EncryptedDataPoolManager : MonoBehaviour
             foreach (var frag in decodedFragments)
             {
                 frag.optimizationValue = fragmentOptimizationDefaults[frag]
-                                         * gameConfig.encryptedCodeOptimizationMultiplier;
+                                         * gameConfig.Current.encryptedCodeOptimizationMultiplier;
             }
         }
         else
@@ -348,8 +348,8 @@ public class EncryptedDataPoolManager : MonoBehaviour
             //Set new values from GameConfig
             foreach (var frag in encryptedFragments)
             {
-                frag.junkDensity = gameConfig.encryptedCodeJunkMultiplier;
-                frag.detectionRisk = gameConfig.encryptedCodeDetectionMultiplier;
+                frag.junkDensity = gameConfig.Current.encryptedCodeJunkMultiplier;
+                frag.detectionRisk = gameConfig.Current.encryptedCodeDetectionMultiplier;
             }
         }
         else

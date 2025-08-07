@@ -145,6 +145,10 @@ public class GameManager : MonoBehaviour
         }
 
         ShowPanel(PanelType.Main);
+
+        //TEST:
+        int value = PlayerPrefsHandler.GetDifficulty();
+        Debug.Log("START DIFF: " + value);
     }
 
     private void InitializeGamePanels()
@@ -409,4 +413,15 @@ public class GameManager : MonoBehaviour
 
         //Start Animation
     }
+
+    //Selectin difficulty
+    public void OnDifficultySelected(int difficulty)
+    {
+        PlayerPrefsHandler.SetDifficulty(difficulty); // 0 - Easy, 1 - Hard
+
+        gameConfig.RefreshSelectedDifficulty(); // <--- refresh cache
+
+        Debug.Log("DIFFICULTY LEVEL: " + difficulty);
+    }
+
 }

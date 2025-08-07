@@ -57,7 +57,7 @@ public class TraceScannerManager : MonoBehaviour
             UpdateTraceDetectionSlider();
         }
 
-        if (currentTraceDetection >= gameConfig.criticalThreshold)
+        if (currentTraceDetection >= gameConfig.Current.criticalThreshold)
         {
             if (!isOverloaded)
             {
@@ -65,7 +65,7 @@ public class TraceScannerManager : MonoBehaviour
                 OnCriticalDetectionReached();
             }
         }
-        else if (currentTraceDetection < gameConfig.preWarningThreshold)
+        else if (currentTraceDetection < gameConfig.Current.preWarningThreshold)
         {
             if (isOverloaded)
             {
@@ -78,11 +78,11 @@ public class TraceScannerManager : MonoBehaviour
         if (isOverloaded)
         {
             overloadTimer += Time.deltaTime;
-            if (overloadTimer >= gameConfig.preassureOverloadDurationBeforeGameOver)
+            if (overloadTimer >= gameConfig.Current.detectionOverloadDurationBeforeGameOver)
                 OnGameOverRequested?.Invoke(GameOverReason.TraceDetected);
         }
 
-        if (currentTraceDetection >= gameConfig.preWarningThreshold)
+        if (currentTraceDetection >= gameConfig.Current.preWarningThreshold)
         {
             uiManager.ShowWarningMessage(
                 uiManager.CriticalPreassure,
@@ -117,7 +117,7 @@ public class TraceScannerManager : MonoBehaviour
     private void OnCriticalDetectionReached()
     {
         //Start animating dangerous lights
-        uiManager.StartTraceScannerTimer(gameConfig.preassureOverloadDurationBeforeGameOver);
+        uiManager.StartTraceScannerTimer(gameConfig.Current.detectionOverloadDurationBeforeGameOver);
         SoundManager.Instance.PlayControlled("Countdown");
     }
 
@@ -132,12 +132,12 @@ public class TraceScannerManager : MonoBehaviour
     {
         if (isDetectionPerClickBoostActivated)
         {
-            currentTraceDetection += gameConfig.preassurePerClickUpgradeMultiplier; //1
+            currentTraceDetection += gameConfig.Current.preassurePerClickUpgradeMultiplier; //1
             currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
         }
         else
         {
-            currentTraceDetection += gameConfig.pressurePerClickStandard; //3
+            currentTraceDetection += gameConfig.Current.detectionPerClickStandard; //3
             currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
         }
     }
@@ -148,11 +148,11 @@ public class TraceScannerManager : MonoBehaviour
         {
             if (isFirewallProtectionDecreasePerClickBoostActivated)
             {
-                firewallManager.SubtractFirewallProtection(gameConfig.firewallProtectionDecreasePerClickMultiplier);
+                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallProtectionDecreasePerClickMultiplier);
             }
             else
             {
-                firewallManager.SubtractFirewallProtection(gameConfig.firewallDecreasePerClickStandard);
+                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallDecreasePerClickStandard);
             }
         }
         else
@@ -165,8 +165,8 @@ public class TraceScannerManager : MonoBehaviour
     {
         //Check the bool isPreassureDecreaseBoostActivated and set the value of pressureDecreasePerSecond accordingly.
         float decrease = isDetectionDecreaseBoostActivated
-         ? gameConfig.detectionPerSecondMultiplier * Time.deltaTime
-         : gameConfig.pressureDecreasePerSecondStandard * Time.deltaTime;
+         ? gameConfig.Current.detectionPerSecondMultiplier * Time.deltaTime
+         : gameConfig.Current.detectionDecreasePerSecondStandard * Time.deltaTime;
 
         currentTraceDetection -= decrease;
         currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
@@ -184,7 +184,7 @@ public class TraceScannerManager : MonoBehaviour
 
         if (criticalTresholdMarker != null)
         {
-            float normalizedCritical = Mathf.Clamp01(gameConfig.criticalThreshold / 100f);
+            float normalizedCritical = Mathf.Clamp01(gameConfig.Current.criticalThreshold / 100f);
             float xCritical = Mathf.Lerp(-sliderWidth / 2f, sliderWidth / 2f, normalizedCritical);
             Vector2 newPosCritical = criticalTresholdMarker.anchoredPosition;
             newPosCritical.x = xCritical;
@@ -193,7 +193,7 @@ public class TraceScannerManager : MonoBehaviour
 
         if (preWarningThresholdMarker != null)
         {
-            float normalizedPreWarning = Mathf.Clamp01(gameConfig.preWarningThreshold / 100f);
+            float normalizedPreWarning = Mathf.Clamp01(gameConfig.Current.preWarningThreshold / 100f);
             float xPreWarning = Mathf.Lerp(-sliderWidth / 2f, sliderWidth / 2f, normalizedPreWarning);
             Vector2 newPosPreWarning = preWarningThresholdMarker.anchoredPosition;
             newPosPreWarning.x = xPreWarning;

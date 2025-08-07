@@ -10,10 +10,6 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameConfig gameConfig;
 
-    [Header("Character Animations")]
-    [SerializeField] private Animator characterAnimator;
-    [SerializeField] private string clickAnimationTrigger = "Click";
-
     [Header("Flying Clickable Bonus")]
     [SerializeField] private List<FlyingClickableBonus> prefabs;
     [SerializeField] private Canvas canvas;
@@ -26,7 +22,7 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
 
     private bool isBlocked = false; //bool responsible for blocking tapping on clicktarget in case of game over
 
-    private Queue<FlyingClickableBonus> pool = new Queue<FlyingClickableBonus>(); //Pool of all clickable flying bonuses
+    private Queue<FlyingClickableBonus> pool = new Queue<FlyingClickableBonus>(); //Pool of all clickable flying CP
 
 
     private void Awake()
@@ -60,12 +56,6 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
 
 
         ActivateFlyingClickableEvent(screenPos, targetPos);
-
-        //Implementacija animacija lika
-        //if (characterAnimator != null)
-        //{
-        //    characterAnimator.SetTrigger(clickAnimationTrigger);
-        //}
 
         SoundManager.Instance.PlayTypingSound();
     }
@@ -104,12 +94,9 @@ public class ClickTarget : MonoBehaviour, IPointerDownHandler
     {
         while (true)
         {
-            yield return new WaitForSeconds(gameConfig.autoClickInterval);
+            yield return new WaitForSeconds(gameConfig.Current.autoClickInterval);
             OnClicked?.Invoke();
 
-            // Animacija
-            // if (characterAnimator != null)
-            //     characterAnimator.SetTrigger(clickAnimationTrigger);
         }
     }
 

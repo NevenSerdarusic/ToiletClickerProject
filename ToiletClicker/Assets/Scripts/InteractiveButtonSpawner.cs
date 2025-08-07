@@ -60,22 +60,31 @@ public class InteractiveButtonSpawner : MonoBehaviour
     {
         interactiveButton.gameObject.SetActive(true);
 
-        //Get button rect transform and set random position of spawning
+        //Set position
         RectTransform rect = interactiveButton.GetComponent<RectTransform>();
         rect.anchoredPosition = GetRandomPositionInside(clickTargetArea);
+        rect.localScale = Vector3.zero;
 
-        //Set randpm amount
-        amount = Random.Range(gameConfig.minFirewallIncreaseValue, gameConfig.maxFirewallIncreaseValue);
-        //Radnomly choose between positive and negative effect
+        //Randomly choose between positive and negative
         isPositive = Random.value > 0.5f;
 
-        //Set color
-        buttonText.text = isPositive ? $"-{amount}" : $"+{amount}";
-        buttonText.color = isPositive ? uiManager.WarningTextColor : uiManager.DangerTextColor;
+        if (isPositive)
+        {
+            amount = Random.Range(gameConfig.Current.minPositiveFirewallValue, gameConfig.Current.maxPositiveFirewallValue);
+            buttonText.text = $"-{amount}%";
+            buttonText.color = uiManager.WarningTextColor;
+        }
+        else
+        {
+            amount = Random.Range(gameConfig.Current.minNegativeFirewallValue, gameConfig.Current.maxNegativeFirewallValue);
+            buttonText.text = $"+{amount}%";
+            buttonText.color = uiManager.DangerTextColor;
+        }
 
-        //Button animation
-        LeanTween.scale(buttonRect, Vector3.one, buttonSpawningAnimationDuration).setEaseOutBack();
+        //Pop-in animation
+        LeanTween.scale(rect, Vector3.one, buttonSpawningAnimationDuration).setEaseOutBack();
 
+        //Auto-hide
         StartCoroutine(HideButtonAfterSeconds(buttonLifetime));
     }
 

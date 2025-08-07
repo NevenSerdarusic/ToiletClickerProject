@@ -10,7 +10,7 @@ public static class PlayerPrefsHandler
     private const string BestScoreFirewallDecreaseKey = "BestScoreFirewall";
     private const string GameCompletedKey = "GameCompleted";
     private const string TypingVolumeKey = "TypingVolume";
-
+    private const string DifficultyKey = "SelectedDifficulty";
 
     // ----------- CP -----------
     public static int GetCP()
@@ -92,5 +92,17 @@ public static class PlayerPrefsHandler
     {
         PlayerPrefs.SetFloat(TypingVolumeKey, value);
         PlayerPrefs.Save();
+    }
+
+    // ----------- DIFFICULTY -----------
+    public static void SetDifficulty(int difficulty)
+    {
+        PlayerPrefs.SetInt(DifficultyKey, difficulty);
+        PlayerPrefs.Save();
+    }
+
+    public static int GetDifficulty()
+    {
+        return PlayerPrefs.GetInt(DifficultyKey, 0); // default Easy
     }
 }
