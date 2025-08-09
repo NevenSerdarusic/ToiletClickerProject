@@ -16,8 +16,6 @@ public class FirewallManager : MonoBehaviour
 
     public event Action OnNonProtectionAchived;
 
-    //public float GetCurrentFirewallLevel() => currentFirewallProtection;
-
     private void Start()
     {
         //If no default firewall protection is set, set the initial one from GameConfig
@@ -32,8 +30,6 @@ public class FirewallManager : MonoBehaviour
         }
 
         UpdateTotalFirewallProtectionUI();
-
-        UpdateBestScore();
     }
 
     public void AddFirewallProtection(float amount)
@@ -81,30 +77,11 @@ public class FirewallManager : MonoBehaviour
         }
     }
 
-    public void UpdateBestScore()
-    {
-        if (uiManager != null)
-        {
-            uiManager.UpdateBestScoreFirewallProtectionDecrease(gameConfig.Current.startingFirewallProtection);
-        }
-    }
-
     public void ResetTotalFirewallProtection()
     {
         currentFirewallProtection = gameConfig.Current.startingFirewallProtection;
         //PlayerPrefsHandler.SetFirewallProtection(currentFirewallProtection);
         UpdateTotalFirewallProtectionUI();
-    }
-
-    //Method for checking and saving the lowest point of weight in any played game, as a BestScore
-    public void CheckAndSaveBestScore()
-    {
-        float best = PlayerPrefsHandler.GetBestScoreFirewallDecrease(gameConfig.Current.startingFirewallProtection);
-
-        if (currentFirewallProtection < best)
-        {
-            PlayerPrefsHandler.SetBestScoreFirewallDecrease(currentFirewallProtection);
-        }
     }
 
 }

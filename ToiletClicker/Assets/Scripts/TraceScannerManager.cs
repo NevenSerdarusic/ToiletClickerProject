@@ -46,17 +46,36 @@ public class TraceScannerManager : MonoBehaviour
         traceScannerSlider.value = 0;
     }
 
-
     private void Update()
     {
         if (!isTraceActive) return;
 
+        HandleDetectionDrain();
+        HandleOverloadLogic();
+        HandlePreWarningUI();
+    }
+
+    public void OnClick()
+    {
+        currentTraceDetection += GetCurrentDetectionFillAmount();
+        currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
+
+        UpdateTraceDetectionSlider();
+        ApplyFirewallProtectionDecreasePerClick();
+    }
+
+    private void HandleDetectionDrain()
+    {
         if (currentTraceDetection > 0f)
         {
-            CalculateTrackDetectionDecrease();
+            currentTraceDetection -= GetCurrentDetectionDrainAmount() * Time.deltaTime;
+            currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
             UpdateTraceDetectionSlider();
         }
+    }
 
+    private void HandleOverloadLogic()
+    {
         if (currentTraceDetection >= gameConfig.Current.criticalThreshold)
         {
             if (!isOverloaded)
@@ -72,6 +91,7 @@ public class TraceScannerManager : MonoBehaviour
                 isOverloaded = false;
                 OnTraceDetectionBackToSafe();
             }
+
             overloadTimer = 0f;
         }
 
@@ -81,7 +101,10 @@ public class TraceScannerManager : MonoBehaviour
             if (overloadTimer >= gameConfig.Current.detectionOverloadDurationBeforeGameOver)
                 OnGameOverRequested?.Invoke(GameOverReason.TraceDetected);
         }
+    }
 
+    private void HandlePreWarningUI()
+    {
         if (currentTraceDetection >= gameConfig.Current.preWarningThreshold)
         {
             uiManager.ShowWarningMessage(
@@ -93,13 +116,6 @@ public class TraceScannerManager : MonoBehaviour
         }
     }
 
-    public void OnClick()
-    {
-        CalculateDetectionOnClick();
-
-        ApplyFirewallProtectionDecreasePerClick();
-    }
-
     private void UpdateTraceDetectionSlider()
     {
         if (traceScannerSlider != null)
@@ -109,14 +125,11 @@ public class TraceScannerManager : MonoBehaviour
     public void ResetTraceDetection()
     {
         currentTraceDetection = 0f;
-        
-        if (traceScannerSlider != null)
-            traceScannerSlider.value = currentTraceDetection / 100f;
+        UpdateTraceDetectionSlider();
     }
 
     private void OnCriticalDetectionReached()
     {
-        //Start animating dangerous lights
         uiManager.StartTraceScannerTimer(gameConfig.Current.detectionOverloadDurationBeforeGameOver);
         SoundManager.Instance.PlayControlled("Countdown");
     }
@@ -128,52 +141,36 @@ public class TraceScannerManager : MonoBehaviour
         SoundManager.Instance.Stop("Countdown");
     }
 
-    private void CalculateDetectionOnClick()
-    {
-        if (isDetectionPerClickBoostActivated)
-        {
-            currentTraceDetection += gameConfig.Current.preassurePerClickUpgradeMultiplier; //1
-            currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
-        }
-        else
-        {
-            currentTraceDetection += gameConfig.Current.detectionPerClickStandard; //3
-            currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
-        }
-    }
-    
     private void ApplyFirewallProtectionDecreasePerClick()
     {
         if (firewallManager != null)
         {
-            if (isFirewallProtectionDecreasePerClickBoostActivated)
-            {
-                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallProtectionDecreasePerClickMultiplier);
-            }
-            else
-            {
-                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallDecreasePerClickStandard);
-            }
+            float amount = isFirewallProtectionDecreasePerClickBoostActivated
+                ? gameConfig.Current.firewallProtectionDecreasePerClickMultiplier
+                : gameConfig.Current.firewallDecreasePerClickStandard;
+
+            firewallManager.SubtractFirewallProtection(amount);
         }
         else
         {
-            Debug.LogWarning("Weight Manager is not set!");
+            Debug.LogWarning("FirewallManager is not set!");
         }
     }
 
-    private void CalculateTrackDetectionDecrease()
+    private float GetCurrentDetectionFillAmount()
     {
-        //Check the bool isPreassureDecreaseBoostActivated and set the value of pressureDecreasePerSecond accordingly.
-        float decrease = isDetectionDecreaseBoostActivated
-         ? gameConfig.Current.detectionPerSecondMultiplier * Time.deltaTime
-         : gameConfig.Current.detectionDecreasePerSecondStandard * Time.deltaTime;
-
-        currentTraceDetection -= decrease;
-        currentTraceDetection = Mathf.Clamp(currentTraceDetection, 0f, 100f);
+        return isDetectionPerClickBoostActivated
+            ? gameConfig.Current.detectionFillMultiplier
+            : gameConfig.Current.detectionPerClickStandard;
     }
 
+    private float GetCurrentDetectionDrainAmount()
+    {
+        return isDetectionDecreaseBoostActivated
+            ? gameConfig.Current.detectionDrainMultiplier
+            : gameConfig.Current.detectionDecreasePerSecondStandard;
+    }
 
-    //Method that sets the warningTeshold & criticalThreshold to a position on the slider that must not be exceeded
     private void PositionCriticalThresholdMarker()
     {
         if (traceScannerSlider == null)
@@ -201,24 +198,8 @@ public class TraceScannerManager : MonoBehaviour
         }
     }
 
-
-
-    //UPGRADES RELATED METHODS:
-    //Method that controls the increase in the variable responsible for the rate of pressure drop during printing
-    public void DetectionDecreaseBoost(bool isActive)
-    {
-        isDetectionDecreaseBoostActivated = isActive;
-    }
-
-
-    //Method that controls the reduction of the value of the variable responsible for the level of pressure increase when tapping
-    public void DetectionPerClickBoost(bool isActive)
-    {
-        isDetectionPerClickBoostActivated = isActive;
-    }
-
-    public void FirewallPerClickDecrease(bool isActive)
-    {
-        isFirewallProtectionDecreasePerClickBoostActivated = isActive;
-    }
+    // UPGRADES CONTROL METHODS
+    public void DetectionDecreaseBoost(bool isActive) => isDetectionDecreaseBoostActivated = isActive;
+    public void DetectionPerClickBoost(bool isActive) => isDetectionPerClickBoostActivated = isActive;
+    public void FirewallPerClickDecrease(bool isActive) => isFirewallProtectionDecreasePerClickBoostActivated = isActive;
 }

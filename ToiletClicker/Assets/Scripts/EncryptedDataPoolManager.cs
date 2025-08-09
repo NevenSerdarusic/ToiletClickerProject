@@ -79,21 +79,6 @@ public class EncryptedDataPoolManager : MonoBehaviour
         {
             fragmentOptimizationDefaults[frag] = frag.optimizationValue;
         }
-
-        //Debug.Log("=== JUNK AND DETECTION ===");
-        //foreach (var kvp in fragmentDefaults)
-        //{
-        //    var frag = kvp.Key;
-        //    var (origJunk, origDetection) = kvp.Value;
-        //    Debug.Log($"Fragment '{frag.fragmentDisplayText}': junkDensity={origJunk}, detectionRisk={origDetection}");
-        //}
-        //Debug.Log("=== OPTIMIZATION ===");
-        //foreach (var kvp in fragmentOptimizationDefaults)
-        //{
-        //    var frag = kvp.Key;
-        //    var origOpt = kvp.Value;
-        //    Debug.Log($"Fragment '{frag.fragmentDisplayText}': optimizationValue={origOpt}");
-        //}
     }
 
     private void Update()

@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Menu Buttons & Actions")]
     [SerializeField] private List<ButtonAction> menuButtons;
+    [SerializeField] private float buttonTextColorTransitionDuration = 0.2f;
 
     [Header("Menu Panels")]
     [SerializeField] private List<GamePanel> gamePanels;
@@ -145,10 +146,6 @@ public class GameManager : MonoBehaviour
         }
 
         ShowPanel(PanelType.Main);
-
-        //TEST:
-        int value = PlayerPrefsHandler.GetDifficulty();
-        Debug.Log("START DIFF: " + value);
     }
 
     private void InitializeGamePanels()
@@ -163,11 +160,37 @@ public class GameManager : MonoBehaviour
 
     private void BindMenuButtons()
     {
-        foreach (var ba in menuButtons)
+        foreach (var button in menuButtons)
         {
-            if (ba.button != null && ba.onClick != null)
-                ba.button.onClick.AddListener(() => ba.onClick.Invoke());
+            if (button.button != null && button.onClick != null)
+            {
+                // Pokušaj dohvatiti TMP_Text (ako ga nema, animacija ?e se presko?iti)
+                TMP_Text buttonText = button.button.GetComponentInChildren<TMP_Text>();
+                Color? originalColor = buttonText != null ? buttonText.color : (Color?)null;
+
+                // Dodaj listener
+                button.button.onClick.AddListener(() =>
+                {
+                    if (buttonText != null && originalColor.HasValue)
+                    {
+                        PlayButtonCTAEffect(buttonText, originalColor.Value);
+                    }
+
+                    button.onClick.Invoke();
+                });
+            }
         }
+    }
+
+    private void PlayButtonCTAEffect(TMP_Text buttonText, Color originalColor)
+    {
+        LeanTween.value(buttonText.gameObject, originalColor, uiManager.WarningTextColor, buttonTextColorTransitionDuration)
+            .setOnUpdate((Color c) => { buttonText.color = c; })
+            .setOnComplete(() =>
+            {
+                LeanTween.value(buttonText.gameObject, uiManager.WarningTextColor, originalColor, buttonTextColorTransitionDuration)
+                    .setOnUpdate((Color c) => { buttonText.color = c; });
+            });
     }
 
     private void InitializePurchasePanels()
@@ -234,9 +257,7 @@ public class GameManager : MonoBehaviour
         uiManager.ShowGameOverReason(reason);
         clickTarget.BlockClicks(true);
         SoundManager.Instance.PlayLoopingSound("Alarm");
-        firewallManager.CheckAndSaveBestScore();
         upgradeManager.ResetAllUpgrades();
-        firewallManager.UpdateBestScore();
         mainMenuActions.StartLightAnimation();
     }
 
@@ -355,6 +376,7 @@ public class GameManager : MonoBehaviour
         showingShop = !showingShop;
     }
 
+
     private void SlideInPanel(RectTransform panel)
     {
         panel.anchoredPosition = new Vector2(hiddenPosition, panel.anchoredPosition.y);
@@ -400,8 +422,6 @@ public class GameManager : MonoBehaviour
 
         //Play Sound
 
-        firewallManager.CheckAndSaveBestScore();
-
         upgradeManager.ResetAllUpgrades();
 
         PlayerPrefs.DeleteAll();
@@ -409,19 +429,15 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefsHandler.SetGameCompleted(true);
 
-        firewallManager.UpdateBestScore();
-
         //Start Animation
     }
 
     //Selectin difficulty
     public void OnDifficultySelected(int difficulty)
     {
-        PlayerPrefsHandler.SetDifficulty(difficulty); // 0 - Easy, 1 - Hard
+        PlayerPrefsHandler.SetDifficulty(difficulty); //0 - Easy, 1 - Hard
 
-        gameConfig.RefreshSelectedDifficulty(); // <--- refresh cache
-
-        Debug.Log("DIFFICULTY LEVEL: " + difficulty);
+        gameConfig.RefreshSelectedDifficulty(); //refresh cache
     }
 
 }

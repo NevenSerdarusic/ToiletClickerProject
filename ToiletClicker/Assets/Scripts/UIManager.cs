@@ -15,7 +15,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text xpSaldo;
     [SerializeField] private TMP_Text firewallProtectionTotalText;
     [SerializeField] private TMP_Text gameOverText;
-    [SerializeField] private TMP_Text bestScoreText;
 
     [Header("GO References")]
     [SerializeField] private GameObject warningText;
@@ -93,15 +92,6 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogWarning("UIAction component is missing!");
         }
-    }
-
-
-    //Update Best Score Text
-    public void UpdateBestScoreFirewallProtectionDecrease(float defaultFirewallProtection)
-    {
-        float best = PlayerPrefsHandler.GetBestScoreFirewallDecrease(defaultFirewallProtection);
-
-        bestScoreText.text = best.ToString("F2") + "%";
     }
 
 

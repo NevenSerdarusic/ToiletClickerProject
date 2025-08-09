@@ -21,7 +21,7 @@ public class SoundManager : MonoBehaviour
     [Header("General Sounds")]
     [SerializeField] private List<SoundData> generalSounds;
 
-    [Header("Fart Sounds")]
+    [Header("Typing Sound")]
     [SerializeField] private AudioClip typingSound;
     [SerializeField] private float typingSoundVolume = 0.5f;
 
@@ -55,9 +55,9 @@ public class SoundManager : MonoBehaviour
 
         if (generalAudioSource == null || typingAudioSource == null || buttonAudioSource == null)
             Debug.LogError("[SoundManager] AudioSources not properly assigned!");
+        SoundsSettings();
 
         soundLookup = generalSounds.ToDictionary(s => s.name, s => s);
-        SoundsSettings();
     }
 
     private void Start()

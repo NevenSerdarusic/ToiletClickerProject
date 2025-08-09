@@ -7,7 +7,7 @@ public static class PlayerPrefsHandler
     private const string FirewallProtectionKey = "Firewall";
     private const string XPKey = "TotalXP";
     private const string MusicMutedKey = "MusicMuted";
-    private const string BestScoreFirewallDecreaseKey = "BestScoreFirewall";
+    //private const string BestScoreFirewallDecreaseKey = "BestScoreFirewall";
     private const string GameCompletedKey = "GameCompleted";
     private const string TypingVolumeKey = "TypingVolume";
     private const string DifficultyKey = "SelectedDifficulty";
@@ -58,16 +58,16 @@ public static class PlayerPrefsHandler
     }
 
     // ----------- BEST SCORE (lowest weight) -----------
-    public static float GetBestScoreFirewallDecrease(float defaultFirewall)
-    {
-        return PlayerPrefs.GetFloat(BestScoreFirewallDecreaseKey, defaultFirewall); 
-    }
+    //public static float GetBestScoreFirewallDecrease(float defaultFirewall)
+    //{
+    //    return PlayerPrefs.GetFloat(BestScoreFirewallDecreaseKey, defaultFirewall); 
+    //}
 
-    public static void SetBestScoreFirewallDecrease(float amount)
-    {
-        PlayerPrefs.SetFloat(BestScoreFirewallDecreaseKey, amount);
-        PlayerPrefs.Save();
-    }
+    //public static void SetBestScoreFirewallDecrease(float amount)
+    //{
+    //    PlayerPrefs.SetFloat(BestScoreFirewallDecreaseKey, amount);
+    //    PlayerPrefs.Save();
+    //}
 
 
     // ----------- GAME COMPLETION STATUS -----------

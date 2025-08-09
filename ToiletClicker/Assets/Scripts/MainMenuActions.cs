@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class MainMenuActions : MonoBehaviour
 {
-    [Header("Panel/Curtain Animation Settings")]
+    [Header("Panel Animation Settings")]
     [SerializeField] private float panelSlideDuration = 1f;
 
     [Header("Panel Button Animation Settings")]
@@ -26,7 +26,6 @@ public class MainMenuActions : MonoBehaviour
 
     [Header("Background Panel Animation Settings")]
     [SerializeField] private RectTransform backgroundPanelRect;
-    [SerializeField] private RectTransform clickableTargetRect; 
     [SerializeField] private float rectAnimDuration = 1f;
     [SerializeField] private LeanTweenType rectAnimEase = LeanTweenType.easeInOutCubic;
 
@@ -47,6 +46,12 @@ public class MainMenuActions : MonoBehaviour
     private readonly Dictionary<RectTransform, Vector2> originalCharPositions = new();
 
     private Coroutine titleCoroutine;
+
+    //Rect Transform settings set up for background Panel animation
+    private Vector2 startOffsetMin = new Vector2(0, 0);
+    private Vector2 startOffsetMax = new Vector2(0, 0);
+    private Vector2 endOffsetMin = new Vector2(0, 200);
+    private Vector2 endOffsetMax = new Vector2(-225, -187);
 
     public float CurtainSlideDuration => panelSlideDuration;
 
@@ -302,43 +307,56 @@ public class MainMenuActions : MonoBehaviour
     }
 
     //Animate logic of backgroundPanel
-    public void AnimateBackgroundPanel(bool open)
+    public void AnimateBackgroundPanel(bool zoomIn)
     {
-        // Closed i open offseti
-        Vector2 closedMin = Vector2.zero;
-        Vector2 closedMax = Vector2.zero;
-        Vector2 openMin = clickableTargetRect.offsetMin;
-        Vector2 openMax = clickableTargetRect.offsetMax;
-
-        // Definiraj odakle ide i kamo ide
-        Vector2 startMin = open ? closedMin : openMin;
-        Vector2 endMin = open ? openMin : closedMin;
-        Vector2 startMax = open ? closedMax : openMax;
-        Vector2 endMax = open ? openMax : closedMax;
-
-        // Ako zatvaramo (open==false), aktiviraj odmah
-        if (!open)
+        if (zoomIn)
+        {
             backgroundPanelRect.gameObject.SetActive(true);
 
-        // Postavi na start
-        backgroundPanelRect.offsetMin = startMin;
-        backgroundPanelRect.offsetMax = startMax;
+            // Animiraj offsetMin
+            LeanTween.value(backgroundPanelRect.gameObject, startOffsetMin, endOffsetMin, rectAnimDuration)
+                .setEase(rectAnimEase)
+                .setOnUpdate((Vector2 val) =>
+                {
+                    backgroundPanelRect.offsetMin = val;
+                });
 
-        // Pokreni tween
-        LeanTween.value(gameObject, 0f, 1f, rectAnimDuration)
-            .setEase(rectAnimEase)
-            .setOnUpdate((float t) =>
-            {
-                backgroundPanelRect.offsetMin = Vector2.Lerp(startMin, endMin, t);
-                backgroundPanelRect.offsetMax = Vector2.Lerp(startMax, endMax, t);
-            })
-            .setOnComplete(() =>
-            {
-                // Ako otvaramo, na kraju isključi panel
-                if (open)
+            // Animiraj offsetMax
+            LeanTween.value(backgroundPanelRect.gameObject, startOffsetMax, endOffsetMax, rectAnimDuration)
+                .setEase(rectAnimEase)
+                .setOnUpdate((Vector2 val) =>
+                {
+                    backgroundPanelRect.offsetMax = val;
+                });
+        }
+        else
+        {
+            // Animiraj nazad na nulu i ugasi gameObject
+            LeanTween.value(backgroundPanelRect.gameObject, endOffsetMin, startOffsetMin, rectAnimDuration)
+                .setEase(rectAnimEase)
+                .setOnUpdate((Vector2 val) =>
+                {
+                    backgroundPanelRect.offsetMin = val;
+                });
+
+            LeanTween.value(backgroundPanelRect.gameObject, endOffsetMax, startOffsetMax, rectAnimDuration)
+                .setEase(rectAnimEase)
+                .setOnUpdate((Vector2 val) =>
+                {
+                    backgroundPanelRect.offsetMax = val;
+                })
+                .setOnComplete(() =>
+                {
                     backgroundPanelRect.gameObject.SetActive(false);
-            });
+                });
+        }
     }
+
+
+
+
+
+
 
     //Animate logic of hidding and showing subPanel of InfoPanel
     public void AnimateSubPanelTransparency(GameObject panel, bool transparent)

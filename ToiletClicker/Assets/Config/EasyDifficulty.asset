@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e77ca0c1a662144b798996dedd74cf, type: 3}
   m_Name: EasyDifficulty
   m_EditorClassIdentifier: 
-  startingFirewallProtection: 60
+  startingFirewallProtection: 80
   maxFirewallProtection: 100
   nonFirewallProtection: 0
   detectionPerClickStandard: 1.5
-  detectionDecreasePerSecondStandard: 1
-  preWarningThreshold: 80
+  detectionDecreasePerSecondStandard: 4.5
+  preWarningThreshold: 85
   criticalThreshold: 95
   detectionOverloadDurationBeforeGameOver: 10
-  firewallDecreasePerClickStandard: 1
+  firewallDecreasePerClickStandard: 0.05
   minPositiveFirewallValue: 1
   maxPositiveFirewallValue: 5
   minNegativeFirewallValue: 1
-  maxNegativeFirewallValue: 10
-  autoClickInterval: 0.5
-  duobleTapMultiplier: 2
+  maxNegativeFirewallValue: 5
+  autoClickInterval: 0.25
+  doubleTapMultiplier: 2
   megaTapMultiplier: 5
   firewallProtectionDecreaseImpact: 5
   codeReplacingSlotCount: 5
@@ -34,6 +34,6 @@ MonoBehaviour:
   encryptedCodeOptimizationMultiplier: 3.5
   encryptedCodeJunkMultiplier: 1
   encryptedCodeDetectionMultiplier: 1
-  detectionPerSecondMultiplier: 10
-  preassurePerClickUpgradeMultiplier: 1
-  firewallProtectionDecreasePerClickMultiplier: 0.5
+  detectionFillMultiplier: 0.5
+  detectionDrainMultiplier: 2
+  firewallProtectionDecreasePerClickMultiplier: 10

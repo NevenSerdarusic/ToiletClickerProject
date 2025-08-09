@@ -130,16 +130,16 @@ public class UpgradeManager : MonoBehaviour
         switch (upgrade.type)
         {
             case UpgradeType.DualTap:
-                clickTarget.SetClickMultiplier(gameConfig.Current.duobleTapMultiplier);
+                clickTarget.SetClickMultiplier(gameConfig.Current.doubleTapMultiplier);
                 break;
             case UpgradeType.MegaTap:
                 clickTarget.SetClickMultiplier(gameConfig.Current.megaTapMultiplier);
                 break;
             case UpgradeType.FirewallShock:
-                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallProtectionDecreaseImpact);
+                firewallManager.SubtractFirewallProtection(gameConfig.Current.firewallProtectionDecreaseImpact);//INSTANT
                 break;
             case UpgradeType.ProxySwap:
-                encryptedDataPoolManager.ReplaceEncryptedWithDecoded(gameConfig.Current.codeReplacingSlotCount);
+                encryptedDataPoolManager.ReplaceEncryptedWithDecoded(gameConfig.Current.codeReplacingSlotCount);//INSTANT
                 break;
             case UpgradeType.CodeFreeze:
                 encryptedDataPoolManager.SlowScroll(true);
@@ -234,5 +234,14 @@ public class UpgradeManager : MonoBehaviour
     {
         return upgradeButtons;
     }
+
+
+    //Method which give asign if we have affordable upgrade in list
+    //public bool HasAffordableUpgrades()
+    //{
+    //    int currentXP = gameManager.GetTotalXP();
+    //    return allUpgrades.Any(upg => currentXP >= upg.upgradePrice);
+    //}
+
 
 }

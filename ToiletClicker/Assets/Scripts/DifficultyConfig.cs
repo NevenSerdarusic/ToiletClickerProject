@@ -26,7 +26,7 @@ public class DifficultyConfig : ScriptableObject
 
     [Header("Upgrades Settings")]
     public float autoClickInterval = 0.5f;
-    public float duobleTapMultiplier = 2;
+    public float doubleTapMultiplier = 2;
     public float megaTapMultiplier = 5;
     public int firewallProtectionDecreaseImpact = 5;
     public int codeReplacingSlotCount = 5;
@@ -34,7 +34,7 @@ public class DifficultyConfig : ScriptableObject
     public float encryptedCodeOptimizationMultiplier = 3.5f;
     public float encryptedCodeJunkMultiplier = 1f;
     public float encryptedCodeDetectionMultiplier = 1f;
-    public float detectionPerSecondMultiplier = 10f;
-    public float preassurePerClickUpgradeMultiplier = 1f;
+    public float detectionFillMultiplier = 10f;
+    public float detectionDrainMultiplier = 1f;
     public float firewallProtectionDecreasePerClickMultiplier = 0.5f;
 }

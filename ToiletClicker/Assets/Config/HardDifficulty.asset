@@ -15,25 +15,25 @@ MonoBehaviour:
   startingFirewallProtection: 80
   maxFirewallProtection: 100
   nonFirewallProtection: 0
-  detectionPerClickStandard: 2.5
-  detectionDecreasePerSecondStandard: 2
+  detectionPerClickStandard: 2
+  detectionDecreasePerSecondStandard: 3.5
   preWarningThreshold: 85
   criticalThreshold: 95
   detectionOverloadDurationBeforeGameOver: 10
   firewallDecreasePerClickStandard: 0.01
   minPositiveFirewallValue: 1
   maxPositiveFirewallValue: 5
-  minNegativeFirewallValue: 1
-  maxNegativeFirewallValue: 10
+  minNegativeFirewallValue: 5
+  maxNegativeFirewallValue: 15
   autoClickInterval: 0.5
-  duobleTapMultiplier: 2
+  doubleTapMultiplier: 2
   megaTapMultiplier: 5
   firewallProtectionDecreaseImpact: 5
   codeReplacingSlotCount: 5
   scrollRectDecreaseSpeedMultiplier: 0.5
-  encryptedCodeOptimizationMultiplier: 3.5
-  encryptedCodeJunkMultiplier: 1
-  encryptedCodeDetectionMultiplier: 1
-  detectionPerSecondMultiplier: 10
-  preassurePerClickUpgradeMultiplier: 1
-  firewallProtectionDecreasePerClickMultiplier: 0.5
+  encryptedCodeOptimizationMultiplier: 3
+  encryptedCodeJunkMultiplier: 1.5
+  encryptedCodeDetectionMultiplier: 1.5
+  detectionFillMultiplier: 0.5
+  detectionDrainMultiplier: 1.5
+  firewallProtectionDecreasePerClickMultiplier: 10

@@ -91,10 +91,16 @@ public class InteractiveButtonSpawner : MonoBehaviour
     private void OnInteractiveButtonClicked()
     {
         if (isPositive)
+        {
             firewallManager.SubtractFirewallProtection(amount);
+            SoundManager.Instance.Play("FirewallDecrease");
+        } 
         else
+        {
             firewallManager.AddFirewallProtection(amount);
-
+            SoundManager.Instance.Play("FirewallIncrease");
+        }
+            
         interactiveButton.gameObject.SetActive(false);
     }
 
