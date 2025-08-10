@@ -80,23 +80,25 @@ public class UpgradeManager : MonoBehaviour
 
     private void UpdateButtonStates()
     {
+        bool anyAvailable = false;
+
         foreach (var button in upgradeButtons)
         {
             if (button.HasUpgrade)
             {
                 bool canBuy = gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice;
-
-                // Postavi interactable
                 button.SetInteractable(canBuy);
 
-                // Dohvati SVE TMP_Text komponente unutar buttona
                 TMP_Text[] texts = button.GetComponentsInChildren<TMP_Text>(true);
                 foreach (var txt in texts)
-                {
                     txt.color = canBuy ? uiManager.DefaultTextColor : uiManager.GameMainTextColor;
-                }
+
+                if (canBuy) anyAvailable = true;
             }
         }
+
+        // Sada samo UpgradeManager javlja GameManageru
+        gameManager.SetUpgradeAvailability(anyAvailable);
     }
 
 

@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform shopPanel;
     [SerializeField] private RectTransform upgradePanel;
     [SerializeField] private Image purchaseButtonImage;
+    [SerializeField] private Image purchaseGlowImage;
     [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite upgradeIcon;
     [SerializeField] private float panelSlideDuration = 0.5f;
@@ -92,6 +93,14 @@ public class GameManager : MonoBehaviour
     private bool showingShop = true;
     private const float shownPosition = -112.5f;
     private const float hiddenPosition = 115f;
+
+    private LTDescr glowTween;
+
+    //States related to available items in shop or upgrade manager
+    public bool IsShopPanelActive() => showingShop;
+    public bool IsUpgradePanelActive() => !showingShop;
+    private bool upgradeHasAvailable;
+
 
     private ButtonAction playButtonAction;
 
@@ -146,6 +155,9 @@ public class GameManager : MonoBehaviour
         }
 
         ShowPanel(PanelType.Main);
+
+        //Turn OFF purchasedButton glow on start
+        purchaseGlowImage.gameObject.SetActive(false);
     }
 
     private void InitializeGamePanels()
@@ -440,4 +452,33 @@ public class GameManager : MonoBehaviour
         gameConfig.RefreshSelectedDifficulty(); //refresh cache
     }
 
+    //Activate glow animation when upgrade is available to purchase
+    public void SetUpgradeAvailability(bool hasAvailable)
+    {
+        upgradeHasAvailable = hasAvailable;
+        UpdatePurchaseGlow();
+    }
+
+    private void UpdatePurchaseGlow()
+    {
+        if (upgradeHasAvailable)
+        {
+            if (glowTween != null) LeanTween.cancel(purchaseGlowImage.gameObject);
+
+            purchaseGlowImage.gameObject.SetActive(true);
+            glowTween = LeanTween.alpha(purchaseGlowImage.rectTransform, 0.3f, 0.5f)
+                .setLoopPingPong();
+        }
+        else
+        {
+            if (glowTween != null) LeanTween.cancel(purchaseGlowImage.gameObject);
+            purchaseGlowImage.color = new Color(
+                purchaseGlowImage.color.r,
+                purchaseGlowImage.color.g,
+                purchaseGlowImage.color.b,
+                1f
+            );
+            purchaseGlowImage.gameObject.SetActive(false);
+        }
+    }
 }
