@@ -85,15 +85,29 @@ public class SoundManager : MonoBehaviour
     private void SetupAllUIButtonSounds()
     {
         gameButtonList = Resources.FindObjectsOfTypeAll<Button>()
-        .Where(b => b.gameObject.hideFlags == HideFlags.None && !string.IsNullOrEmpty(b.gameObject.scene.name))
-        .ToList();
-
+            .Where(b =>
+                b.gameObject.hideFlags == HideFlags.None &&
+                !string.IsNullOrEmpty(b.gameObject.scene.name)
+            )
+            .ToList();
 
         foreach (var button in gameButtonList)
         {
-            button.onClick.AddListener(() => PlayClick());
+            if (button.CompareTag("MenuButton"))
+            {
+                button.onClick.AddListener(() => PlayClick());
+            }
+            else
+            {
+                Debug.LogWarning($"Button '{button.name}' does not have TAG = 'MenuButton'.");
+            }
         }
+
+        //Finally, we filter the list to contain only those with the tag
+        gameButtonList = gameButtonList.Where(b => b.CompareTag("MenuButton")).ToList();
     }
+
+
 
     private void PlayClick()
     {

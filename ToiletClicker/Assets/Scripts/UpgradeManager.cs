@@ -109,6 +109,8 @@ public class UpgradeManager : MonoBehaviour
 
         gameManager.SpendXP(upgrade.upgradePrice);
 
+        SoundManager.Instance.Play("ItemPurchased");
+
         UpdateButtonStates();
 
         if (upgrade.isInstant)

@@ -94,6 +94,7 @@ public class ShopManager : MonoBehaviour
         gameManager.SpendCoins(item.cost);
         purchasedItems.Add(item);
         encryptedDataPoolManager.ReplaceFirstEncryptedCodeWithDecoded(item);
+        SoundManager.Instance.Play("ItemPurchased");
 
         // Skupi sve trenutno prikazane
         var displayed = shopButtons
