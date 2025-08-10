@@ -23,18 +23,21 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<GameObject> gameBackgroundPanels;
 
     [Header("General UI Settings")]
-    [SerializeField] private Color warningColor;
-    [SerializeField] private Color dangerColor;
-    [SerializeField] private Color defaultColor;
+    [SerializeField] private Color successTextColor;
+    [SerializeField] private Color errorTextColor;
+    [SerializeField] private Color gameMainTextColor;
+    [SerializeField] private Color defaultTextColor;
     [SerializeField] private float warningTextDuration = 2f;
     [SerializeField] private Color defaultGameBackgroundColor;
     
     private Coroutine warningCoroutine;
 
     //PROPERTIES:
-    public Color DefaultTextColor => defaultColor;
-    public Color WarningTextColor => warningColor;
-    public Color DangerTextColor => dangerColor;
+    public Color DefaultTextColor => defaultTextColor;
+    public Color SuccessTextColor => successTextColor;
+    public Color ErrorTextColor => errorTextColor;
+
+    public Color GameMainTextColor => gameMainTextColor;
     public string CriticalPreassure => StringLibrary.criticalDetectionLevel;
     public string SafePreassure => StringLibrary.safeDetectionLevel; 
     public float WarningTextDuration => warningTextDuration;
@@ -81,11 +84,11 @@ public class UIManager : MonoBehaviour
         {
             if (amount > 0f)
             {
-                uIActions.AnimateIndividualFirewallProtectionImpact(amount, dangerColor);
+                uIActions.AnimateIndividualFirewallProtectionImpact(amount, errorTextColor);
             }
             else if (amount < 0f)
             {
-                uIActions.AnimateIndividualFirewallProtectionImpact(amount, warningColor);
+                uIActions.AnimateIndividualFirewallProtectionImpact(amount, successTextColor);
             }
         }
         else
@@ -116,7 +119,7 @@ public class UIManager : MonoBehaviour
     {
         if (uIActions != null)
         {
-            uIActions.AnimateUpgradeTimer(duration, warningColor, dangerColor);
+            uIActions.AnimateUpgradeTimer(duration, successTextColor, errorTextColor);
         }
     }
 

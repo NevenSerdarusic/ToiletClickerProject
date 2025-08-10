@@ -3493,9 +3493,10 @@ MonoBehaviour:
   - {fileID: 2014704163}
   - {fileID: 928308664}
   - {fileID: 346348273}
-  warningColor: {r: 0.019607844, g: 0.93725497, b: 0.27058825, a: 1}
-  dangerColor: {r: 0.9150943, g: 0.12078948, b: 0.082013145, a: 1}
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  successTextColor: {r: 0, g: 1, b: 0.019607844, a: 1}
+  errorTextColor: {r: 1, g: 0, b: 0, a: 1}
+  gameMainTextColor: {r: 0, g: 0.9607844, b: 1, a: 1}
+  defaultTextColor: {r: 0, g: 0, b: 0, a: 1}
   warningTextDuration: 2
   defaultGameBackgroundColor: {r: 0, g: 0.011764706, b: 0.015686275, a: 1}
 --- !u!114 &460194654
@@ -3512,6 +3513,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 460194650}
   encryptedDataPoolManager: {fileID: 460194662}
+  uiManager: {fileID: 460194651}
   allShopItems:
   - {fileID: 11400000, guid: 5be72fdb70cd4dd4a85e9626b557a71d, type: 2}
   - {fileID: 11400000, guid: c6163633dd634ff4ba04b8d8bfcab4dd, type: 2}
@@ -5314,7 +5316,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -93.81799}
+  m_AnchoredPosition: {x: 0, y: -93.818115}
   m_SizeDelta: {x: 992, y: 187.64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &685479914

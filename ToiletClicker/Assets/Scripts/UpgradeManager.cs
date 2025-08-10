@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using TMPro;
 
 public class UpgradeManager : MonoBehaviour
 {
@@ -79,14 +80,25 @@ public class UpgradeManager : MonoBehaviour
 
     private void UpdateButtonStates()
     {
-        //int currentXP = gameManager.GetTotalXP();
-
         foreach (var button in upgradeButtons)
         {
             if (button.HasUpgrade)
-                button.SetInteractable(gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice);
+            {
+                bool canBuy = gameManager.GetTotalXP() >= button.GetUpgrade().upgradePrice;
+
+                // Postavi interactable
+                button.SetInteractable(canBuy);
+
+                // Dohvati SVE TMP_Text komponente unutar buttona
+                TMP_Text[] texts = button.GetComponentsInChildren<TMP_Text>(true);
+                foreach (var txt in texts)
+                {
+                    txt.color = canBuy ? uiManager.DefaultTextColor : uiManager.GameMainTextColor;
+                }
+            }
         }
     }
+
 
 
     public void TryPurchaseUpgrade(UpgradeData upgrade, UpgradeItemUI button)
@@ -206,7 +218,7 @@ public class UpgradeManager : MonoBehaviour
     //In case of game over status, reset all upgrades
     public void ResetAllUpgrades()
     {
-        // Zaustavi sve aktivne upgradeove i ukloni efekte
+        //Stop all active upgrades and remove effects
         foreach (var kvp in activeUpgrades)
         {
             StopCoroutine(kvp.Value);
@@ -220,7 +232,6 @@ public class UpgradeManager : MonoBehaviour
 
         activeUpgrades.Clear();
 
-        // Resetiraj rucno efekte koji možda nisu u coroutine-u (npr. instantne) DA li je ovo potrebno imati tu??
         clickTarget.SetClickMultiplier(1f);
         clickTarget.EnableAutoClick(false);
         encryptedDataPoolManager.SlowScroll(false);
@@ -234,14 +245,4 @@ public class UpgradeManager : MonoBehaviour
     {
         return upgradeButtons;
     }
-
-
-    //Method which give asign if we have affordable upgrade in list
-    //public bool HasAffordableUpgrades()
-    //{
-    //    int currentXP = gameManager.GetTotalXP();
-    //    return allUpgrades.Any(upg => currentXP >= upg.upgradePrice);
-    //}
-
-
 }

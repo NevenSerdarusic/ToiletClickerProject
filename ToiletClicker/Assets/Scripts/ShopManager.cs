@@ -9,6 +9,7 @@ public class ShopManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameManager gameManager;
     [SerializeField] private EncryptedDataPoolManager encryptedDataPoolManager;
+    [SerializeField] private UIManager uiManager;
 
     [Header("Shop Setup")]
     [SerializeField] private List<CodeFragment> allShopItems; //SO Library Healthy Food
@@ -70,7 +71,19 @@ public class ShopManager : MonoBehaviour
         foreach (var button in shopButtons)
         {
             if (button.HasItem)
-                button.SetInteractable(gameManager.GetTotalCoins() >= button.GetItem().cost);
+            {
+                bool canBuy = gameManager.GetTotalCoins() >= button.GetItem().cost;
+
+                //Set interactable status
+                button.SetInteractable(canBuy);
+
+                //Retrieve all TMP_Text components inside the button and set the color of text according to canBuy variable
+                TMP_Text[] texts = button.GetComponentsInChildren<TMP_Text>(true);
+                foreach (var txt in texts)
+                {
+                    txt.color = canBuy ? uiManager.DefaultTextColor : uiManager.GameMainTextColor;
+                }
+            }
         }
     }
 
@@ -116,7 +129,6 @@ public class ShopManager : MonoBehaviour
 
         UpdateButtonStates();
     }
-
 
     public List<CodeFragment> GetAllShopItems()
     {

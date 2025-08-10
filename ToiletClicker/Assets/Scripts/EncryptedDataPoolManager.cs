@@ -111,11 +111,11 @@ public class EncryptedDataPoolManager : MonoBehaviour
 
                         if (code.isEncrypted)
                         {
-                            uIActions.AnimateProcessedCodeTyping(StringLibrary.encryptedCodeMessageDisplay, uiManager.DangerTextColor);
+                            uIActions.AnimateProcessedCodeTyping(StringLibrary.encryptedCodeMessageDisplay, uiManager.ErrorTextColor);
                         }
                         else
                         {
-                            uIActions.AnimateProcessedCodeTyping(StringLibrary.decodedCodeMessageDispay, uiManager.WarningTextColor);
+                            uIActions.AnimateProcessedCodeTyping(StringLibrary.decodedCodeMessageDispay, uiManager.SuccessTextColor);
                         }
                     }
                 }
@@ -135,9 +135,6 @@ public class EncryptedDataPoolManager : MonoBehaviour
                 closestSlot = rect;
             }
         }
-        
-
-       
     }
 
     private void ScrollContent()

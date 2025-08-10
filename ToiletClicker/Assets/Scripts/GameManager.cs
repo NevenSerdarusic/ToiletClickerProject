@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
 
         foreach (var c in gamePanels)
         {
-            // Hide sub-panels
+            //Hide sub-panels
             c.subPanels?.ForEach(sp => sp.SetActive(false));
         }
 
@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour
         {
             if (button.button != null && button.onClick != null)
             {
-                // Pokušaj dohvatiti TMP_Text (ako ga nema, animacija ?e se presko?iti)
+                //Try to get TMP_Text (if it doesn't exist, the animation will be skipped)
                 TMP_Text buttonText = button.button.GetComponentInChildren<TMP_Text>();
                 Color? originalColor = buttonText != null ? buttonText.color : (Color?)null;
 
@@ -184,11 +184,11 @@ public class GameManager : MonoBehaviour
 
     private void PlayButtonCTAEffect(TMP_Text buttonText, Color originalColor)
     {
-        LeanTween.value(buttonText.gameObject, originalColor, uiManager.WarningTextColor, buttonTextColorTransitionDuration)
+        LeanTween.value(buttonText.gameObject, originalColor, uiManager.SuccessTextColor, buttonTextColorTransitionDuration)
             .setOnUpdate((Color c) => { buttonText.color = c; })
             .setOnComplete(() =>
             {
-                LeanTween.value(buttonText.gameObject, uiManager.WarningTextColor, originalColor, buttonTextColorTransitionDuration)
+                LeanTween.value(buttonText.gameObject, uiManager.SuccessTextColor, originalColor, buttonTextColorTransitionDuration)
                     .setOnUpdate((Color c) => { buttonText.color = c; });
             });
     }
@@ -420,14 +420,14 @@ public class GameManager : MonoBehaviour
 
         ShowPanel(PanelType.GameCompleted);
 
-        //Play Sound
-
         upgradeManager.ResetAllUpgrades();
 
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
 
         PlayerPrefsHandler.SetGameCompleted(true);
+
+        //Play Sound
 
         //Start Animation
     }

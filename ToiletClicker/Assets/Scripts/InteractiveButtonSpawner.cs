@@ -72,13 +72,13 @@ public class InteractiveButtonSpawner : MonoBehaviour
         {
             amount = Random.Range(gameConfig.Current.minPositiveFirewallValue, gameConfig.Current.maxPositiveFirewallValue);
             buttonText.text = $"-{amount}%";
-            buttonText.color = uiManager.WarningTextColor;
+            buttonText.color = uiManager.SuccessTextColor;
         }
         else
         {
             amount = Random.Range(gameConfig.Current.minNegativeFirewallValue, gameConfig.Current.maxNegativeFirewallValue);
             buttonText.text = $"+{amount}%";
-            buttonText.color = uiManager.DangerTextColor;
+            buttonText.color = uiManager.ErrorTextColor;
         }
 
         //Pop-in animation

@@ -111,7 +111,7 @@ public class TraceScannerManager : MonoBehaviour
                 uiManager.CriticalPreassure,
                 uiManager.WarningTextDuration,
                 true,
-                uiManager.DangerTextColor
+                uiManager.ErrorTextColor
             );
         }
     }
@@ -136,7 +136,7 @@ public class TraceScannerManager : MonoBehaviour
 
     private void OnTraceDetectionBackToSafe()
     {
-        uiManager.ShowWarningMessage(uiManager.SafePreassure, uiManager.WarningTextDuration, true, uiManager.WarningTextColor);
+        uiManager.ShowWarningMessage(uiManager.SafePreassure, uiManager.WarningTextDuration, true, uiManager.SuccessTextColor);
         uiManager.StopTraceDetectionTimer();
         SoundManager.Instance.Stop("Countdown");
     }
